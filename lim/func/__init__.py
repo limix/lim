@@ -1,6 +1,7 @@
 from .learnable import Learnable
 from .data import UniFuncData
 from .data import BiFuncData
+from .data import BiFuncReduce
 from .variables import Variables
 from .variables import merge_variables
 from .types import Scalar

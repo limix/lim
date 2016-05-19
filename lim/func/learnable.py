@@ -1,8 +1,9 @@
 from .variables import Variables
 
 class Learnable(object):
-    def __init__(self, **kwargs):
-        self._vars = Variables(**kwargs)
+    def __init__(self, variables):
+        assert isinstance(variables, Variables)
+        self._vars = variables
 
     def gradient(self, *args, **kwargs):
         names = sorted(self._vars.names())
