@@ -1,4 +1,5 @@
 from .learnable import Learnable
+from .learnable import LearnableReduce
 from .data import UniFuncData
 from .data import BiFuncData
 from .data import BiFuncReduce
