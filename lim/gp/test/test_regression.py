@@ -8,7 +8,6 @@ from scipy.stats import pearsonr
 from ..regression import RegGP
 from ...cov import LinearCov
 from ...mean import OffsetMean
-from ...data import set_data
 from ...func import check_grad
 from ...random import GPSampler
 
@@ -21,11 +20,11 @@ def test_regression_value():
     mean = OffsetMean()
     mean.offset = offset
     mean.fix('offset')
-    set_data(mean, N)
+    mean.set_data(N)
 
     cov = LinearCov()
     cov.scale = 1.0
-    set_data(cov, X)
+    cov.set_data(X, X)
 
     y = random.randn(N)
 
@@ -41,11 +40,11 @@ def test_regression_gradient():
     mean = OffsetMean()
     mean.offset = offset
     mean.fix('offset')
-    set_data(mean, N)
+    mean.set_data(N)
 
     cov = LinearCov()
     cov.scale = 1.0
-    set_data(cov, X)
+    cov.set_data(X, X)
 
     y = random.randn(N)
 
@@ -71,11 +70,11 @@ def test_maximize_1():
     mean = OffsetMean()
     mean.offset = offset
     mean.fix('offset')
-    set_data(mean, N)
+    mean.set_data(N)
 
     cov = LinearCov()
     cov.scale = 1.0
-    set_data(cov, X)
+    cov.set_data(X, X)
 
     y = random.randn(N)
 
@@ -92,11 +91,11 @@ def test_maximize_2():
 
     mean = OffsetMean()
     mean.offset = offset
-    set_data(mean, N)
+    mean.set_data(N)
 
     cov = LinearCov()
     cov.scale = 1.0
-    set_data(cov, X)
+    cov.set_data(X, X)
 
     y = random.randn(N)
 
@@ -115,15 +114,15 @@ def test_predict():
 
     mean = OffsetMean()
     mean.offset = offset
-    set_data(mean, N, purpose='sample')
-    set_data(mean, nlearn, purpose='learn')
-    set_data(mean, npred, purpose='predict')
+    mean.set_data(N, purpose='sample')
+    mean.set_data(nlearn, purpose='learn')
+    mean.set_data(npred, purpose='predict')
 
     cov = LinearCov()
     cov.scale = 1.0
-    set_data(cov, X, purpose='sample')
-    set_data(cov, X[:nlearn, :], purpose='learn')
-    set_data(cov, X[-npred:, :], purpose='predict')
+    cov.set_data(X, X, purpose='sample')
+    cov.set_data(X[:nlearn, :], X[:nlearn, :], purpose='learn')
+    cov.set_data(X[-npred:, :], X[-npred:, :], purpose='predict')
 
     y = GPSampler(mean, cov).sample(random)
 
@@ -134,6 +133,6 @@ def test_predict():
 
     ypred = gp.predict()
     (corr, pval) = pearsonr(y[-npred:], ypred)
-    
+
     npt.assert_almost_equal(corr, 0.81494179361621788)
     npt.assert_almost_equal(pval, 0)
