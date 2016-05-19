@@ -151,11 +151,14 @@ def test_predict_1():
 #     mean.set_data(nlearn, purpose='learn')
 #     mean.set_data(npred, purpose='predict')
 #
-#     cov = LinearCov()
-#     cov.scale = 1.0
-#     cov.set_data((X, X), purpose='sample')
-#     cov.set_data((X[:nlearn, :], X[:nlearn, :]), purpose='learn')
-#     cov.set_data((X[-npred:, :], X[-npred:, :]), purpose='predict')
+#     cov_left = LinearCov()
+#     cov_left.scale = 1.0
+#     cov_left.set_data((X, X), purpose='sample')
+#     cov_left.set_data((X[:nlearn, :], X[:nlearn, :]), purpose='learn')
+#     cov_left.set_data((X[-npred:, :], X[-npred:, :]), purpose='predict')
+#
+#     cov_right = EyeCov()
+#     cov_left.scale = 0.2
 #
 #     y = GPSampler(mean, cov).sample(random)
 #
