@@ -93,12 +93,8 @@ class RegGP(object):
         _Kim = self._Kim()
         K_pp = cov.data('predict').value()
 
-        cov.set_data((cov.data('learn').raw[0], cov.data('predict').raw[0]),
-                     purpose='learn_predict')
         K_lp = cov.data('learn_predict').value()
 
         est_mean = m_p + K_lp.T.dot(_Kim)
-
-        cov.unset_data(purpose='learn_predict')
 
         return est_mean

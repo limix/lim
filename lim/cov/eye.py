@@ -26,14 +26,5 @@ class EyeCov(Learnable, FuncData):
     def value(self, x0, x1):
         return self.scale * (x0 == x1)
 
-        # if isnumber(x0):
-        #     assert isnumber(x1)
-        #     return self.scale * (x0 is x1)
-        # if x0.ndim == 1:
-        #     return array([self.scale * (x0 is x1)])
-        # elif x0.ndim == 2:
-        #     return self.scale * (x0 is x1) * eye(x0.shape[0])
-        # assert False
-
     def derivative_logscale(self, x0, x1):
         return self.value(x0, x1)
