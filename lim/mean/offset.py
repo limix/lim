@@ -3,11 +3,13 @@ from numpy import ones
 
 from ..func import Learnable
 from ..func import Scalar
+from ..func import UniFuncData
 
-class OffsetMean(Learnable):
+class OffsetMean(Learnable, UniFuncData):
     def __init__(self):
         self._offset = Scalar(1.0)
         Learnable.__init__(self, offset=self._offset)
+        UniFuncData.__init__(self)
 
     @property
     def offset(self):

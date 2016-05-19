@@ -9,6 +9,6 @@ class GPSampler(object):
         if random_state is None:
             random_state = RandomState()
 
-        m = self._mean.sample.value()
-        K = self._cov.sample.value()
+        m = self._mean.data('sample').value()
+        K = self._cov.data('sample').value()
         return random_state.multivariate_normal(m, K)

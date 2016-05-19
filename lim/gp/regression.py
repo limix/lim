@@ -9,9 +9,6 @@ from ..func import merge_variables
 from ..func.optimize.brent import maximize as maximize_scalar
 from ..func.optimize.tnc import maximize as maximize_array
 
-from ..data import set_data
-from ..data import unset_data
-
 from ..random import GPSampler
 
 class RegGP(object):
@@ -26,9 +23,9 @@ class RegGP(object):
         cov = self._cov
         Kiym = self._Kim()
 
-        ym = y - mean.learn.value()
+        ym = y - mean.data('learn').value()
 
-        (s, logdet) = slogdet(cov.learn.value())
+        (s, logdet) = slogdet(cov.data('learn').value())
         assert s == 1.
 
         n = len(y)
@@ -48,7 +45,7 @@ class RegGP(object):
 
         g = []
         for i in range(len(vars_)):
-            dm = mean.learn.gradient()[i]
+            dm = mean.data('learn').gradient()[i]
             g.append(dm.dot(Kiym))
         return g
 
@@ -56,19 +53,19 @@ class RegGP(object):
         cov = self._cov
 
         vars_ = cov.variables().select(fixed=False)
-        K = cov.learn.value()
+        K = cov.data('learn').value()
         Kiym = self._Kim()
 
         g = []
         for i in range(len(vars_)):
-            dK = self._cov.learn.gradient()[i]
+            dK = self._cov.data('learn').gradient()[i]
             g.append(- solve(K, dK).diagonal().sum()
                      + Kiym.dot(dK.dot(Kiym)))
         return [gi / 2 for gi in g]
 
     def _Kim(self):
-        m = self._mean.learn.value()
-        K = self._cov.learn.value()
+        m = self._mean.data('learn').value()
+        K = self._cov.data('learn').value()
         return solve(K, self._y - m)
 
     def variables(self):
@@ -92,16 +89,16 @@ class RegGP(object):
         mean = self._mean
         cov = self._cov
 
-        m_p = mean.predict.value()
+        m_p = mean.data('predict').value()
         _Kim = self._Kim()
-        K_pp = cov.predict.value()
+        K_pp = cov.data('predict').value()
 
-        set_data(cov, cov.learn.data_left, cov.predict.data_left,
-                 purpose='learn_predict')
-        K_lp = cov.learn_predict.value()
+        cov.set_data(cov.data('learn').raw[0], cov.data('predict').raw[0],
+                     purpose='learn_predict')
+        K_lp = cov.data('learn_predict').value()
 
         est_mean = m_p + K_lp.T.dot(_Kim)
 
-        unset_data(cov, purpose='learn_predict')
+        cov.unset_data(purpose='learn_predict')
 
         return est_mean

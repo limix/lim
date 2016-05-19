@@ -1,7 +1,6 @@
 import numpy as np
 import numpy.testing as npt
 
-from ..data import set_data
 from ...mean import OffsetMean
 from ...cov import LinearCov
 
@@ -11,8 +10,8 @@ def test_UniFuncWrapper_value():
     n = 10
     o = 1.3
     mean.offset = o
-    set_data(mean, n)
-    npt.assert_almost_equal(o*np.ones(n), mean.learn.value())
+    mean.set_data(n)
+    npt.assert_almost_equal(o*np.ones(n), mean.data('learn').value())
 
 def test_BinFuncWrapper_value():
     cov = LinearCov()
@@ -24,8 +23,8 @@ def test_BinFuncWrapper_value():
         for (j, xj) in enumerate(X):
             K[i, j] = cov.value(xi, xj)
 
-    set_data(cov, X)
-    npt.assert_almost_equal(K, cov.learn.value())
+    cov.set_data(X, X)
+    npt.assert_almost_equal(K, cov.data('learn').value())
 
 def test_UniFuncWrapper_gradient():
     mean = OffsetMean()
@@ -33,9 +32,9 @@ def test_UniFuncWrapper_gradient():
     n = 10
     o = 1.3
     mean.offset = o
-    set_data(mean, n)
+    mean.set_data(n)
 
-    npt.assert_almost_equal(mean.gradient(n), mean.learn.gradient())
+    npt.assert_almost_equal(mean.gradient(n), mean.data('learn').gradient())
 
 def test_BinFuncWrapper_gradient():
     cov = LinearCov()
@@ -44,5 +43,5 @@ def test_BinFuncWrapper_gradient():
 
     dK = cov.gradient(X, X)[0]
 
-    set_data(cov, X)
-    npt.assert_almost_equal(dK, cov.learn.gradient()[0])
+    cov.set_data(X, X)
+    npt.assert_almost_equal(dK, cov.data('learn').gradient()[0])
