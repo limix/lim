@@ -23,7 +23,7 @@ def test_BinFuncWrapper_value():
         for (j, xj) in enumerate(X):
             K[i, j] = cov.value(xi, xj)
 
-    cov.set_data(X, X)
+    cov.set_data((X, X))
     npt.assert_almost_equal(K, cov.data('learn').value())
 
 def test_UniFuncWrapper_gradient():
@@ -43,5 +43,5 @@ def test_BinFuncWrapper_gradient():
 
     dK = cov.gradient(X, X)[0]
 
-    cov.set_data(X, X)
+    cov.set_data((X, X))
     npt.assert_almost_equal(dK, cov.data('learn').gradient()[0])

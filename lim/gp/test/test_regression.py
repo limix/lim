@@ -24,7 +24,7 @@ def test_regression_value():
 
     cov = LinearCov()
     cov.scale = 1.0
-    cov.set_data(X, X)
+    cov.set_data((X, X))
 
     y = random.randn(N)
 
@@ -44,7 +44,7 @@ def test_regression_gradient():
 
     cov = LinearCov()
     cov.scale = 1.0
-    cov.set_data(X, X)
+    cov.set_data((X, X))
 
     y = random.randn(N)
 
@@ -74,7 +74,7 @@ def test_maximize_1():
 
     cov = LinearCov()
     cov.scale = 1.0
-    cov.set_data(X, X)
+    cov.set_data((X, X))
 
     y = random.randn(N)
 
@@ -95,7 +95,7 @@ def test_maximize_2():
 
     cov = LinearCov()
     cov.scale = 1.0
-    cov.set_data(X, X)
+    cov.set_data((X, X))
 
     y = random.randn(N)
 
@@ -120,9 +120,9 @@ def test_predict():
 
     cov = LinearCov()
     cov.scale = 1.0
-    cov.set_data(X, X, purpose='sample')
-    cov.set_data(X[:nlearn, :], X[:nlearn, :], purpose='learn')
-    cov.set_data(X[-npred:, :], X[-npred:, :], purpose='predict')
+    cov.set_data((X, X), purpose='sample')
+    cov.set_data((X[:nlearn, :], X[:nlearn, :]), purpose='learn')
+    cov.set_data((X[-npred:, :], X[-npred:, :]), purpose='predict')
 
     y = GPSampler(mean, cov).sample(random)
 

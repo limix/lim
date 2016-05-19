@@ -4,13 +4,13 @@ from numpy import log
 from ..func import Learnable
 from ..func import Variables
 from ..func import Scalar
-from ..func import BiFuncData
+from ..func import FuncData
 
-class LinearCov(Learnable, BiFuncData):
+class LinearCov(Learnable, FuncData):
     def __init__(self):
         self._logscale = Scalar(0.0)
         Learnable.__init__(self, Variables(logscale=self._logscale))
-        BiFuncData.__init__(self)
+        FuncData.__init__(self)
 
     @property
     def scale(self):

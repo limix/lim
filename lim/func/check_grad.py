@@ -15,8 +15,11 @@ _step = sqrt(finfo(float).eps)
 def approx_fprime(xk, f, step):
     f0 = f(xk)
     grad = [zeros_like(asarray(f0).ravel()) for i in range(len(xk))]
+    d = zeros(len(grad))
     for k in range(len(xk)):
-        grad[k][:] = (f(xk + step) - f0) / step
+        d[k] = step
+        grad[k][:] = asarray((f(xk + d) - f0) / step).ravel()
+        d[k] = 0
     return grad
 
 def check_grad(func, grad, x0, step=_step):

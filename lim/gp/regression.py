@@ -93,7 +93,7 @@ class RegGP(object):
         _Kim = self._Kim()
         K_pp = cov.data('predict').value()
 
-        cov.set_data(cov.data('learn').raw[0], cov.data('predict').raw[0],
+        cov.set_data((cov.data('learn').raw[0], cov.data('predict').raw[0]),
                      purpose='learn_predict')
         K_lp = cov.data('learn_predict').value()
 
