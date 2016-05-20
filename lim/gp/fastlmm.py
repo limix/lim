@@ -32,7 +32,6 @@ class FastLMM(object):
         self._S = QS[1]
         self._lS0 = log(self._S[0])
 
-        self._logscale = 0.0
         self._logdelta = 0.0
 
         self._logdiagi_aux0 = empty(len(self._S[0]))
@@ -55,13 +54,19 @@ class FastLMM(object):
 
         return nom/denom
 
-    @property
     def scale(self):
-        return exp(self._logscale)
+        return exp(self._logscale())
 
-    @scale.setter
-    def scale(self, s):
-        self._logscale = log(s)
+    def _logscale(self):
+        diff = self._diff()
+
+        ldi = self._logdiagi()
+
+        ymKiym0 = sum(exp(ldi[0]) * diff[0] * diff[0])
+        ymKiym1 = sum(exp(ldi[1]) * diff[1] * diff[1])
+
+        ymKiym = ymKiym0 + ymKiym1
+        return log(ymKiym / len(self._y))
 
     @property
     def delta(self):
@@ -83,10 +88,16 @@ class FastLMM(object):
         Qto = self._Qtones()
         return (Qto[0] * self.offset(), Qto[1] * self.offset())
 
+    # def _logdiagi(self):
+    #     lS0 = self._lS0
+    #     out = self._logdiagi_aux0
+    #     _logsumexp_as(lS0, self._logdelta, out)
+    #     return (-out, -self._logdelta)
+
     def _logdiagi(self):
         lS0 = self._lS0
         out = self._logdiagi_aux0
-        _logsumexp_as(lS0, self._logdelta, out)
+        _logsumexp_as(lS0 + log(1-self.delta), self._logdelta, out)
         return (-out, -self._logdelta)
 
     def _logdet(self, logdiagi=None):
@@ -95,7 +106,7 @@ class FastLMM(object):
         else:
             ldi = logdiagi
         n = len(self._y)
-        return n * self._logscale - ldi[0].sum() - (n-len(ldi[0])) * ldi[1]
+        return n * self._logscale() - ldi[0].sum() - (n-len(ldi[0])) * ldi[1]
 
     def _diff(self):
         a = self._Qty()
@@ -110,7 +121,7 @@ class FastLMM(object):
         else:
             ldi = logdiagi
 
-        si = -self._logscale
+        si = -self._logscale()
         ymKiym0 = sum(exp(si + ldi[0]) * diff[0] * diff[0])
         ymKiym1 = sum(exp(si + ldi[1]) * diff[1] * diff[1])
 
@@ -120,37 +131,37 @@ class FastLMM(object):
         n = len(self._y)
         return - (logdet + ymKiym + n * log(2*pi)) / 2
 
-    def optimal_delta(self):
-        nsteps = 100
+    def learn(self):
+        nsteps = 10000
         step = 1/(nsteps+1)
-        logstep = log(step)
-
-        lS0 = self._lS0
-        out = self._logdiagi_aux0
-        _logsumexp_as(lS0, logstep, out)
-        lml0 = self.lml(logdiagi=(-out, -logstep))
+        self.delta = step
         best_step = 0
-
+        lml0 = self.lml()
         for i in range(1, nsteps):
-            logdelta = log(i * step + step)
-            _logsumexp_as(out, logstep, out)
-            lml1 = self.lml(logdiagi=(-out, -logdelta))
+            self.delta = i * step + step
+            lml1 = self.lml()
             if lml1 > lml0:
                 lml0 = lml1
                 best_step = i
-
         self.delta = best_step * step + step
 
-    def optimal_scale(self, logdiagi=None):
-        diff = self._diff()
-
-        if logdiagi is None:
-            ldi = self._logdiagi()
-        else:
-            ldi = logdiagi
-
-        ymKiym0 = sum(exp(ldi[0]) * diff[0] * diff[0])
-        ymKiym1 = sum(exp(ldi[1]) * diff[1] * diff[1])
-
-        ymKiym = ymKiym0 + ymKiym1
-        self.scale = ymKiym / len(self._y)
+    # def learn(self):
+    #     nsteps = 100
+    #     step = 1/(nsteps+1)
+    #     logstep = log(step)
+    #
+    #     lS0 = self._lS0
+    #     out = self._logdiagi_aux0
+    #     _logsumexp_as(lS0, logstep, out)
+    #     lml0 = self.lml(logdiagi=(-out, -logstep))
+    #     best_step = 0
+    #
+    #     for i in range(1, nsteps):
+    #         logdelta = log(i * step + step)
+    #         _logsumexp_as(out, logstep, out)
+    #         lml1 = self.lml(logdiagi=(-out, -logdelta))
+    #         if lml1 > lml0:
+    #             lml0 = lml1
+    #             best_step = i
+    #
+    #     self.delta = best_step * step + step
