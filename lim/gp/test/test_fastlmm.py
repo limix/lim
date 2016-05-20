@@ -52,6 +52,11 @@ def test_regression_value():
 
     npt.assert_almost_equal(lml0, lml1)
 
+    cov_left.fix('logscale')
+    cov_right.fix('logscale')
+    gp.learn()
+    npt.assert_almost_equal(flmm.optimal_offset(), mean.offset)
+
 # def test_regression_gradient():
 #     random = np.random.RandomState(94584)
 #     N = 400

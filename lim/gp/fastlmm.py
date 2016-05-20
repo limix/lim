@@ -105,6 +105,24 @@ class FastLMM(object):
         n = len(self._y)
         return - (logdet + ymKiym + n * log(2*pi)) / 2
 
+    def optimal_offset(self):
+        Qty = self._Qty()
+        Qtones = self._Qtones()
+        ldi = self._logdiagi()
+        n = len(self._y)
+
+        a = sum(Qtones[0] * Qtones[0] * exp(ldi[0]))
+        b = sum(Qtones[1] * Qtones[1] * exp(ldi[1]))
+        denom = b - a
+        if abs(denom) < 1e-10:
+            return 0.0
+
+        a = sum(Qty[0] * Qtones[0] * exp(ldi[0]))
+        b = sum(Qty[1] * Qtones[1] * exp(ldi[1]))
+        nom = b - a
+
+        return nom/denom
+
     # def lml_gradient(self):
     #     grad_cov = self._lml_gradient_cov()
     #     grad_mean = self._lml_gradient_mean()
