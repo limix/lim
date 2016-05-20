@@ -1,26 +1,26 @@
 from __future__ import division
 
-from numpy.random import RandomState
+import numpy as np
 from numpy.testing import assert_almost_equal
-from numpy import sqrt
+
 
 from ..fastlmm import FastLMM
-from ..regression import RegGP
+from ...gp.regression import RegGP
 from ...util.fruits import Apples
 from ...cov import LinearCov
 from ...cov import EyeCov
 from ...cov import SumCov
 from ...mean import OffsetMean
+from ...func import check_grad
 from ...random import GPSampler
-from ...genetics import eigen_design_matrix
 
-def test_optimization():
-    random = RandomState(9458)
+def test_learn():
+    random = np.random.RandomState(9458)
     N = 200
     X = random.randn(N, 400)
     X -= X.mean(0)
     X /= X.std(0)
-    X /= sqrt(X.shape[1])
+    X /= np.sqrt(X.shape[1])
     offset = 1.2
 
     mean = OffsetMean()
@@ -45,8 +45,10 @@ def test_optimization():
     gp = RegGP(y, mean, cov)
     gp.learn()
     delta = cov_right.scale / (cov_left.scale + cov_right.scale)
-    QS = eigen_design_matrix(X)
-    flmm = FastLMM(y, QS[0][0], QS[0][1], QS[1][0])
-    flmm.delta = delta
-    assert_almost_equal(gp.lml(), flmm.lml())
+
+    flmm = FastLMM(y, X)
+    flmm.learn()
+
     assert_almost_equal(mean.offset, flmm.offset, decimal=6)
+    assert_almost_equal(cov_left.scale, flmm.genetic_variance, decimal=5)
+    assert_almost_equal(cov_right.scale, flmm.noise_variance, decimal=5)
