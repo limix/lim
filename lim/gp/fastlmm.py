@@ -74,8 +74,8 @@ class FastLMM(object):
         Qto = self._Qtones()
         return (Qto[0] * self._offset, Qto[1] * self._offset)
 
-    def _diag(self):
-        return (self._S[0] + exp(self._logdelta), exp(self._logdelta))
+    # def _diag(self):
+    #     return (self._S[0] + exp(self._logdelta), exp(self._logdelta))
 
     def _logdiagi(self):
         lS0 = self._lS0
@@ -85,9 +85,9 @@ class FastLMM(object):
         return (-out, -self._logdelta)
 
     def _logdet(self):
-        d = self._diag()
+        ldi = self._logdiagi()
         n = len(self._y)
-        return n * self._logscale + log(d[0]).sum() + (n-len(d[0])) * log(d[1])
+        return n * self._logscale - ldi[0].sum() - (n-len(ldi[0])) * ldi[1]
 
     def lml(self):
         a = self._Qty()
