@@ -1,10 +1,11 @@
 from __future__ import division
 
-from math import exp
-
 from numpy import log
+from numpy import exp
 from numpy import pi
 from numpy import sum
+from numpy import empty
+from numpy import logaddexp
 from numpy.linalg import solve
 from numpy.linalg import slogdet
 
@@ -14,6 +15,13 @@ from ..genetics import eigen_design_matrix
 
 from ..random import GPSampler
 
+def _logsumexp_as(arr, scalar, out):
+    for i in range(arr.shape[0]):
+        out[i] = logaddexp(arr[i], scalar)
+
+def _logsumexp_aa(arr0, arr1, out):
+    for i in range(arr0.shape[0]):
+        out[i] = logaddexp(arr0[i], arr1[i])
 
 class FastLMM(object):
     def __init__(self, y, X):
@@ -22,10 +30,13 @@ class FastLMM(object):
         QS = eigen_design_matrix(X)
         self._Q = QS[0]
         self._S = QS[1]
+        self._lS0 = log(self._S[0])
 
         self._offset = 0.0
         self._logscale = 0.0
         self._logdelta = 0.0
+
+        self._logdiagi_aux0 = empty(len(self._S[0]))
 
     @property
     def offset(self):
@@ -66,21 +77,27 @@ class FastLMM(object):
     def _diag(self):
         return (self._S[0] + exp(self._logdelta), exp(self._logdelta))
 
+    def _logdiagi(self):
+        lS0 = self._lS0
+        out = empty(lS0.shape[0])
+        out = self._logdiagi_aux0
+        _logsumexp_as(lS0, self._logdelta, out)
+        return (-out, -self._logdelta)
+
     def _logdet(self):
         d = self._diag()
         n = len(self._y)
         return n * self._logscale + log(d[0]).sum() + (n-len(d[0])) * log(d[1])
 
     def lml(self):
-
         a = self._Qty()
         b = self._Qtoffset()
         diff = (a[0] - b[0], a[1] - b[1])
 
-        d = self._diag()
-
-        ymKiym0 = sum((1./exp(self._logscale)) * diff[0] * diff[0] / d[0])
-        ymKiym1 = sum((1./exp(self._logscale)) * diff[1] * diff[1] / d[1])
+        ldi = self._logdiagi()
+        si = -self._logscale
+        ymKiym0 = sum(exp(si + ldi[0]) * diff[0] * diff[0])
+        ymKiym1 = sum(exp(si + ldi[1]) * diff[1] * diff[1])
 
         ymKiym = ymKiym0 + ymKiym1
         logdet = self._logdet()
