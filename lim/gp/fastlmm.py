@@ -32,19 +32,28 @@ class FastLMM(object):
         self._S = QS[1]
         self._lS0 = log(self._S[0])
 
-        self._offset = 0.0
         self._logscale = 0.0
         self._logdelta = 0.0
 
         self._logdiagi_aux0 = empty(len(self._S[0]))
 
-    @property
     def offset(self):
-        return self._offset
+        Qty = self._Qty()
+        Qtones = self._Qtones()
+        ldi = self._logdiagi()
+        n = len(self._y)
 
-    @offset.setter
-    def offset(self, o):
-        self._offset = o
+        a = sum(Qtones[0] * Qtones[0] * exp(ldi[0]))
+        b = sum(Qtones[1] * Qtones[1] * exp(ldi[1]))
+        denom = b - a
+        if abs(denom) < 1e-10:
+            return 0.0
+
+        a = sum(Qty[0] * Qtones[0] * exp(ldi[0]))
+        b = sum(Qty[1] * Qtones[1] * exp(ldi[1]))
+        nom = b - a
+
+        return nom/denom
 
     @property
     def scale(self):
@@ -72,7 +81,7 @@ class FastLMM(object):
 
     def _Qtoffset(self):
         Qto = self._Qtones()
-        return (Qto[0] * self._offset, Qto[1] * self._offset)
+        return (Qto[0] * self.offset(), Qto[1] * self.offset())
 
     def _logdiagi(self):
         lS0 = self._lS0
@@ -145,22 +154,3 @@ class FastLMM(object):
 
         ymKiym = ymKiym0 + ymKiym1
         self.scale = ymKiym / len(self._y)
-
-    def optimal_offset(self):
-        Qty = self._Qty()
-        Qtones = self._Qtones()
-        ldi = self._logdiagi()
-        n = len(self._y)
-
-        a = sum(Qtones[0] * Qtones[0] * exp(ldi[0]))
-        b = sum(Qtones[1] * Qtones[1] * exp(ldi[1]))
-        denom = b - a
-        if abs(denom) < 1e-10:
-            self._offset = 0.0
-            return
-
-        a = sum(Qty[0] * Qtones[0] * exp(ldi[0]))
-        b = sum(Qty[1] * Qtones[1] * exp(ldi[1]))
-        nom = b - a
-
-        self._offset = nom/denom
