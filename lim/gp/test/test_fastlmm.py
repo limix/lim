@@ -1,7 +1,7 @@
 from __future__ import division
 
 import numpy as np
-import numpy.testing as npt
+from numpy.testing import assert_almost_equal
 
 from scipy.stats import pearsonr
 
@@ -16,7 +16,7 @@ from ..fastlmm import FastLMM
 from ...func import check_grad
 from ...random import GPSampler
 
-def test_regression_value():
+def test_fastlmm_optimization_1():
     random = np.random.RandomState(94584)
     N = 400
     X = random.randn(N, 500)
@@ -50,12 +50,96 @@ def test_regression_value():
     flmm.delta = 1.0
     lml1 = flmm.lml()
 
-    npt.assert_almost_equal(lml0, lml1)
+    assert_almost_equal(lml0, lml1)
 
     cov_left.fix('logscale')
     cov_right.fix('logscale')
     gp.learn()
-    npt.assert_almost_equal(flmm.optimal_offset(), mean.offset)
+    flmm.optimal_offset()
+    assert_almost_equal(flmm.offset, mean.offset)
+
+
+    cov_right.unfix('logscale')
+    mean.fix('offset')
+    gp.learn()
+    flmm.optimal_delta()
+
+    assert_almost_equal(cov_right.scale, flmm.scale*flmm.delta, decimal=3)
+    assert_almost_equal(gp.lml(), flmm.lml(), decimal=4)
+
+# def test_fastlmm_optimization_2():
+#     random = np.random.RandomState(94584)
+#     N = 400
+#     X = random.randn(N, 500)
+#     X -= X.mean(0)
+#     X /= X.std(0)
+#     X /= np.sqrt(X.shape[1])
+#     offset = 1.2
+#
+#     mean = OffsetMean()
+#     mean.offset = offset
+#     mean.set_data(N)
+#
+#     cov_left = LinearCov()
+#     cov_left.scale = 1.5
+#     cov_left.set_data((X, X))
+#
+#     cov_right = EyeCov()
+#     cov_right.scale = 1.5
+#     cov_right.set_data((Apples(N), Apples(N)))
+#
+#     cov = SumCov([cov_left, cov_right])
+#
+#     y = random.randn(N)
+#
+#     gp = RegGP(y, mean, cov)
+#     lml0 = gp.lml()
+#
+#     flmm = FastLMM(y, X)
+#     flmm.offset = offset
+#     flmm.scale = 1.5
+#     flmm.delta = 1.0
+#     lml1 = flmm.lml()
+#
+#     assert_almost_equal(lml0, lml1)
+#
+#     gp.learn()
+#
+#     print(flmm.lml())
+#     flmm.optimal_offset()
+#     flmm.optimal_scale()
+#     flmm.optimal_delta()
+#
+#     print(flmm.lml())
+#     flmm.optimal_offset()
+#     flmm.optimal_scale()
+#     flmm.optimal_delta()
+#
+#     print(flmm.lml())
+#     flmm.optimal_offset()
+#     flmm.optimal_scale()
+#     flmm.optimal_delta()
+#
+#     print(flmm.lml())
+#     flmm.optimal_offset()
+#     flmm.optimal_scale()
+#     flmm.optimal_delta()
+#
+#     print(flmm.lml())
+#     flmm.optimal_offset()
+#     print(flmm.lml())
+#     flmm.optimal_scale()
+#     print(flmm.lml())
+#     flmm.optimal_delta()
+#     print(flmm.lml())
+#
+#
+#     print(mean.offset, cov_left.scale, cov_right.scale)
+#     print(flmm.offset, flmm.scale, flmm.scale*flmm.delta)
+#
+#     # print(gp.lml())
+
+
 
 # def test_regression_gradient():
 #     random = np.random.RandomState(94584)
@@ -85,7 +169,7 @@ def test_regression_value():
 #         cov.scale = np.exp(x[0])
 #         return gp.lml_gradient()
 #
-#     npt.assert_almost_equal(check_grad(func, grad, [0]), 0)
+#     assert_almost_equal(check_grad(func, grad, [0]), 0)
 #
 # def test_maximize_1():
 #     random = np.random.RandomState(94584)
@@ -107,7 +191,7 @@ def test_regression_value():
 #     gp = RegGP(y, mean, cov)
 #
 #     gp.learn()
-#     npt.assert_almost_equal(gp.lml(), -805.453722549)
+#     assert_almost_equal(gp.lml(), -805.453722549)
 #
 # def test_maximize_2():
 #     random = np.random.RandomState(94584)
@@ -128,7 +212,7 @@ def test_regression_value():
 #     gp = RegGP(y, mean, cov)
 #
 #     gp.learn()
-#     npt.assert_almost_equal(gp.lml(), -761.517250775)
+#     assert_almost_equal(gp.lml(), -761.517250775)
 #
 # def test_predict_1():
 #     random = np.random.RandomState(94584)
@@ -156,13 +240,13 @@ def test_regression_value():
 #     gp = RegGP(y[:nlearn], mean, cov)
 #
 #     gp.learn()
-#     npt.assert_almost_equal(gp.lml(), -1377.9245876374036)
+#     assert_almost_equal(gp.lml(), -1377.9245876374036)
 #
 #     ypred = gp.predict()
 #     (corr, pval) = pearsonr(y[-npred:], ypred)
 #
-#     npt.assert_almost_equal(corr, 0.81494179361621788)
-#     npt.assert_almost_equal(pval, 0)
+#     assert_almost_equal(corr, 0.81494179361621788)
+#     assert_almost_equal(pval, 0)
 #
 # def test_predict_2():
 #     random = np.random.RandomState(94584)
@@ -201,10 +285,10 @@ def test_regression_value():
 #     cov_left.scale = 0.1
 #     cov_right.scale = 5.0
 #     gp.learn()
-#     npt.assert_almost_equal(gp.lml(), -1379.03320103)
+#     assert_almost_equal(gp.lml(), -1379.03320103)
 #
 #     ypred = gp.predict()
 #     (corr, pval) = pearsonr(y[-npred:], ypred)
 #
-#     npt.assert_almost_equal(corr, 0.81700837814)
-#     npt.assert_almost_equal(pval, 0)
+#     assert_almost_equal(corr, 0.81700837814)
+#     assert_almost_equal(pval, 0)

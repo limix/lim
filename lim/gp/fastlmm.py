@@ -74,36 +74,77 @@ class FastLMM(object):
         Qto = self._Qtones()
         return (Qto[0] * self._offset, Qto[1] * self._offset)
 
-    # def _diag(self):
-    #     return (self._S[0] + exp(self._logdelta), exp(self._logdelta))
-
     def _logdiagi(self):
         lS0 = self._lS0
-        out = empty(lS0.shape[0])
         out = self._logdiagi_aux0
         _logsumexp_as(lS0, self._logdelta, out)
         return (-out, -self._logdelta)
 
-    def _logdet(self):
-        ldi = self._logdiagi()
+    def _logdet(self, logdiagi=None):
+        if logdiagi is None:
+            ldi = self._logdiagi()
+        else:
+            ldi = logdiagi
         n = len(self._y)
         return n * self._logscale - ldi[0].sum() - (n-len(ldi[0])) * ldi[1]
 
-    def lml(self):
+    def _diff(self):
         a = self._Qty()
         b = self._Qtoffset()
-        diff = (a[0] - b[0], a[1] - b[1])
+        return (a[0] - b[0], a[1] - b[1])
 
-        ldi = self._logdiagi()
+    def lml(self, logdiagi=None):
+        diff = self._diff()
+
+        if logdiagi is None:
+            ldi = self._logdiagi()
+        else:
+            ldi = logdiagi
+
         si = -self._logscale
         ymKiym0 = sum(exp(si + ldi[0]) * diff[0] * diff[0])
         ymKiym1 = sum(exp(si + ldi[1]) * diff[1] * diff[1])
 
         ymKiym = ymKiym0 + ymKiym1
-        logdet = self._logdet()
+        logdet = self._logdet(logdiagi=ldi)
 
         n = len(self._y)
         return - (logdet + ymKiym + n * log(2*pi)) / 2
+
+    def optimal_delta(self):
+        nsteps = 100
+        step = 1/(nsteps+1)
+        logstep = log(step)
+
+        lS0 = self._lS0
+        out = self._logdiagi_aux0
+        _logsumexp_as(lS0, logstep, out)
+        lml0 = self.lml(logdiagi=(-out, -logstep))
+        best_step = 0
+
+        for i in range(1, nsteps):
+            logdelta = log(i * step + step)
+            _logsumexp_as(out, logstep, out)
+            lml1 = self.lml(logdiagi=(-out, -logdelta))
+            if lml1 > lml0:
+                lml0 = lml1
+                best_step = i
+
+        self.delta = best_step * step + step
+
+    def optimal_scale(self, logdiagi=None):
+        diff = self._diff()
+
+        if logdiagi is None:
+            ldi = self._logdiagi()
+        else:
+            ldi = logdiagi
+
+        ymKiym0 = sum(exp(ldi[0]) * diff[0] * diff[0])
+        ymKiym1 = sum(exp(ldi[1]) * diff[1] * diff[1])
+
+        ymKiym = ymKiym0 + ymKiym1
+        self.scale = ymKiym / len(self._y)
 
     def optimal_offset(self):
         Qty = self._Qty()
@@ -115,89 +156,11 @@ class FastLMM(object):
         b = sum(Qtones[1] * Qtones[1] * exp(ldi[1]))
         denom = b - a
         if abs(denom) < 1e-10:
-            return 0.0
+            self._offset = 0.0
+            return
 
         a = sum(Qty[0] * Qtones[0] * exp(ldi[0]))
         b = sum(Qty[1] * Qtones[1] * exp(ldi[1]))
         nom = b - a
 
-        return nom/denom
-
-    # def lml_gradient(self):
-    #     grad_cov = self._lml_gradient_cov()
-    #     grad_mean = self._lml_gradient_mean()
-    #     return grad_cov + grad_mean
-    #
-    # def _lml_gradient_mean(self):
-    #     mean = self._mean
-    #
-    #     vars_ = mean.variables().select(fixed=False)
-    #
-    #     Kiym = self._Kim()
-    #
-    #     g = []
-    #     for i in range(len(vars_)):
-    #         dm = mean.data('learn').gradient()[i]
-    #         g.append(dm.dot(Kiym))
-    #     return g
-    #
-    # def _lml_gradient_cov(self):
-    #     cov = self._cov
-    #
-    #     vars_ = cov.variables().select(fixed=False)
-    #     K = cov.data('learn').value()
-    #     Kiym = self._Kim()
-    #
-    #     g = []
-    #     for i in range(len(vars_)):
-    #         dK = self._cov.data('learn').gradient()[i]
-    #         g.append(- solve(K, dK).diagonal().sum()
-    #                  + Kiym.dot(dK.dot(Kiym)))
-    #     return [gi / 2 for gi in g]
-    #
-    # def _Kim(self):
-    #     m = self._mean.data('learn').value()
-    #     K = self._cov.data('learn').value()
-    #     return solve(K, self._y - m)
-    #
-    # def variables(self):
-    #     v0 = self._mean.variables().select(fixed=False)
-    #     v1 = self._cov.variables().select(fixed=False)
-    #     return merge_variables(dict(mean=v0, cov=v1))
-    #
-    # def learn(self):
-    #     self.value = lambda: self.lml()
-    #     self.gradient = lambda: self.lml_gradient()
-    #
-    #     if len(self.variables()) == 0:
-    #         return
-    #     elif len(self.variables()) == 1:
-    #         maximize_scalar(self)
-    #     else:
-    #         maximize_array(self)
-    #
-    # def predict(self):
-    #     y = self._y
-    #     mean = self._mean
-    #     cov = self._cov
-    #
-    #     m_p = mean.data('predict').value()
-    #     _Kim = self._Kim()
-    #     K_pp = cov.data('predict').value()
-    #
-    #     K_lp = cov.data('learn_predict').value()
-    #
-    #     est_mean = m_p + K_lp.T.dot(_Kim)
-    #
-    #     return est_mean
-
-if __name__ == '__main__':
-    import numpy as np
-    import logging
-    logging.basicConfig(level=logging.INFO)
-    np.random.seed(100)
-    n = 5
-    y = np.random.randint(0, 2, n)
-    X = np.random.randn(n, 300)
-    flmm = FastLMM(y, X)
-    flmm.lml()
+        self._offset = nom/denom
