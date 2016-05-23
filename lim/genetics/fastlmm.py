@@ -2,7 +2,9 @@ from __future__ import division
 
 from numpy import exp
 
-from .decomposition import eigen_design_matrix
+from limix_math.linalg import qs_decomposition
+
+from .transformation import DesignMatrixTrans
 from ..inference import FastLMM as FastLMMCore
 from ..func import maximize_scalar
 from ..func import Learnable
@@ -15,11 +17,17 @@ class FastLMM(Learnable, FuncData):
         self._logistic = Scalar(0.0)
         Learnable.__init__(self, Variables(logistic=self._logistic))
         FuncData.__init__(self)
-        QS = eigen_design_matrix(X)
+        self._trans = DesignMatrixTrans(X)
+        X = self._trans.transform(X)
+        QS = qs_decomposition(X)
         self._flmmc = FastLMMCore(y, QS[0][0], QS[0][1], QS[1][0])
         self._genetic_variance = None
         self._noise_variance = None
         self._offset = None
+
+        self._y = y
+        self._QS = QS
+        self._X = X
 
     def _delta(self):
         return 1 / (1 + exp(self._logistic.value))
@@ -52,3 +60,11 @@ class FastLMM(Learnable, FuncData):
     def value(self):
         self._flmmc.delta = self._delta()
         return self._flmmc.lml()
+
+    def predict(self, Xp):
+        Xp = self._trans.transform(Xp)
+        Cp = Xp.dot(self._X.T)
+        Cpp = Xp.dot(Xp.T)
+        Q0 = self._QS[0][0]
+        Q1 = self._QS[0][1]
+        return self._flmmc.predict(self._y, Cp, Cpp, Q0, Q1)

@@ -7,6 +7,9 @@ from numpy.linalg import slogdet
 
 from scipy.stats import multivariate_normal
 
+from limix_math.linalg import sum2diag
+
+from ..math import epsilon
 from ..func import merge_variables
 from ..func import maximize_scalar
 from ..func import maximize
@@ -108,7 +111,7 @@ class RegGPPredictor(object):
     def __init__(self, mean, cov):
         self._mean = mean
         self._cov = cov
-        self._mvn = multivariate_normal(mean, cov)
+        self._mvn = multivariate_normal(mean, sum2diag(cov, epsilon.small))
 
     @property
     def mean(self):

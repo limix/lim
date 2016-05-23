@@ -3,6 +3,9 @@ from __future__ import division
 from numpy import dot
 from numpy import empty
 from numpy import log
+from numpy import eye
+
+from scipy.stats import multivariate_normal
 
 # from numba import jit
 # from numba import jitclass
@@ -35,8 +38,8 @@ class FastLMM(object):
         self._n = y.shape[0]
         self._p = self._n - S0.shape[0]
         self._S0 = S0
-        self._diag0 = empty(Q0.shape[1])
-        self._diag1 = 0.0
+        self._diag0 = S0 * 0.5 + 0.5
+        self._diag1 = 0.5
         self._m = empty(self._n)
 
         self._offset = 0.0
@@ -147,5 +150,45 @@ class FastLMM(object):
         self._lml /= 2
         return self._lml
 
-    def predict(self):
-        pass
+    def predict(self, y, Cp, Cpp, Q0, Q1):
+        o = self._offset
+        delta = self.delta
+        ym = y - o
+        Q0tym = Q0.T.dot(ym)
+        Q1tym = Q1.T.dot(ym)
+
+        diag0 = self._diag0
+        diag1 = self._diag1
+
+        CpQ0 = Cp.dot(Q0)
+        CpQ1 = Cp.dot(Q1)
+
+        mean  = o + (1-delta) * CpQ0.dot(Q0tym / diag0)
+        mean += (1-delta) * CpQ1.dot(Q1tym / diag1)
+
+        cov  = Cpp * (1-self.delta) + eye(Cpp.shape[0]) * self.delta
+        cov -= (1-delta)**2 * CpQ0.dot((CpQ0 / diag0).T)
+        cov -= (1-delta)**2 * CpQ1.dot((CpQ1 / diag1).T)
+        cov *= self.scale
+
+        return FastLMMPredictor(mean, cov)
+
+class FastLMMPredictor(object):
+    def __init__(self, mean, cov):
+        self._mean = mean
+        self._cov = cov
+        self._mvn = multivariate_normal(mean, cov)
+
+    @property
+    def mean(self):
+        return self._mean
+
+    @property
+    def cov(self):
+        return self._cov
+
+    def pdf(self, y):
+        return self._mvn.pdf(y)
+
+    def logpdf(self, y):
+        return self._mvn.logpdf(y)
