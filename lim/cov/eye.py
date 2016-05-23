@@ -1,13 +1,10 @@
-from numpy import eye
 from numpy import exp
 from numpy import log
-from numpy import array
 
 from ..func import Learnable
 from ..func import Variables
 from ..func import Scalar
 from ..func import FuncData
-from ..util.scalar import isnumber
 
 class EyeCov(Learnable, FuncData):
     def __init__(self):

@@ -12,7 +12,7 @@ from ...cov import EyeCov
 from ...cov import SumCov
 from ...mean import OffsetMean
 from ...func import check_grad
-from ...random import GPSampler
+from ...random import RegGPSampler
 
 def test_regression_value():
     random = np.random.RandomState(94584)
@@ -52,7 +52,6 @@ def test_regression_gradient():
     y = random.randn(N)
 
     gp = RegGP(y, mean, cov)
-    g = gp.lml_gradient()
 
     def func(x):
         cov.scale = np.exp(x[0])
@@ -128,7 +127,7 @@ def test_predict_1():
     cov.set_data((X[:nlearn, :], X[-npred:, :]), purpose='learn_predict')
     cov.set_data((X[-npred:, :], X[-npred:, :]), purpose='predict')
 
-    y = GPSampler(mean, cov).sample(random)
+    y = RegGPSampler(mean, cov).sample(random)
 
     gp = RegGP(y[:nlearn], mean, cov)
 
@@ -171,7 +170,7 @@ def test_predict_2():
 
     cov = SumCov([cov_left, cov_right])
 
-    y = GPSampler(mean, cov).sample(random)
+    y = RegGPSampler(mean, cov).sample(random)
 
     gp = RegGP(y[:nlearn], mean, cov)
 

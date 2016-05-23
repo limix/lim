@@ -1,1 +1,1 @@
-from .gp import GPSampler
+from .regression import RegGPSampler

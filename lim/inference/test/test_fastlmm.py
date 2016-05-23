@@ -11,7 +11,7 @@ from ...cov import LinearCov
 from ...cov import EyeCov
 from ...cov import SumCov
 from ...mean import OffsetMean
-from ...random import GPSampler
+from ...random import RegGPSampler
 from ...genetics import eigen_design_matrix
 
 def test_optimization():
@@ -40,7 +40,7 @@ def test_optimization():
 
     cov = SumCov([cov_left, cov_right])
 
-    y = GPSampler(mean, cov).sample(random)
+    y = RegGPSampler(mean, cov).sample(random)
 
     gp = RegGP(y, mean, cov)
     gp.learn()

@@ -9,8 +9,6 @@ from ..func import merge_variables
 from ..func.optimize.brent import maximize as maximize_scalar
 from ..func.optimize.tnc import maximize as maximize_array
 
-from ..random import GPSampler
-
 class RegGP(object):
     def __init__(self, y, mean, cov):
         self._y = y
@@ -73,10 +71,13 @@ class RegGP(object):
         v1 = self._cov.variables().select(fixed=False)
         return merge_variables(dict(mean=v0, cov=v1))
 
-    def learn(self):
-        self.value = lambda: self.lml()
-        self.gradient = lambda: self.lml_gradient()
+    def value(self):
+        return self.lml()
 
+    def gradient(self):
+        return self.lml_gradient()
+
+    def learn(self):
         if len(self.variables()) == 0:
             return
         elif len(self.variables()) == 1:

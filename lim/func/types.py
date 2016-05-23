@@ -2,7 +2,7 @@ from numpy import array
 from numpy import asarray
 
 class Scalar(object):
-    __slots__ = ['raw', '_listeners', '_fixed']
+    __slots__ = ['raw', '_listeners', '_fixed', 'value']
     def __init__(self, value):
         self._listeners = []
         self._fixed = False

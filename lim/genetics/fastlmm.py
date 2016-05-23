@@ -2,13 +2,13 @@ from __future__ import division
 
 from numpy import exp
 
-from ..gp import FastLMM as FastLMMCore
+from .decomposition import eigen_design_matrix
+from ..inference import FastLMM as FastLMMCore
 from ..func.optimize.brent import maximize
 from ..func import Learnable
 from ..func import Variables
 from ..func import Scalar
 from ..func import FuncData
-from .decomposition import eigen_design_matrix
 
 class FastLMM(Learnable, FuncData):
     def __init__(self, y, X):

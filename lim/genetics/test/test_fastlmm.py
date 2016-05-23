@@ -4,14 +4,12 @@ import numpy as np
 from numpy.testing import assert_almost_equal
 
 from ..fastlmm import FastLMM
-from ...gp.regression import RegGP
 from ...util.fruits import Apples
 from ...cov import LinearCov
 from ...cov import EyeCov
 from ...cov import SumCov
 from ...mean import OffsetMean
-from ...func import check_grad
-from ...random import GPSampler
+from ...random import RegGPSampler
 
 def test_learn():
     random = np.random.RandomState(9458)
@@ -36,7 +34,7 @@ def test_learn():
 
     cov = SumCov([cov_left, cov_right])
 
-    y = GPSampler(mean, cov).sample(random)
+    y = RegGPSampler(mean, cov).sample(random)
 
     flmm = FastLMM(y, X)
     flmm.learn()
