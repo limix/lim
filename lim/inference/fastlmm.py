@@ -146,3 +146,6 @@ class FastLMM(object):
         self._lml +=  - sum(log(self._diag0)) - p * log(self._diag1)
         self._lml /= 2
         return self._lml
+
+    def predict(self):
+        pass

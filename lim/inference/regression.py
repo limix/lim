@@ -5,6 +5,8 @@ from numpy import pi
 from numpy.linalg import solve
 from numpy.linalg import slogdet
 
+from scipy.stats import multivariate_normal
+
 from ..func import merge_variables
 from ..func import maximize_scalar
 from ..func import maximize
@@ -86,7 +88,6 @@ class RegGP(object):
             maximize(self)
 
     def predict(self):
-        y = self._y
         mean = self._mean
         cov = self._cov
 
@@ -96,6 +97,29 @@ class RegGP(object):
 
         K_lp = cov.data('learn_predict').value()
 
-        est_mean = m_p + K_lp.T.dot(_Kim)
+        emean = m_p + K_lp.T.dot(_Kim)
+        K = self._cov.data('learn').value()
+        ecov = K_pp - K_lp.T.dot(solve(K, K_lp))
 
-        return est_mean
+        return RegGPPredictor(emean, ecov)
+
+
+class RegGPPredictor(object):
+    def __init__(self, mean, cov):
+        self._mean = mean
+        self._cov = cov
+        self._mvn = multivariate_normal(mean, cov)
+
+    @property
+    def mean(self):
+        return self._mean
+
+    @property
+    def cov(self):
+        return self._cov
+
+    def pdf(self, y):
+        return self._mvn.pdf(y)
+
+    def logpdf(self, y):
+        return self._mvn.logpdf(y)
