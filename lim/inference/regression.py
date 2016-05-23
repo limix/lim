@@ -6,8 +6,8 @@ from numpy.linalg import solve
 from numpy.linalg import slogdet
 
 from ..func import merge_variables
-from ..func.optimize.brent import maximize as maximize_scalar
-from ..func.optimize.tnc import maximize as maximize_array
+from ..func import maximize_scalar
+from ..func import maximize
 
 class RegGP(object):
     def __init__(self, y, mean, cov):
@@ -83,7 +83,7 @@ class RegGP(object):
         elif len(self.variables()) == 1:
             maximize_scalar(self)
         else:
-            maximize_array(self)
+            maximize(self)
 
     def predict(self):
         y = self._y

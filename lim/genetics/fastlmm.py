@@ -4,7 +4,7 @@ from numpy import exp
 
 from .decomposition import eigen_design_matrix
 from ..inference import FastLMM as FastLMMCore
-from ..func.optimize.brent import maximize
+from ..func import maximize_scalar
 from ..func import Learnable
 from ..func import Variables
 from ..func import Scalar
@@ -37,7 +37,7 @@ class FastLMM(Learnable, FuncData):
         return self._offset
 
     def learn(self):
-        maximize(self)
+        maximize_scalar(self)
 
         delta = self._delta()
         self._flmmc.delta = delta

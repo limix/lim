@@ -10,3 +10,7 @@ from .types import Scalar
 from .types import Vector
 from .types import Matrix
 from .check_grad import check_grad
+from .optimize import minimize_scalar
+from .optimize import maximize_scalar
+from .optimize import minimize
+from .optimize import maximize
