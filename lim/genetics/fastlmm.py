@@ -1,6 +1,7 @@
 from __future__ import division
 
 from numpy import exp
+from numpy import atleast_2d
 
 from limix_math.linalg import qs_decomposition
 
@@ -62,9 +63,8 @@ class FastLMM(Learnable, FuncData):
         return self._flmmc.lml()
 
     def predict(self, Xp):
+        Xp = atleast_2d(Xp)
         Xp = self._trans.transform(Xp)
         Cp = Xp.dot(self._X.T)
         Cpp = Xp.dot(Xp.T)
-        Q0 = self._QS[0][0]
-        Q1 = self._QS[0][1]
-        return self._flmmc.predict(self._y, Cp, Cpp, Q0, Q1)
+        return self._flmmc.predict(Cp, Cpp)

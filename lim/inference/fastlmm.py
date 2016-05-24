@@ -3,9 +3,10 @@ from __future__ import division
 from numpy import dot
 from numpy import empty
 from numpy import log
-from numpy import eye
 
 from scipy.stats import multivariate_normal
+
+from limix_math.linalg import sum2diag
 
 # from numba import jit
 # from numba import jitclass
@@ -41,6 +42,8 @@ class FastLMM(object):
         self._diag0 = S0 * 0.5 + 0.5
         self._diag1 = 0.5
         self._m = empty(self._n)
+        self._Q0 = Q0
+        self._Q1 = Q1
 
         self._offset = 0.0
         self._scale = 1.0
@@ -55,22 +58,36 @@ class FastLMM(object):
         self.b0 = 0.0
         self.c0 = 0.0
 
-        yTQ0 = dot(y.T, Q0)
-        self._yTQ0_2x = yTQ0 ** 2
+        self._yTQ0 = dot(y.T, Q0)
+        self._yTQ0_2x = self._yTQ0 ** 2
 
-        yTQ1 = dot(y.T, Q1)
-        self._yTQ1_2x = yTQ1 ** 2
+        self._yTQ1 = dot(y.T, Q1)
+        self._yTQ1_2x = self._yTQ1 ** 2
 
-        oneTQ0 = Q0.sum(0)
-        self._oneTQ0_2x = oneTQ0 ** 2
+        self._oneTQ0 = Q0.sum(0)
+        self._oneTQ0_2x = self._oneTQ0 ** 2
 
-        oneTQ1 = Q1.sum(0)
-        self._oneTQ1_2x = oneTQ1 ** 2
+        self._oneTQ1 = Q1.sum(0)
+        self._oneTQ1_2x = self._oneTQ1 ** 2
 
-        self._yTQ0_oneTQ0 = yTQ0 * oneTQ0
-        self._yTQ1_oneTQ1 = yTQ1 * oneTQ1
+        self._yTQ0_oneTQ0 = self._yTQ0 * self._oneTQ0
+        self._yTQ1_oneTQ1 = self._yTQ1 * self._oneTQ1
 
         self._valid_update = 0
+        self.__Q0tymD0 = None
+        self.__Q1tymD1 = None
+
+    def _Q0tymD0(self):
+        if self.__Q0tymD0 is None:
+            Q0tym = self._yTQ0 - self._oneTQ0 * self._offset
+            self.__Q0tymD0 = Q0tym / self._diag0
+        return self.__Q0tymD0
+
+    def _Q1tymD1(self):
+        if self.__Q1tymD1 is None:
+            Q1tym = self._yTQ1 - self._oneTQ1 * self._offset
+            self.__Q1tymD1 = Q1tym / self._diag1
+        return self.__Q1tymD1
 
     @property
     def scale(self):
@@ -87,6 +104,8 @@ class FastLMM(object):
     @delta.setter
     def delta(self, delta):
         self._valid_update = 0
+        self.__Q0tymD0 = None
+        self.__Q1tymD1 = None
         self._delta = delta
 
     def _update_joints(self):
@@ -150,23 +169,19 @@ class FastLMM(object):
         self._lml /= 2
         return self._lml
 
-    def predict(self, y, Cp, Cpp, Q0, Q1):
-        o = self._offset
+    def predict(self, Cp, Cpp):
         delta = self.delta
-        ym = y - o
-        Q0tym = Q0.T.dot(ym)
-        Q1tym = Q1.T.dot(ym)
 
         diag0 = self._diag0
         diag1 = self._diag1
 
-        CpQ0 = Cp.dot(Q0)
-        CpQ1 = Cp.dot(Q1)
+        CpQ0 = Cp.dot(self._Q0)
+        CpQ1 = Cp.dot(self._Q1)
 
-        mean  = o + (1-delta) * CpQ0.dot(Q0tym / diag0)
-        mean += (1-delta) * CpQ1.dot(Q1tym / diag1)
+        mean  = self._offset + (1-delta) * CpQ0.dot(self._Q0tymD0())
+        mean += (1-delta) * CpQ1.dot(self._Q1tymD1())
 
-        cov  = Cpp * (1-self.delta) + eye(Cpp.shape[0]) * self.delta
+        cov = sum2diag(Cpp * (1-self.delta), self.delta)
         cov -= (1-delta)**2 * CpQ0.dot((CpQ0 / diag0).T)
         cov -= (1-delta)**2 * CpQ1.dot((CpQ1 / diag1).T)
         cov *= self.scale

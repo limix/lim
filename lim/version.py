@@ -1,0 +1,3 @@
+
+# THIS FILE IS GENERATED FROM LIM SETUP.PY
+version = '0.0.1'
