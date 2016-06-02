@@ -8,32 +8,6 @@ from scipy.stats import multivariate_normal
 
 from limix_math.linalg import sum2diag
 
-# from numba import jit
-# from numba import jitclass
-# from numba import float64
-# from numba import int64
-# from numba import boolean
-
-# spec = [
-#     ('n', int64),
-#     ('p', int64),
-#     ('S0', float64[:]),
-#     ('diag0', float64[:]),
-#     ('diag1', float64),
-#     ('m', float64[:]),
-#     ('offset', float64),
-#     ('scale', float64),
-#     ('delta_', float64),
-#     ('lml_', float64),
-#     ('yTQ0_2x', float64[:]),
-#     ('yTQ1_2x', float64[:]),
-#     ('oneTQ0_2x', float64[:]),
-#     ('oneTQ1_2x', float64[:]),
-#     ('yTQ0_oneTQ0', float64[:]),
-#     ('yTQ1_oneTQ1', float64[:]),
-#     ('valid_update_', int64),
-# ]
-
 class FastLMM(object):
     def __init__(self, y, Q0, Q1, S0):
         self._n = y.shape[0]

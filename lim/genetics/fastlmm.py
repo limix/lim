@@ -2,6 +2,7 @@ from __future__ import division
 
 from numpy import exp
 from numpy import atleast_2d
+from numpy import clip
 
 from limix_math.linalg import qs_decomposition
 
@@ -31,7 +32,8 @@ class FastLMM(Learnable, FuncData):
         self._X = X
 
     def _delta(self):
-        return 1 / (1 + exp(self._logistic.value))
+        x = 1 / (1 + exp(-self._logistic.value))
+        return clip(x, 1e-5, 1-1e-5)
 
     @property
     def genetic_variance(self):
