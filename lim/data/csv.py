@@ -80,9 +80,6 @@ class CSVPath(ArrayViewInterface):
             return self._create_2d_array(lslice[0], lslice[1])
         assert False
 
-    def __array__(self):
-        return self._create_array((slice(0, None, 1),)*self.ndim)
-
     def _create_1d_array_row(self, slice_):
         with open(self._filepath) as csvfile:
             reader = csv.reader(csvfile)

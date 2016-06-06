@@ -1,21 +1,26 @@
 import h5py as h5
 
+from numpy import asarray
+
 from .array import ArrayViewInterface
-from .scalar import cast
+from .scalar import npy2py_type
 
 class H5Path(ArrayViewInterface):
     def __init__(self, filepath, itempath, dtype=None):
         super(H5Path, self).__init__()
         self._filepath = filepath
         self._itempath = itempath
-        self._dtype = dtype
-        with h5.File(self._filepath, 'r') as f:
-            harr = f[self._itempath]
-            self._dtype = type(cast(harr[(0,) * harr.ndim].item(0)))
+        if dtype is None:
+            with h5.File(self._filepath, 'r') as f:
+                harr = f[self._itempath]
+                dtype = harr[(0,) * harr.ndim].dtype
+                self._dtype = npy2py_type(dtype)
+        else:
+            self._dtype = dtype
 
     def item(self, *args):
         with h5.File(self._filepath, 'r') as f:
-            return cast(f[self._itempath][args], self._dtype)
+            return self._dtype(f[self._itempath][args])
 
     @property
     def dtype(self):
