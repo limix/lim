@@ -2,14 +2,6 @@ from ..math.scalar import isint
 
 import numpy as np
 
-def cast(v, dtype=None):
-    if dtype is not None:
-        return dtype(v)
-
-    if isint(v):
-        return int(v)
-    return v
-
 def npy2py_type(npy_type):
     int_types = [
         np.int_,
