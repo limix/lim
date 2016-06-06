@@ -49,5 +49,8 @@ def test_2d():
     _test_1d(lim.csvpath, os.path.join(root, '1d_array_col.csv'), float)
     _test_1d(lim.csvpath, os.path.join(root, '1d_array_row.csv'), float)
 
+    _test_1d(lim.csvpath, os.path.join(root, '1d_array_col_bytes.csv'), bytes)
+    _test_1d(lim.csvpath, os.path.join(root, '1d_array_row_bytes.csv'), bytes)
+
     _test_2d(lim.csvpath, os.path.join(root, '2d_array.csv'), float)
     _test_2d(lim.csvpath, os.path.join(root, '2d_array_bytes.csv'), bytes)
