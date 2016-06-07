@@ -37,3 +37,7 @@ def npy2py_type(npy_type):
         return bytes
 
     raise TypeError
+
+def npy2py_cast(npy_value):
+    type_ = npy2py_type(type(npy_value))
+    return type_(npy_value)

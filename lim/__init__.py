@@ -10,5 +10,9 @@ def csvpath(filepath, dtype=float):
     from .data.csv import CSVPath
     return CSVPath(filepath, dtype=dtype)
 
+def plinkpaths(basepath):
+    from .data.plink import plinkpaths
+    return plinkpaths(basepath)
+
 def vcfpath(filepath):
     from .data.vcf import VCFPath

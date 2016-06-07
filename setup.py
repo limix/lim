@@ -55,8 +55,8 @@ def setup_package():
 
     write_version()
 
-    install_requires = ['limix_math']
-    setup_requires = []
+    install_requires = ['limix_math', 'cffi>=1.0.0']
+    setup_requires = ['cffi>=1.0.0']
 
     metadata = dict(
         name=PKG_NAME,
@@ -69,7 +69,8 @@ def setup_package():
         packages=find_packages(),
         zip_safe=True,
         install_requires=install_requires,
-        setup_requires=setup_requires
+        setup_requires=setup_requires,
+        cffi_modules=["lim/data/cplink/bed.py:ffi"],
     )
 
     if conda_present:
