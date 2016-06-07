@@ -19,6 +19,9 @@ class DataView(object):
         self._sample_attrs = sample_attrs
         self._marker_attrs = marker_attrs
 
+    def genotype(self, genotype_id):
+        pass
+
     @property
     def sample_attrs(self):
         return self._sample_attrs
@@ -50,8 +53,10 @@ class Data(object):
         for (i, a) in enumerate(attrs):
             self._sample_attrs.set_value(sample_ids[i], attr_id, a)
 
-    def add_marker_attrs(self, attr_id, attrs, marker_ids=None):
+    def add_marker_attrs(self, attr_id, attrs, genotype_ids, marker_ids=None):
         marker_ids = _make_sure_ids(marker_ids, len(attrs))
+
+        if genotype_ids OIS DIJWQI JOIQWJIOQWJODIQ
 
         for (i, a) in enumerate(attrs):
             self._marker_attrs.set_value(marker_ids[i], attr_id, a)
@@ -59,11 +64,19 @@ class Data(object):
     def add_genotype(self, genotype_id, X, sample_ids=None, marker_ids=None):
         sample_ids = _make_sure_ids(sample_ids, X.shape[0])
         marker_ids = _make_sure_ids(marker_ids, X.shape[1])
-        self._genotypes[genotype_id] = (sample_ids, marker_ids, X)
+
+        if genotype_id not in self._genotypes:
+            self._genotypes = []
+
+        self._genotypes[genotype_id].append((sample_ids, marker_ids, X))
 
     def add_trait(self, trait_id, Y, sample_ids=None):
         sample_ids = _make_sure_ids(sample_ids, Y.shape[0])
-        self._traits[trait_id] = (sample_ids, Y)
+
+        if trait_id not in self._traits:
+            self._traits = []
+
+        self._traits[trait_id].append((sample_ids, Y))
 
     @property
     def sample_attrs(self):
