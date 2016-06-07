@@ -7,6 +7,7 @@ from .slice import extract_ndim
 from .slice import create_lslice
 from .slice import normalize_lslice_dim
 from .slice import normalize_lslice_shape
+from .slice import check_lslice_boundary
 
 class FloatView(float64):
     def __new__(cls, *_):
@@ -23,6 +24,10 @@ class FloatView(float64):
         if len(args) == 0:
             args = (0,)
         return self._ref._item(args, [self._lslice])
+
+    @property
+    def raw(self):
+        return float(self.item((0,)))
 
     @property
     def shape(self):
@@ -57,6 +62,10 @@ class IntView(int64):
         if len(args) == 0:
             args = (0,)
         return self._ref._item(args, [self._lslice])
+
+    @property
+    def raw(self):
+        return int(self.item((0,)))
 
     @property
     def shape(self):
@@ -94,6 +103,10 @@ class BytesView(bytes_):
         return self._ref._item(args, [self._lslice])
 
     @property
+    def raw(self):
+        return bytes(self.item((0,)))
+
+    @property
     def shape(self):
         return tuple()
 
@@ -121,12 +134,23 @@ class ArrayViewBase(object):
     def __getitem__(self, slice_):
         if not isinstance(slice_, tuple):
             slice_ = (slice_,)
-        lslice = normalize_lslice_dim(create_lslice(slice_), self.ndim)
+
+        lslice = create_lslice(slice_)
+        check_lslice_boundary(lslice, self.shape)
+
+        lslice = normalize_lslice_dim(lslice, self.ndim)
         return _create_view(self, lslice)
 
     @property
     def shape(self):
         raise NotImplementedError
+
+    def __iter__(self):
+        for i in range(self.shape[0]):
+            yield self[i].raw
+
+    def __len__(self):
+        return self.shape[0]
 
     @property
     def ndim(self):
@@ -205,6 +229,10 @@ class ArrayView(ArrayViewBase):
 
     def _shape(self, lslice_list):
         return self._ref._shape([self._lslice]+lslice_list)
+
+    def __iter__(self):
+        for i in range(self._lslice[0]):
+            yield self[i].raw
 
     @property
     def ndim(self):

@@ -1,67 +1,98 @@
 import sqlite3
 
-def _py_type_to_sql_type(type_):
-    if type_ is str or type_ is bytes:
-        return 'text'
-    if type_ is int:
-        return 'integer'
-    if type_ is float:
-        return 'real'
-    raise TypeError('Unknown data type.')
+from pandas import DataFrame
+from pandas import read_sql
 
-def _create_sqlfields(attrs):
-    fields = '( '
-    for (name, attr) in iter(attrs.items()):
-        ftype = _py_type_to_sql_type(attr.dtype)
-        fields += '%s %s, ' % (name, ftype)
-    fields = fields[:-2] + ' )'
+from numpy import asarray
+from numpy import arange
 
-    return fields
+from .scalar import npy2py_type
 
-def _insert_attributes(cursor, table_name, attrs):
-    attrs = [v[:] for v in attrs.values()]
-    nattrs = len(attrs)
-    nvalues = len(attrs[0])
-    for i in range(nvalues):
-        sql  = "INSERT INTO trait_%s_sample VALUES " % (table_name,)
-        sql += "(" + ','.join(['?']*nattrs) + ")"
-        cursor.execute(sql, [attr[i] for attr in attrs])
+def _make_sure_ids(ids, n):
+    if ids is None:
+        ids = arange(n, dtype=int)
+    return ids
+
+class DataView(object):
+    def __init__(self, ref, sample_attrs, marker_attrs):
+        self._ref = ref
+        self._sample_attrs = sample_attrs
+        self._marker_attrs = marker_attrs
+
+    @property
+    def sample_attrs(self):
+        return self._sample_attrs
+
+    @property
+    def marker_attrs(self):
+        return self._marker_attrs
+
+    def __repr__(self):
+        return repr(self._sample_attrs) + '\n' + repr(self._marker_attrs)
+
+    def __str_(self):
+        return bytes(self._sample_attrs) + '\n' + bytes(self._marker_attrs)
 
 class Data(object):
     def __init__(self):
-        self._conn = sqlite3.connect(':memory:')
-        self._trait = dict()
-        self._genotype = dict()
+        self._sample_attrs = DataFrame()
+        self._sample_attrs.index.name = 'sample_id'
 
-    def add_trait(self, path, id, sample_attrs):
-        self._trait[id] = path
-        table_name = "trait_%s_sample" % (id,)
+        self._marker_attrs = DataFrame()
+        self._marker_attrs.index.name = 'marker_id'
 
-        c = self._conn.cursor()
-        fields = _create_sqlfields(sample_attrs)
-        c.execute("CREATE TABLE trait_%s_sample %s" % (table_name, fields))
+        self._genotypes = dict()
+        self._traits = dict()
 
-        _insert_attributes(c, table_name, sample_attrs)
+    def add_sample_attrs(self, attr_id, attrs, sample_ids=None):
+        sample_ids = _make_sure_ids(sample_ids, len(attrs))
 
-        self._conn.commit()
+        for (i, a) in enumerate(attrs):
+            self._sample_attrs.set_value(sample_ids[i], attr_id, a)
 
-    def add_genotype(self, path, id, sample_attrs, marker_attrs):
-        self._genotype[id] = path
+    def add_marker_attrs(self, attr_id, attrs, marker_ids=None):
+        marker_ids = _make_sure_ids(marker_ids, len(attrs))
 
-        c = self._conn.cursor()
-        import ipdb; ipdb.set_trace()
+        for (i, a) in enumerate(attrs):
+            self._marker_attrs.set_value(marker_ids[i], attr_id, a)
 
-        fields = _create_sqlfields(sample_attrs)
-        table_name = "genotype_%s_sample" % (id,)
-        c.execute("CREATE TABLE %s %s" % (table_name, fields))
-        _insert_attributes(c, table_name, sample_attrs)
+    def add_genotype(self, genotype_id, X, sample_ids=None, marker_ids=None):
+        sample_ids = _make_sure_ids(sample_ids, X.shape[0])
+        marker_ids = _make_sure_ids(marker_ids, X.shape[1])
+        self._genotypes[genotype_id] = (sample_ids, marker_ids, X)
 
-        fields = _create_sqlfields(marker_attrs)
-        table_name = "genotype_%s_marker" % (id,)
-        c.execute("CREATE TABLE genotype_%s_marker %s" % (table_name, fields))
-        _insert_attributes(c, table_name, marker_attrs)
+    def add_trait(self, trait_id, Y, sample_ids=None):
+        sample_ids = _make_sure_ids(sample_ids, Y.shape[0])
+        self._traits[trait_id] = (sample_ids, Y)
 
-        self._conn.commit()
+    @property
+    def sample_attrs(self):
+        return self._sample_attrs
 
-    def select(self, traits, genotypes):
-        pass
+    @property
+    def marker_attrs(self):
+        return self._marker_attrs
+
+    def where(self, sample_query='1 = 1', marker_query='1 = 1'):
+
+        conn = sqlite3.connect(':memory:')
+
+        self._sample_attrs.to_sql('sample_attrs', conn,
+                                  index_label='sample_id')
+        self._marker_attrs.to_sql('marker_attrs', conn,
+                                  index_label='marker_id')
+
+        s = read_sql("SELECT * FROM sample_attrs WHERE %s" % sample_query,
+                     conn, index_col="sample_id")
+        m = read_sql("SELECT * FROM marker_attrs WHERE %s" % marker_query,
+                     conn, index_col="marker_id")
+
+        conn.close()
+
+        return DataView(self, s, m)
+
+    def __repr__(self):
+        return repr(self._sample_attrs) + '\n' + repr(self._marker_attrs)
+
+    def __str_(self):
+        return bytes(self._sample_attrs) + '\n' + bytes(self._marker_attrs)

@@ -1,13 +1,44 @@
-# import os
-#
-# import lim
-#
-# def test_data_definition():
-#     root = os.path.dirname(os.path.realpath(__file__))
-#     root = os.path.join(root, 'data', 'horta1')
-#
-#     d = lim.define_data()
-#
+import os
+from os.path import join
+
+import lim
+
+def test_data_definition():
+    root = os.path.dirname(os.path.realpath(__file__))
+    root = join(root, 'data', 'def')
+
+    d = lim.define_data()
+
+    smoke = lim.csvpath(join(root, 'smoke.csv'), bytes)
+    d.add_sample_attrs('smoke', smoke)
+
+    X, sample_attrs, marker_attrs = lim.plinkpaths(join(root, 'example'))
+    for (id_, attr) in iter(marker_attrs.items()):
+        d.add_sample_attrs(id_, attr)
+
+    d.add_genotype('geno', X)
+
+    for (id_, attr) in iter(marker_attrs.items()):
+        d.add_marker_attrs(id_, attr)
+
+    d.add_trait('trait', lim.h5path(join(root, 'example.h5'), '/group/trait'))
+
+    dsmokers = d.where("smoke = 'y'")
+    dchrom1 = d.where("chrom = 1")
+
+    print("")
+    print(d)
+    print("")
+    print(dsmokers)
+    print("")
+    print(dchrom1)
+
+    # d.add_trait(lim.h5path(join(root, 'example.h5'), '/group/trait'), 'trait')
+    # # d.add_genotype(X, 'marker')
+    #
+    # d = d.where('trait.sample_id > 0')
+
+
 #     trait_fp = os.path.join(root, 'trait.hdf5')
 #     sample_attrs = dict(id=lim.h5path(trait_fp, '/group1/trait1/sample_id'))
 #     d.add_trait(lim.h5path(trait_fp, '/group1/trait1/array'), 'trait1',

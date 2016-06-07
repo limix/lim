@@ -1,3 +1,12 @@
+def check_lslice_boundary(lslice, shape):
+    for (i, s) in enumerate(lslice):
+        if isinstance(s, int):
+            if s >= shape[i] or s < 0:
+                raise IndexError
+        else:
+            if s.stop is not None and s.stop > shape[i]:
+                raise IndexError
+
 def check_index(i, slice_):
     if slice_.stop is not None and i * slice_.step >= slice_.stop:
         return -1
