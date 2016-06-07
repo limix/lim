@@ -92,3 +92,33 @@ def test_arrays():
     R = array([[0, 3, 2, 3, 3, 3], [3, 2, 1, 3, 3, 3], [3, 1, 1, 2, 2, 0]])
     X, individuals, markers = p[0], p[1], p[2]
     _test_2d(X, R)
+
+    family_id = array(['1', '1', '1', '2', '2', '2'])
+    _test_1d(individuals['family_id'], family_id)
+
+    individual_id = array(['1', '2', '3', '1', '2', '3'])
+    _test_1d(individuals['individual_id'], individual_id)
+
+    paternal_id = array(['0', '0', '1', '0', '0', '1'])
+    _test_1d(individuals['paternal_id'], paternal_id)
+
+    maternal_id = array(['0', '0', '2', '0', '0', '2'])
+    _test_1d(individuals['maternal_id'], maternal_id)
+
+    sex = array(['1', '1', '1', '1', '1', '1'], bytes)
+    _test_1d(individuals['sex'], sex)
+
+    phenotype = array([-9, -9, 2, -9, 2, 2], int)
+    _test_1d(individuals['phenotype'], phenotype)
+
+    snp_ids = array(['snp1', 'snp2', 'snp3'], bytes)
+    _test_1d(markers['snp_id'], snp_ids)
+
+    genetic_dist = array([ 0.,  0.,  0.], float)
+    _test_1d(markers['genetic_dist'], genetic_dist)
+
+    chrom_ids = array(['1', '1', '1'], bytes)
+    _test_1d(markers['chrom'], chrom_ids)
+
+    bp_pos = array([1, 2, 3], int)
+    _test_1d(markers['bp_pos'], bp_pos)

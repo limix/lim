@@ -20,9 +20,9 @@ def _read_fam(filepath):
         msg = "There are %d columns instead of six: %d." % d.shape[1]
         raise TypeError(msg)
 
-    return dict(family_id=d[0,:], individual_id=d[1,:],
-                paternal_id=d[2,:], maternal_id=d[3,:],
-                sex=d[4,:], phenotype=d[5,:])
+    return dict(family_id=d[:,0], individual_id=d[:,1],
+                paternal_id=d[:,2], maternal_id=d[:,3],
+                sex=d[:,4], phenotype=d[:,5].astype(int))
 
 def _read_map(filepath):
     d = loadtxt(filepath, bytes)
