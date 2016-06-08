@@ -56,8 +56,6 @@ class Data(object):
     def add_marker_attrs(self, attr_id, attrs, genotype_ids, marker_ids=None):
         marker_ids = _make_sure_ids(marker_ids, len(attrs))
 
-        if genotype_ids OIS DIJWQI JOIQWJIOQWJODIQ
-
         for (i, a) in enumerate(attrs):
             self._marker_attrs.set_value(marker_ids[i], attr_id, a)
 
