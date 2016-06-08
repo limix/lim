@@ -13,6 +13,9 @@ def _make_sure_ids(ids, n):
         ids = arange(n, dtype=int)
     return ids
 
+def create_data():
+    return Data()
+
 class DataView(object):
     def __init__(self, ref, sample_attrs, marker_attrs):
         self._ref = ref

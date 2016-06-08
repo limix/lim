@@ -8,10 +8,13 @@ from ..data.array.slice import check_index
 from ..data.array import ArrayViewInterface
 
 class CSVPath(ArrayViewInterface):
-    def __init__(self, filepath, dtype=float):
+    def __init__(self, filepath, dtype=float,
+                 row_header=False, col_header=False):
         super(CSVPath, self).__init__()
         self._filepath = filepath
         self._dtype = dtype
+        self._row_header = row_header
+        self._col_header = col_header
 
     def _is_col_layout(self):
         with open(self._filepath) as csvfile:
