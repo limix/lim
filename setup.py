@@ -70,7 +70,7 @@ def setup_package():
         zip_safe=True,
         install_requires=install_requires,
         setup_requires=setup_requires,
-        cffi_modules=["lim/data/cplink/bed.py:ffi"],
+        cffi_modules=["lim/reader/cplink/bed.py:ffi"],
     )
 
     if conda_present:

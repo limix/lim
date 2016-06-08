@@ -4,15 +4,7 @@ from numpy import empty
 from numpy import zeros
 
 from .cplink import bed_ffi
-from .array import ArrayViewInterface
-from .scalar import npy2py_cast
-
-def plinkpaths(basepath):
-    individuals = _read_fam(basepath + '.fam')
-    snps = _read_map(basepath + '.map')
-    genotype = BedPath(basepath + '.bed', len(snps['snp_id']),
-                       len(individuals['individual_id']))
-    return (genotype, individuals, snps)
+from ..data.array import ArrayViewInterface
 
 def _read_fam(filepath):
     d = loadtxt(filepath, bytes)
@@ -75,3 +67,10 @@ class BedPath(ArrayViewInterface):
                                pointer)
 
         return X
+
+def reader(basepath):
+    individuals = _read_fam(basepath + '.fam')
+    snps = _read_map(basepath + '.map')
+    genotype = BedPath(basepath + '.bed', len(snps['snp_id']),
+                       len(individuals['individual_id']))
+    return (genotype, individuals, snps)

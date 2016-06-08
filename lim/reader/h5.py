@@ -2,8 +2,8 @@ import h5py as h5
 
 from numpy import asarray
 
-from .array import ArrayViewInterface
-from .scalar import npy2py_type
+from ..data.array import ArrayViewInterface
+from ..util import npy2py_type
 
 class H5Path(ArrayViewInterface):
     def __init__(self, filepath, itempath, dtype=None):
@@ -38,3 +38,6 @@ class H5Path(ArrayViewInterface):
     def _create_array(self, lslice):
         with h5.File(self._filepath, 'r') as f:
             return f[self._itempath][lslice].astype(self._dtype)
+
+def reader(filepath, itempath, dtype=None):
+    return H5Path(filepath, itempath, dtype=dtype)

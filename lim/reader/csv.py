@@ -4,8 +4,8 @@ import csv
 
 from numpy import asarray
 
-from .slice import check_index
-from .array import ArrayViewInterface
+from ..data.array.slice import check_index
+from ..data.array import ArrayViewInterface
 
 class CSVPath(ArrayViewInterface):
     def __init__(self, filepath, dtype=float):
@@ -113,3 +113,6 @@ class CSVPath(ArrayViewInterface):
                     arr.append(srow)
                 i += 1
         return asarray(arr).astype(self._dtype)
+
+def reader(filepath, dtype=float):
+    return CSVPath(filepath, dtype=dtype)

@@ -11,7 +11,7 @@ ffi = FFI()
 include_dirs = [root]
 src_files = [join(root, 'bed.c')]
 
-ffi.set_source('lim.data.cplink.bed_ffi',
+ffi.set_source('lim.reader.cplink.bed_ffi',
         '#include "bed.h"',
         include_dirs=include_dirs,
         sources=src_files,
