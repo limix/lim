@@ -2,6 +2,7 @@ from collections import Iterable
 
 from numpy import asarray
 from numpy import full
+from numpy import where
 
 from .scalar import FloatView
 from .scalar import BytesView
@@ -17,11 +18,27 @@ from .slice import normalize_lslice_shape
 from .slice import check_lslice_boundary
 from .base import ArrayViewBase
 
+class ArrayAccessor(object):
+    def __init__(self, ref, axis):
+        self._ref = ref
+        self._axis = axis
+
+    def __call__(self, args):
+        return self._ref.get(self._axis, args)
+
 class ArrayViewInterface(ArrayViewBase):
     def __init__(self):
         super(ArrayViewInterface, self).__init__()
         self._axis_name = dict()
         self._axis_values = dict()
+
+    def get(self, axis, label):
+        labels = self.get_axis_values(axis)
+        if axis == 0:
+            return self[where(labels == label)[0][0],:]
+        elif axis == 1:
+            return self[:,where(labels == label)[0][0]]
+        raise IndexError
 
     def set_axis_name(self, axis, name):
         self._axis_name[axis] = name
@@ -45,6 +62,13 @@ class ArrayViewInterface(ArrayViewBase):
         lslice = merge_lslices(lslice_list)
         idx = transform_index(idx, lslice)
         return self.item(*idx)
+
+    def __getattr__(self, args):
+        if args == self.get_axis_name(0):
+            return ArrayAccessor(self, 0)
+        elif args == self.get_axis_name(1):
+            return ArrayAccessor(self, 1)
+        raise AttributeError
 
     def __getitem__(self, slice_):
         if not isinstance(slice_, tuple):

@@ -2,6 +2,9 @@ from os.path import join
 from os.path import dirname
 from os.path import realpath
 
+from numpy import array
+from numpy.testing import assert_array_equal
+
 import lim
 
 _root = dirname(realpath(__file__))
@@ -21,20 +24,26 @@ def test_create_data():
 
     Y01 = lim.reader.group([Y0, Y1], name='condition', values=[0, 1])
 
-    # Y2 = lim.csv_reader('expr_cond2.csv', row_header=True, col_header=True, float)
-    # Y2.set_axis_name(0, 'gene')
-    # Y2.set_axis_name(1, 'sample_id')
-    #
-    # Y3 = lim.csv_reader('expr_cond3.csv', row_header=True, col_header=True, float)
-    # Y3.set_axis_name(0, 'gene')
-    # Y3.set_axis_name(1, 'sample_id')
-    #
-    # Y23 = lim.group([Y2, Y3], name='condition', values=[0, 1])
-    #
-    # Y = lim.group(Y01, Y23, name='planet', values=['mars', 'venus'])
-    #
-    # data.add_sample_attrs(Y)
-    #
+    Y2 = lim.reader.csv(join(_root, 'expr_cond2.csv'), float, row_header=True, col_header=True)
+    Y2.set_axis_name(0, 'gene')
+    Y2.set_axis_name(1, 'sample_id')
+
+    Y3 = lim.reader.csv(join(_root, 'expr_cond3.csv'), float, row_header=True, col_header=True)
+    Y3.set_axis_name(0, 'gene')
+    Y3.set_axis_name(1, 'sample_id')
+
+    Y23 = lim.reader.group([Y2, Y3], name='condition', values=[0, 1])
+
+    Y = lim.reader.group([Y01, Y23], name='planet', values=['mars', 'venus'])
+
+    data.add_sample_attrs(Y)
+
+    y = data.planet('mars').condition(0).gene("geneA")
+    assert_array_equal(y, array([2.1, -3.1, 0.2, 0.13]))
+
+    yi = data.planet('mars').condition(0).sample_id("sample_02")
+    assert_array_equal(yi, array([-3.1, 33.2, -23.]))
+
     # y = lim.h5_reader('gene_expr.h5', '/group/smoke_trait')
     # y.set_axis_name(0, 'sample_id')
     # y.set_axis_values(0, Y0.get_axis_values(0))
