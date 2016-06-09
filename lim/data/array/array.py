@@ -104,6 +104,29 @@ class ArrayViewInterface(ArrayViewBase):
         lslice = normalize_lslice_dim(lslice, self.ndim)
         return self._create_array(normalize_lslice_shape(lslice, self.shape))
 
+class ArrayNumpy(ArrayViewInterface):
+    def __init__(self, arr):
+        super(ArrayNumpy, self).__init__()
+        self._arr = arr
+
+    def item(self, *args):
+        return self._arr[args]
+
+    @property
+    def dtype(self):
+        return self._arr.dtype
+
+    @property
+    def shape(self):
+        return self._arr.shape
+
+    @property
+    def ndim(self):
+        return self._arr.ndim
+
+    def _create_array(self, lslice):
+        return self._arr[lslice]
+
 class ArrayView(ArrayViewBase):
     def __init__(self, ref, lslice):
         super(ArrayView, self).__init__()

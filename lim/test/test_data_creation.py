@@ -68,10 +68,13 @@ def test_create_data():
                                         -0.48993065101082273,
                                         -1.4155466852892591,
                                         -0.79204549998611107]))
-    #
-    # (Y, M, G) = lim.bed_reader('base_name')
-    #
-    # data.add_sample_attrs(Y)
+
+    (samples, markers, G) = lim.reader.ped(join(_root, 'plink'))
+    data.add_sample_attrs(samples, 'ped')
+    assert_array_equal(data.ped.attr('individual_id'), array([['1'], ['2'],
+                                                        ['3'], ['1'], ['2'],
+                                                        ['3']]))
+
     # data.add_marker_attrs(M)
     # data.add_genotype(G)
     #
