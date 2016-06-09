@@ -5,6 +5,7 @@ import h5py
 from numpy import array
 from numpy import asarray
 from numpy import loadtxt
+from numpy import atleast_2d
 from numpy.testing import assert_array_equal
 from numpy.testing import assert_equal
 
@@ -44,20 +45,20 @@ def test_arrays():
     root = os.path.join(root, 'data')
 
     fp = os.path.join(root, '1d_array_col.csv')
-    _test_1d(lim.reader.csv(fp, float),
-             loadtxt(fp, delimiter=',', dtype=float))
+    _test_2d(lim.reader.csv(fp, float),
+             atleast_2d(loadtxt(fp, delimiter=',', dtype=float)).T)
 
     fp = os.path.join(root, '1d_array_row.csv')
-    _test_1d(lim.reader.csv(fp, float),
-             loadtxt(fp, delimiter=',', dtype=float))
+    _test_2d(lim.reader.csv(fp, float),
+             atleast_2d(loadtxt(fp, delimiter=',', dtype=float)))
 
     fp = os.path.join(root, '1d_array_col_bytes.csv')
     _test_1d(lim.reader.csv(fp, bytes),
-             loadtxt(fp, delimiter=',', dtype=bytes))
+             atleast_2d(loadtxt(fp, delimiter=',', dtype=bytes)).T)
 
     fp = os.path.join(root, '1d_array_row_bytes.csv')
     _test_1d(lim.reader.csv(fp, bytes),
-             loadtxt(fp, delimiter=',', dtype=bytes))
+             atleast_2d(loadtxt(fp, delimiter=',', dtype=bytes)))
 
     fp = os.path.join(root, '2d_array.csv')
     _test_2d(lim.reader.csv(fp, float),
