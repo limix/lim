@@ -61,6 +61,10 @@ class ArrayViewInterface(ArrayViewBase):
         else:
             self._axis_values[axis] = _obj2bytes(full(self.shape[axis], values))
 
+    def set_axis_value(self, axis, old_val, new_val):
+        i = where(self._axis_values[axis] == old_val)[0][0]
+        self._axis_values[axis][i] = new_val
+
     def get_axis_values(self, axis):
         return self._axis_values[axis]
 
@@ -141,6 +145,9 @@ class ArrayView(ArrayViewBase):
         super(ArrayView, self).__init__()
         self._ref = ref
         self._lslice = lslice
+
+    def set_axis_value(self, axis, old_val, new_val):
+        self._ref.set_axis_value(axis, old_val, new_val)
 
     def get_axis_values(self, axis):
         return self._ref.get_axis_values(axis)
