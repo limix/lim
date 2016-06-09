@@ -31,9 +31,9 @@ class ArrayViewInterface(ArrayViewBase):
 
     def set_axis_values(self, axis, values):
         if isinstance(values, Iterable):
-            self._axis_values[axis] = asarray(values)
+            self._axis_values[axis] = _obj2bytes(asarray(values))
         else:
-            self._axis_values[axis] = full(self.shape[axis], values)
+            self._axis_values[axis] = _obj2bytes(full(self.shape[axis], values))
 
     def get_axis_values(self, axis):
         return self._axis_values[axis]
@@ -143,3 +143,9 @@ def _create_view(ref, lslice):
     if extract_ndim(lslice) == 0:
         return _create_scalar_view(ref, lslice)
     return ArrayView(ref, lslice)
+
+def _obj2bytes(v):
+    import numpy as np
+    if isinstance(v.dtype, np.object):
+        return v.astype(bytes)
+    return v

@@ -1,19 +1,26 @@
+from os.path import join
+from os.path import dirname
+from os.path import realpath
+
 import lim
+
+_root = dirname(realpath(__file__))
+_root = join(_root, 'data', 'def')
 
 def test_create_data():
 
     data = lim.create_data()
 
-    Y0 = lim.csv_reader('expr_cond0.csv', row_header=True, col_header=True, float)
-    # Y0.set_axis_name(0, 'sample_id')
-    # Y0.set_axis_name(1, 'gene')
-    #
-    # Y1 = lim.csv_reader('expr_cond1.csv', row_header=True, col_header=True, float)
-    # Y1.set_axis_name(0, 'sample_id')
-    # Y1.set_axis_name(1, 'gene')
-    #
-    # Y01 = group([Y0, Y1], name='condition', values=[0, 1])
-    #
+    Y0 = lim.reader.csv(join(_root, 'expr_cond0.csv'), float, row_header=True, col_header=True)
+    Y0.set_axis_name(0, 'sample_id')
+    Y0.set_axis_name(1, 'gene')
+
+    Y1 = lim.reader.csv(join(_root, 'expr_cond1.csv'), float, row_header=True, col_header=True)
+    Y1.set_axis_name(0, 'sample_id')
+    Y1.set_axis_name(1, 'gene')
+
+    Y01 = lim.reader.group([Y0, Y1], name='condition', values=[0, 1])
+
     # Y2 = lim.csv_reader('expr_cond2.csv', row_header=True, col_header=True, float)
     # Y2.set_axis_name(0, 'gene')
     # Y2.set_axis_name(1, 'sample_id')

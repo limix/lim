@@ -17,8 +17,8 @@ class CSVPath(ArrayViewInterface):
         header = 0 if col_header else None
         index_col = 0 if row_header else None
 
-        data = read_csv(filepath, header=header, index_col=index_col,
-                              dtype=dtype)
+        data = read_csv(filepath, header=header, index_col=index_col)
+        data = data.astype(dtype)
 
         self.set_axis_name(0, data.index.name)
         self.set_axis_name(1, data.columns.name)
