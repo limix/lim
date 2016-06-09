@@ -40,18 +40,25 @@ def create_data():
 #     def __str_(self):
 #         return bytes(self._sample_attrs) + '\n' + bytes(self._marker_attrs)
 
+class DictAccessor(object):
+    def __init__(self, dict_):
+        self._dict = dict_
+
+    def __getattr__(self, attr):
+        if attr in self._dict:
+            return self._dict[attr]
+        raise AttributeError
+
 class Data(object):
     def __init__(self):
         self._sample_groups = dict()
-        pass
-        # self._sample_attrs = DataFrame()
-        # self._sample_attrs.index.name = 'sample_id'
-        #
-        # self._marker_attrs = DataFrame()
-        # self._marker_attrs.index.name = 'marker_id'
-        #
-        # self._genotypes = dict()
-        # self._traits = dict()
+        self._marker_groups = dict()
+
+    def add_marker_attrs(self, M, name=None):
+        if name is None:
+            self._marker_groups[M.name] = M
+        else:
+            self._marker_groups[name] = group([M], name=name)
 
     def add_sample_attrs(self, Y, name=None):
         if name is None:
@@ -64,11 +71,14 @@ class Data(object):
         # for (i, a) in enumerate(attrs):
         #     self._sample_attrs.set_value(sample_ids[i], attr_id, a)
 
+    @property
+    def sample(self):
+        return DictAccessor(self._sample_groups)
 
-    def __getattr__(self, attr):
-        if attr in self._sample_groups:
-            return self._sample_groups[attr]
-        raise AttributeError
+    @property
+    def marker(self):
+        return DictAccessor(self._marker_groups)
+
     # def add_marker_attrs(self, attr_id, attrs, genotype_ids, marker_ids=None):
     #     marker_ids = _make_sure_ids(marker_ids, len(attrs))
     #
