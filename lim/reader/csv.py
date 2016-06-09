@@ -2,13 +2,11 @@ from __future__ import absolute_import
 
 from pandas import read_csv
 
-from numpy import asarray
-
-from ..data.array.slice import check_index
 from ..data.array import ArrayViewInterface
 
 def reader(filepath, dtype=float, row_header=False, col_header=False):
-    return CSVPath(filepath, dtype=dtype, row_header=row_header, col_header=col_header)
+    return CSVPath(filepath, dtype=dtype, row_header=row_header,
+                   col_header=col_header)
 
 class CSVPath(ArrayViewInterface):
     def __init__(self, filepath, dtype=float,
