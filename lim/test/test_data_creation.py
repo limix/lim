@@ -44,11 +44,16 @@ def test_create_data():
     yi = data.planet('mars').condition(0).sample_id("sample_02")
     assert_array_equal(yi, array([-3.1, 33.2, -23.]))
 
-    # y = lim.h5_reader('gene_expr.h5', '/group/smoke_trait')
-    # y.set_axis_name(0, 'sample_id')
-    # y.set_axis_values(0, Y0.get_axis_values(0))
-    # data.add_sample_attrs(y)
-    #
+    y = lim.reader.h5(join(_root, 'gene_expr.h5'), '/group/smoke_trait')
+    y.set_axis_name(0, 'sample_id')
+    y.set_axis_values(0, Y0.get_axis_values(0))
+
+    y.set_axis_name(1, 'env')
+    y.set_axis_values(1, 'smoke')
+
+    data.add_sample_attrs(y, name='phase2')
+    assert_array_equal(data.phase2.env('smoke'), array(['y', 'n', 'n', 'y']))
+
     # y = lim.h5_reader('gene_expr.h5', '/group/height')
     # y.set_axis_name(0, 'sample_id')
     # y.set_axis_values(0, Y0.get_axis_values(0))

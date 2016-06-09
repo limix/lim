@@ -7,6 +7,7 @@ from numpy import asarray
 from numpy import arange
 
 from .scalar import npy2py_type
+from ..reader.group import group
 
 def _make_sure_ids(ids, n):
     if ids is None:
@@ -52,8 +53,11 @@ class Data(object):
         # self._genotypes = dict()
         # self._traits = dict()
 
-    def add_sample_attrs(self, Y):
-        self._sample_groups[Y.name] = Y
+    def add_sample_attrs(self, Y, name=None):
+        if name is None:
+            self._sample_groups[Y.name] = Y
+        else:
+            self._sample_groups[name] = group([Y], name=name)
 
         # sample_ids = _make_sure_ids(sample_ids, len(attrs))
         #

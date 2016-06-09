@@ -71,23 +71,23 @@ def test_arrays():
     fp = os.path.join(root, 'array.h5')
     with h5py.File(fp, 'r') as f:
         _test_1d(lim.reader.h5(fp, '/group/1d_array'),
-                 f['/group/1d_array'])
+                 atleast_2d(f['/group/1d_array'][:]).T)
 
     fp = os.path.join(root, 'array.h5')
     with h5py.File(fp, 'r') as f:
         _test_1d(lim.reader.h5(fp, '/group/1d_array_bytes'),
-                 f['/group/1d_array_bytes'])
+                 atleast_2d(f['/group/1d_array_bytes']).T)
 
     fp = os.path.join(root, 'array.h5')
     with h5py.File(fp, 'r') as f:
-        _test_1d(lim.reader.h5(fp, '/group/2d_array'),
-                 f['/group/2d_array'])
+        _test_2d(lim.reader.h5(fp, '/group/2d_array'),
+                 atleast_2d(f['/group/2d_array']))
 
     fp = os.path.join(root, 'array.h5')
     with h5py.File(fp, 'r') as f:
         _test_1d(lim.reader.h5(fp, '/group/2d_array_bytes'),
-                 f['/group/2d_array_bytes'])
-
+                 atleast_2d(f['/group/2d_array_bytes']))
+    
     root = os.path.dirname(os.path.realpath(__file__))
     basepath = os.path.join(root, 'data', 'plink', 'test')
     p = lim.reader.bed(basepath)
