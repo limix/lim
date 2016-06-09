@@ -31,6 +31,15 @@ class ArrayViewInterface(ArrayViewBase):
         super(ArrayViewInterface, self).__init__()
         self._axis_name = dict()
         self._axis_values = dict()
+        self._indexed_axis = None
+
+    @property
+    def indexed_axis(self):
+        return self._indexed_axis
+
+    @indexed_axis.setter
+    def indexed_axis(self, axis):
+        self._indexed_axis = axis
 
     def get(self, axis, label):
         labels = self.get_axis_values(axis)
@@ -132,6 +141,17 @@ class ArrayView(ArrayViewBase):
         super(ArrayView, self).__init__()
         self._ref = ref
         self._lslice = lslice
+
+    def get_axis_values(self, axis):
+        return self._ref.get_axis_values(axis)
+
+    @property
+    def indexed_axis(self):
+        return self._ref.indexed_axis
+
+    @indexed_axis.setter
+    def indexed_axis(self, axis):
+        self._ref.indexed_axis = axis
 
     def item(self, *args):
         return self._item(args, [])

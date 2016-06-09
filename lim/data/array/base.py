@@ -1,3 +1,5 @@
+from numpy import array
+
 class ArrayViewBase(object):
     def __init__(self):
         pass
@@ -53,3 +55,33 @@ class ArrayViewBase(object):
 
     def __array__(self):
         return self._create_array_recurse([])
+
+    def __eq__(self, rhs):
+        import ipdb; ipdb.set_trace()
+        lia = self.get_axis_values(self.indexed_axis)
+        ria = self.get_axis_values(rhs.indexed_axis)
+
+        lok = array([ia in set(ria) for ia in lia])
+        rok = array([ia in set(lia) for ia in ria])
+
+        larr = self.__array__()[lok]
+        rarr = rhs.__array__()[rok]
+
+        return ArrayIdx(lia[lok][larr == rarr])
+
+        return self.__array__() == rhs
+
+    def __ge__(self, rhs):
+        return self.__array__() >= rhs
+
+    def __le__(self, rhs):
+        return self.__array__() <= rhs
+
+    def __gt__(self, rhs):
+        return self.__array__() > rhs
+
+    def __lt__(self, rhs):
+        return self.__array__() < rhs
+
+    def __ne__(self, rhs):
+        return self.__array__() != rhs
