@@ -4,6 +4,7 @@ from os.path import realpath
 
 from numpy import array
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_almost_equal
 
 import lim
 
@@ -45,19 +46,28 @@ def test_create_data():
     assert_array_equal(yi, array([-3.1, 33.2, -23.]))
 
     y = lim.reader.h5(join(_root, 'gene_expr.h5'), '/group/smoke_trait')
+
     y.set_axis_name(0, 'sample_id')
     y.set_axis_values(0, Y0.get_axis_values(0))
-
     y.set_axis_name(1, 'env')
     y.set_axis_values(1, 'smoke')
 
     data.add_sample_attrs(y, name='phase2')
     assert_array_equal(data.phase2.env('smoke'), array(['y', 'n', 'n', 'y']))
 
-    # y = lim.h5_reader('gene_expr.h5', '/group/height')
-    # y.set_axis_name(0, 'sample_id')
-    # y.set_axis_values(0, Y0.get_axis_values(0))
-    # data.add_sample_attrs(y)
+    y = lim.reader.h5(join(_root, 'gene_expr.h5'), '/group/poor')
+
+    y.set_axis_name(0, 'sample_id')
+    y.set_axis_values(0, Y0.get_axis_values(0))
+    y.set_axis_name(1, 'env')
+    y.set_axis_values(1, 'poor')
+
+    data.add_sample_attrs(y, name='phase2')
+    y = data.phase2.env('poor')
+    assert_array_almost_equal(y, array([ 0.55830158954378217,
+                                        -0.48993065101082273,
+                                        -1.4155466852892591,
+                                        -0.79204549998611107]))
     #
     # (Y, M, G) = lim.bed_reader('base_name')
     #
