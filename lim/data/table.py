@@ -1,12 +1,12 @@
 from pandas import DataFrame
 
-from ..column import Column
+from .column import Column
 
 class Table(object):
     def __init__(self):
         self._df = DataFrame()
 
-    def add_column(self, c):
+    def add(self, c):
         for (i, v) in iter(c.items()):
             self._df.set_value(i, c.name, v)
 
