@@ -49,3 +49,9 @@ class Table(object):
 
     def as_matrix(self):
         return self._df.as_matrix()
+
+    def __repr__(self):
+        return repr(self._df)
+
+    def __str__(self):
+        return bytes(self._df)
