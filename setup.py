@@ -55,7 +55,7 @@ def setup_package():
 
     write_version()
 
-    install_requires = ['limix_math', 'cffi>=1.0.0']
+    install_requires = ['limix_math', 'cffi>=1.0.0', 'bidict']
     setup_requires = ['cffi>=1.0.0']
 
     metadata = dict(
