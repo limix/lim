@@ -20,6 +20,12 @@ class Vector(object):
     def items(self):
         return VectorView(self, self._map)
 
+    def __repr__(self):
+        return repr(self._data)
+
+    def __str__(self):
+        return bytes(self._data)
+
 class VectorView(MutableMapping):
     def __init__(self, _ref, map_):
         self._ref, self._map = _ref, map_

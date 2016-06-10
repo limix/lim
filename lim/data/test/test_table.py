@@ -2,7 +2,10 @@ from numpy import object_
 from numpy import nan
 from numpy import array
 from numpy import logical_not as lnot
+
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_equal
+from numpy.testing import assert_raises
 
 from pandas import isnull
 
@@ -33,3 +36,25 @@ def test_adding_columns():
     r = r[lnot(isnull(r))]
 
     assert_array_equal(v, r)
+
+def test_indexing():
+
+    t = Table()
+
+    labels =['sample01', 'sample02', 'sample03']
+    values = [34.3, 2.3, 103.4, -030.]
+    c = Column('height', labels, values)
+    t.add(c)
+
+    labels =['sample02', 'sample03']
+    values = ['doce', 'cogumelo']
+    c = Column('comida', labels, values)
+    t.add(c)
+
+    t.index_name = 'sample_id'
+
+    c = t['comida']
+
+    assert_equal(c['sample03'], array(['cogumelo']))
+    with assert_raises(KeyError):
+        print(c['sample05'])
