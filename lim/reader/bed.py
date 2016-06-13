@@ -4,7 +4,7 @@ from numpy import empty
 from numpy import zeros
 
 from .cplink import bed_ffi
-from ..data.array import ArrayViewInterface
+from ..data.array import MatrixInterface
 
 def _read_fam(filepath):
     d = loadtxt(filepath, bytes)
@@ -26,7 +26,7 @@ def _read_map(filepath):
                 bp_pos=bp_pos)
 
 
-class BedPath(ArrayViewInterface):
+class BedPath(MatrixInterface):
     def __init__(self, filepath, nsnps, nindividuals):
         super(BedPath, self).__init__()
         self._filepath = filepath

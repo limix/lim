@@ -3,11 +3,11 @@
 # from numpy import asarray
 # from numpy import atleast_1d
 #
-# from ..data.array import ArrayViewInterface
+# from ..data.array import MatrixInterface
 # from ..data.slice import extract_ndim
 # from ..util import npy2py_type
 #
-# class H5Path(ArrayViewInterface):
+# class H5Path(MatrixInterface):
 #     def __init__(self, filepath, itempath, dtype=None):
 #         super(H5Path, self).__init__()
 #         self._filepath = filepath

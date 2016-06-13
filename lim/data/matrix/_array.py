@@ -26,9 +26,9 @@ class ArrayAccessor(object):
     def __call__(self, args):
         return self._ref.get(self._axis, args)
 
-class ArrayViewInterface(ArrayViewBase):
+class MatrixInterface(ArrayViewBase):
     def __init__(self):
-        super(ArrayViewInterface, self).__init__()
+        super(MatrixInterface, self).__init__()
         self._axis_name = dict()
         self._axis_values = dict()
         self._indexed_axis = None
@@ -117,7 +117,7 @@ class ArrayViewInterface(ArrayViewBase):
         lslice = normalize_lslice_dim(lslice, self.ndim)
         return self._create_array(normalize_lslice_shape(lslice, self.shape))
 
-class ArrayNumpy(ArrayViewInterface):
+class ArrayNumpy(MatrixInterface):
     def __init__(self, arr):
         super(ArrayNumpy, self).__init__()
         self._arr = arr
