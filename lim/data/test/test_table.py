@@ -37,7 +37,29 @@ def test_adding_columns():
 
     assert_array_equal(v, r)
 
-def test_indexing():
+def test_column_indexing():
+
+    t = Table()
+
+    labels =['sample01', 'sample02', 'sample03']
+    values = [34.3, 2.3, 103.4, -030.]
+    c = Column('height', labels, values)
+    t.add(c)
+
+    labels =['sample02', 'sample03']
+    values = ['doce', 'cogumelo']
+    c = Column('comida', labels, values)
+    t.add(c)
+
+    t.index_name = 'sample_id'
+
+    c = t['comida']
+
+    assert_equal(c['sample03'], array(['cogumelo']))
+    with assert_raises(KeyError):
+        print(c['sample05'])
+
+def test_get_table_by_columns():
 
     t = Table()
 

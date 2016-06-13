@@ -3,11 +3,16 @@ from collections import MutableMapping
 from numpy import asarray
 from numpy import atleast_1d
 
-from bidict import bidict
-
 class Vector(object):
     def __init__(self, labels, values):
-        self._map = bidict(zip(labels, values))
+        self._map = dict(zip(labels, values))
+
+        self._imap = dict()
+        for i in range(len(values)):
+            if values[i] not in self._imap:
+                self._imap[values[i]] = []
+            self._imap[values[i]].append(labels[i])
+
         self._data = asarray(values)
 
     def __len__(self):
