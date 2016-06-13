@@ -3,15 +3,19 @@ from collections import MutableMapping
 from numpy import asarray
 from numpy import atleast_1d
 
+from ..util import npy2py_cast
+from ..util import npy2py_type
+
 class Vector(object):
     def __init__(self, labels, values):
-        self._map = dict(zip(labels, values))
+        cvalues = [npy2py_cast(v) for v in values]
+        self._map = dict(zip(labels, cvalues))
 
         self._imap = dict()
-        for i in range(len(values)):
-            if values[i] not in self._imap:
-                self._imap[values[i]] = []
-            self._imap[values[i]].append(labels[i])
+        for i in range(len(cvalues)):
+            if cvalues[i] not in self._imap:
+                self._imap[cvalues[i]] = []
+            self._imap[cvalues[i]].append(labels[i])
 
         self._data = asarray(values)
 
@@ -19,6 +23,8 @@ class Vector(object):
         return len(self._data)
 
     def __getitem__(self, args):
+        if npy2py_type(type(args)) in [int, bytes, float]:
+            return npy2py_cast(self._map[args])
         idx = atleast_1d(args)
         return asarray([self._map[i] for i in idx])
 
@@ -30,6 +36,10 @@ class Vector(object):
 
     def __str__(self):
         return bytes(self._data)
+
+    @property
+    def dtype(self):
+        return npy2py_type(self._data.dtype)
 
 class VectorView(MutableMapping):
     def __init__(self, _ref, map_):

@@ -6,7 +6,7 @@ from numpy import atleast_2d
 
 from ..data import Table
 from ..data import Column
-from ..data.util import npy2py_type
+from ..util.type import npy2py_type
 
 def reader(filepath, itempath, dtype=None):
 

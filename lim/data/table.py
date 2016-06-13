@@ -1,6 +1,9 @@
+from numpy import where
+
 from pandas import DataFrame
 
 from .column import Column
+from ..util.type import npy2py_type
 
 class Table(object):
     def __init__(self):
@@ -19,21 +22,39 @@ class Table(object):
         self._df.index.name = v
 
     @property
-    def index(self):
+    def index_values(self):
         return self._df.index.values
+
+    @index_values.setter
+    def index_values(self, values):
+        self._df.index = values
 
     @property
     def columns(self):
         return self._df.columns.values
 
     def set_index_value(self, old_val, new_val):
-        self._df.index[old_val] = new_val
+        otype = npy2py_type(type(old_val))
+        ntype = npy2py_type(type(new_val))
+
+        index_name = self._df.index.name
+        values = self._df.index.values
+        i = where(values == old_val)[0][0]
+
+        if otype != ntype:
+            values = values.astype(ntype)
+
+        values[i] = new_val
+
+        self._df.index = values
+
+        self._df.index.name = index_name
 
     def __getitem__(self, colname):
-        return Column(colname, self.index, self._df[colname].values)
+        return Column(colname, self.index_values, self._df[colname].values)
 
     def __getattr__(self, colname):
-        return Column(colname, self.index, self._df[colname].values)
+        return Column(colname, self.index_values, self._df[colname].values)
 
     @property
     def shape(self):

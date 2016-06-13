@@ -31,10 +31,13 @@ def npy2py_type(npy_type):
     if npy_type in bytes_types:
         return bytes
 
-    if npy_type.char in ['S', 'a']:
-        return bytes
+    if hasattr(npy_type, 'char'):
+        if npy_type.char in ['S', 'a']:
+            return bytes
+        raise TypeError
 
-    raise TypeError
+    return npy_type
+
 
 def npy2py_cast(npy_value):
     type_ = npy2py_type(type(npy_value))
