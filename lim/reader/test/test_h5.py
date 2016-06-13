@@ -12,7 +12,7 @@ def test_read():
     root = dirname(realpath(__file__))
     root = join(root, 'data')
 
-    table = lim.reader.csv(join(root, '2d_array.csv'))
+    table = lim.reader.h5(join(root, 'array.h5'), '/group/2d_array')
 
     R = [[ 0.,  1.,  2.,  1.,  0.],
          [ 0.,  1.,  2.,  1.,  0.],
