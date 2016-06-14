@@ -6,8 +6,8 @@ from .column import Column
 from ..util.type import npy2py_type
 
 class Table(object):
-    def __init__(self):
-        self._df = DataFrame()
+    def __init__(self, df=None):
+        self._df = DataFrame() if df is None else df
 
     def add(self, c):
         for (i, v) in iter(c.items()):
