@@ -16,6 +16,12 @@ class Slice(object):
         self.stop = stop
         self.step = step
 
+    def __str__(self):
+        return self.__str__()
+
+    def __repr__(self):
+        return "Slice(%d, %d, %d)" % (self.start, self.stop, self.step)
+
 def _from_slice(slice_, size):
     if isinstance(slice_, Slice):
         return slice_
@@ -62,8 +68,16 @@ def normalize_access(args, shape):
             r = _from_slice(slice(None, None, None), shape[1])
             return (l, r)
 
-        l = _from_slice(args[0], shape[0])
-        r = _from_slice(args[1], shape[1])
+        if isinstance(args[0], int):
+            l = args[0]
+        else:
+            l = _from_slice(args[0], shape[0])
+
+        if isinstance(args[1], int):
+            r = args[1]
+        else:
+            r = _from_slice(args[1], shape[1])
+
         return (l, r)
 
     raise ValueError

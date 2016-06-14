@@ -1,13 +1,15 @@
-from numpy import asarray
-from numpy import loadtxt
-from numpy import empty
-from numpy import zeros
-
 from pandas import read_csv
 
-from .cplink import bed_ffi
+from .cplink import read_item
+from .cplink import read_row_slice
+from .cplink import read_col_slice
+from .cplink import read
+
 from .map import read_map
+
+from ..data import Slice
 from ..data import MatrixInterface
+from ..data import normalize_access
 from ..data import Table
 
 def _read_fam(filepath):
@@ -32,12 +34,10 @@ class BedPath(MatrixInterface):
     def __init__(self, filepath, nsamples, nmarkers):
         super(BedPath, self).__init__()
         self._filepath = filepath
-        self._nmakers = nmarkers
         self._nsamples = nsamples
+        self._nmakers = nmarkers
 
     def item(self, *args):
-        fp = bed_ffi.ffi.new("char[]", self._filepath)
-
         index_msg_err = "Provide an integer or a pair of integers."
 
         if len(args) == 0:
@@ -47,17 +47,24 @@ class BedPath(MatrixInterface):
             raise NotImplementedError
 
         if len(args) == 2:
-            return bed_ffi.lib.bed_read_item(fp, self.shape[0], self.shape[1],
-                                             args[0], args[1])
+            return read_item(self._filepath, args[0], args[1], self.shape)
 
         raise IndexError(index_msg_err)
 
     def __getitem__(self, args):
+        mslice = normalize_access(args, self.shape)
+        if isinstance(mslice[0], int) and isinstance(mslice[1], Slice):
+            return read_row_slice(self._filepath, mslice[0], mslice[1].start,
+                                  mslice[1].stop, mslice[1].step, self.shape)
+        elif isinstance(mslice[1], int) and isinstance(mslice[0], Slice):
+            return read_col_slice(self._filepath, mslice[1], mslice[0].start,
+                                  mslice[0].stop, mslice[0].step, self.shape)
+        # return read_mslice(mslice)
         raise NotImplementedError
 
     @property
     def shape(self):
-        return (self._nmakers, self._nsamples)
+        return (self._nsamples, self._nmakers)
 
     @property
     def dtype(self):
@@ -71,8 +78,7 @@ class BedPath(MatrixInterface):
 
     def __array__(self, *args):
         if len(args) == 0:
-            return
-        import ipdb; ipdb.set_trace()
+            return read(self._filepath, self.shape)
         raise NotImplementedError
 
     @property
