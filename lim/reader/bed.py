@@ -3,12 +3,15 @@ from pandas import read_csv
 from .cplink import read_item
 from .cplink import read_row_slice
 from .cplink import read_col_slice
+from .cplink import read_slice
 from .cplink import read
 
 from .map import read_map
 
 from ..data import Slice
+from ..data.matrix.index import merge_mslices
 from ..data import MatrixInterface
+from ..data import MatrixView
 from ..data import normalize_access
 from ..data import Table
 
@@ -31,11 +34,11 @@ def _read_fam(filepath):
     return table
 
 class BedPath(MatrixInterface):
-    def __init__(self, filepath, nsamples, nmarkers):
+    def __init__(self, filepath, sample_ids, marker_ids):
         super(BedPath, self).__init__()
         self._filepath = filepath
-        self._nsamples = nsamples
-        self._nmakers = nmarkers
+        self._sample_ids = sample_ids
+        self._marker_ids = marker_ids
 
     def item(self, *args):
         index_msg_err = "Provide an integer or a pair of integers."
@@ -51,20 +54,24 @@ class BedPath(MatrixInterface):
 
         raise IndexError(index_msg_err)
 
+    # def __getitem__(self, args):
+    #     mslice = normalize_access(args, self.shape)
+    #     if isinstance(mslice[0], int) and isinstance(mslice[1], Slice):
+    #         return read_row_slice(self._filepath, mslice[0], mslice[1].start,
+    #                               mslice[1].stop, mslice[1].step, self.shape)
+    #     elif isinstance(mslice[1], int) and isinstance(mslice[0], Slice):
+    #         return read_col_slice(self._filepath, mslice[1], mslice[0].start,
+    #                               mslice[0].stop, mslice[0].step, self.shape)
+    #     # return read_mslice(mslice)
+    #     raise NotImplementedError
+
     def __getitem__(self, args):
         mslice = normalize_access(args, self.shape)
-        if isinstance(mslice[0], int) and isinstance(mslice[1], Slice):
-            return read_row_slice(self._filepath, mslice[0], mslice[1].start,
-                                  mslice[1].stop, mslice[1].step, self.shape)
-        elif isinstance(mslice[1], int) and isinstance(mslice[0], Slice):
-            return read_col_slice(self._filepath, mslice[1], mslice[0].start,
-                                  mslice[0].stop, mslice[0].step, self.shape)
-        # return read_mslice(mslice)
-        raise NotImplementedError
+        return MatrixView(self, mslice)
 
     @property
     def shape(self):
-        return (self._nsamples, self._nmakers)
+        return (len(self._sample_ids), len(self._marker_ids))
 
     @property
     def dtype(self):
@@ -76,39 +83,27 @@ class BedPath(MatrixInterface):
     def __str__(self):
         return bytes(self.__array__())
 
-    def __array__(self, *args):
+    def __array__(self, *args, **kwargs):
+        import ipdb; ipdb.set_trace()
         if len(args) == 0:
-            return read(self._filepath, self.shape)
+            if 'index_list' in kwargs:
+                mslice = merge_mslices(kwargs['index_list'])
+                return read(self._filepath, self.shape)
+            else:
+                return read(self._filepath, self.shape)
         raise NotImplementedError
 
     @property
     def sample_ids(self):
-        raise NotImplementedError
+        return self._sample_ids
 
     @property
     def marker_ids(self):
-        raise NotImplementedError
-
-    # def _create_array(self, lslice):
-    #     rslice, cslice = lslice[0], lslice[1]
-    #
-    #     fp = bed_ffi.ffi.new("char[]", self._filepath)
-    #
-    #     nrows_read = (rslice.stop - rslice.start) // rslice.step
-    #     ncols_read = (cslice.stop - cslice.start) // cslice.step
-    #
-    #     X = empty((nrows_read, ncols_read), dtype=int)
-    #     pointer = bed_ffi.ffi.cast("long*", X.ctypes.data)
-    #
-    #     bed_ffi.lib.bed_read_slice(fp, self.shape[0], self.shape[1],
-    #                            rslice.start, rslice.stop, rslice.step,
-    #                            cslice.start, cslice.stop, cslice.step,
-    #                            pointer)
-    #
-    #     return X
+        return self._marker_ids
 
 def reader(basepath):
     sample_tbl = _read_fam(basepath + '.fam')
     marker_tbl = read_map(basepath + '.map')
-    G = BedPath(basepath + '.bed', sample_tbl.shape[0], marker_tbl.shape[0])
+    G = BedPath(basepath + '.bed', sample_tbl.index_values,
+                marker_tbl.index_values)
     return (sample_tbl, marker_tbl, G)

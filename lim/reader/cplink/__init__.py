@@ -123,3 +123,19 @@ def _bed_major(filepath):
     elif major == 1:
         return 'm' # markers first
     raise ValueError("Doesn't look like a valid BED file format.")
+
+def _read_slice(filepath, rslice, cslice, shape):
+    from . import bed_ffi
+    from numpy import empty
+    from numpy import nan
+
+    fp = bed_ffi.ffi.new("char[]", filepath)
+    nrows = (rslice.stop - rslice.start) // rslice.step
+    ncols = (cslice.stop - cslice.start) // cslice.step
+    G = empty((nrows, ncols), dtype=int)
+    pointer = bed_ffi.ffi.cast("long*", G.ctypes.data)
+
+    bed_ffi.lib.bed_read_slice(fp, shape[0], shape[1], c,
+                                   start, stop, step, pointer)
+
+    return G

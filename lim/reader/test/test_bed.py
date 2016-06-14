@@ -19,6 +19,7 @@ def test_read():
     (stable, mtable, G) = lim.reader.bed(join(root, 'plink', 'test'))
 
     assert_array_equal(G.shape, (6, 3))
+    import ipdb; ipdb.set_trace()
     assert_array_equal(G[0,:], array([ 0.,  2.,  2.]))
     assert_array_equal(G[1,:], array([  2.,  nan,   1.]))
     assert_array_equal(G[2,:], array([ nan,   1.,   1.]))

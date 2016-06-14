@@ -26,7 +26,7 @@ class MatrixInterface(object):
     def __str__(self):
         return bytes(self.__array__())
 
-    def __array__(self, *args):
+    def __array__(self, *args, **kwargs):
         raise NotImplementedError
 
     @property
