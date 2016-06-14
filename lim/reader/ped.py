@@ -88,51 +88,6 @@ def _read_map(filepath):
 
     return table
 
-
-    # M = df.as_matrix().astype(bytes)
-    # sample_attrs = dict(family_id=M[:,0], individual_id=M[:,1],
-    #                     paternal_id=M[:,2], maternal_id=M[:,3], sex=M[:,4],
-    #                     phenotype=M[:,5])
-    #
-    # M = M[:,6:]
-    # nsnps = M.shape[1] // 2
-    # nsamples = M.shape[0]
-    #
-    # G = empty((nsamples, nsnps))
-    # for i in range(nsnps):
-    #     left  = M[:,i*2 + 0]
-    #     right = M[:,i*2 + 1]
-    #
-    #     v = concatenate([left, right])
-    #     u = unique(v)
-    #     a = list(set(u).difference('0'))
-    #     if len(a) == 0 or len(a) > 2:
-    #         raise ValueError
-    #
-    #     if len(a) == 1:
-    #         minor_allele = a[0]
-    #     else:
-    #         a0 = sum(v == a[0])
-    #         a1 = sum(v == a[1])
-    #         minor_allele = a[0] if a0 <= a1 else a[1]
-    #
-    #     G[:,i]  = left == minor_allele
-    #     G[:,i] += right == minor_allele
-    #     G[left == '0',i] = nan
-    #
-    # samples = dict()
-    # for (k, v) in iter(sample_attrs.items()):
-    #     arr = ArrayNumpy(atleast_2d(v).T)
-    #
-    #     arr.set_axis_name(0, 'sample_id')
-    #     fa = sample_attrs['family_id']
-    #     ia = sample_attrs['individual_id']
-    #     values = asarray([fa[i] + '_' + ia[i] for i in range(len(fa))])
-    #     arr.set_axis_values(0, values)
-    #
-    #     samples[k] = arr
-    # return (samples, G)
-
 def reader(basepath):
     (sample_tbl, G) = _read_ped(basepath + '.ped')
     marker_tbl = _read_map(basepath + '.map')
@@ -141,9 +96,3 @@ def reader(basepath):
                  marker_id=marker_tbl.index_values)
 
     return (sample_tbl, marker_tbl, G)
-    # marker_attrs = _read_map()
-    #
-    # samples = group(sample_attrs.values(), 'attr', sample_attrs.keys())
-    # markers = group(marker_attrs.values(), 'attr', marker_attrs.keys())
-    #
-    # return PED(samples, markers, G)
