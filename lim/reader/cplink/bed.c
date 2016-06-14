@@ -86,7 +86,7 @@ void _read_slice(FILE* fp, int* shape, Slice* row, Slice* col, long* matrix)
 }
 
 void
-read_slice(char* filepath, int nrows, int ncols,
+bed_read_slice(char* filepath, int nrows, int ncols,
            int r_start, int r_stop, int r_step,
            int c_start, int c_stop, int c_step,
            long* matrix)
@@ -103,8 +103,14 @@ read_slice(char* filepath, int nrows, int ncols,
     fclose(fp);
 }
 
+void
+bed_read(char* filepath, int nrows, int ncols, long* matrix)
+{
+    _read_slice(filepath, nrows, ncols, 0, nrows, 1, 0, ncols, 1, matrix);
+}
+
 int
-read_item(char* filepath, int nrows, int ncols, int row, int col)
+bed_read_item(char* filepath, int nrows, int ncols, int row, int col)
 {
     int shape[2] = {nrows, ncols};
     ItemIdx idx = {row, col};

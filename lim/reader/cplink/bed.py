@@ -18,12 +18,14 @@ ffi.set_source('lim.reader.cplink.bed_ffi',
         libraries=[])
 
 ffi.cdef("""
-int read_item(char* filepath, int nrows, int ncols, int row, int col);
+int bed_read_item(char* filepath, int nrows, int ncols, int row, int col);
 void
-read_slice(char* filepath, int nrows, int ncols,
-           int r_start, int r_stop, int r_step,
-           int c_start, int c_stop, int c_step,
-           long* matrix);
+bed_read_slice(char* filepath, int nrows, int ncols,
+               int r_start, int r_stop, int r_step,
+               int c_start, int c_stop, int c_step,
+               long* matrix);
+void
+bed_read(char* filepath, int nrows, int ncols, long* matrix);
 """)
 
 if __name__ == '__main__':

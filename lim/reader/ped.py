@@ -1,14 +1,12 @@
 from numpy import unique
 from numpy import concatenate
 from numpy import nan
-from numpy import arange
 from numpy import empty
 
 from pandas import read_csv
 
 from .map import read_map
 from ..data import Table
-from ..data import Column
 from ..data import NPyMatrix
 
 def _read_ped_genotype(M):

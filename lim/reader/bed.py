@@ -28,31 +28,12 @@ def _read_fam(filepath):
 
     return table
 
-    # d = loadtxt(filepath, bytes)
-    # if d.shape[1] != 6:
-    #     msg = "There are %d columns instead of six: %d." % d.shape[1]
-    #     raise TypeError(msg)
-    #
-    # return dict(family_id=d[:,0], individual_id=d[:,1],
-    #             paternal_id=d[:,2], maternal_id=d[:,3],
-    #             sex=d[:,4], phenotype=d[:,5].astype(int))
-
-# def _read_map(filepath):
-#     d = loadtxt(filepath, bytes)
-#     chrom = d[:,0]
-#     snp_id = d[:,1]
-#     genetic_dist = asarray(d[:,2], float)
-#     bp_pos = asarray(d[:,3], int)
-#     return dict(chrom=chrom, snp_id=snp_id, genetic_dist=genetic_dist,
-#                 bp_pos=bp_pos)
-
-
 class BedPath(MatrixInterface):
-    def __init__(self, filepath, nsnps, nindividuals):
+    def __init__(self, filepath, nsamples, nmarkers):
         super(BedPath, self).__init__()
         self._filepath = filepath
-        self._nsnps = nsnps
-        self._nindividuals = nindividuals
+        self._nmakers = nmarkers
+        self._nsamples = nsamples
 
     def item(self, *args):
         fp = bed_ffi.ffi.new("char[]", self._filepath)
@@ -66,8 +47,8 @@ class BedPath(MatrixInterface):
             raise NotImplementedError
 
         if len(args) == 2:
-            return bed_ffi.lib.read_item(fp, self.shape[0], self.shape[1],
-                                         args[0], args[1])
+            return bed_ffi.lib.bed_read_item(fp, self.shape[0], self.shape[1],
+                                             args[0], args[1])
 
         raise IndexError(index_msg_err)
 
@@ -76,7 +57,7 @@ class BedPath(MatrixInterface):
 
     @property
     def shape(self):
-        return (self._nsnps, self._nindividuals)
+        return (self._nmakers, self._nsamples)
 
     @property
     def dtype(self):
@@ -89,6 +70,9 @@ class BedPath(MatrixInterface):
         return bytes(self.__array__())
 
     def __array__(self, *args):
+        if len(args) == 0:
+            return
+        import ipdb; ipdb.set_trace()
         raise NotImplementedError
 
     @property
@@ -110,7 +94,7 @@ class BedPath(MatrixInterface):
     #     X = empty((nrows_read, ncols_read), dtype=int)
     #     pointer = bed_ffi.ffi.cast("long*", X.ctypes.data)
     #
-    #     bed_ffi.lib.read_slice(fp, self.shape[0], self.shape[1],
+    #     bed_ffi.lib.bed_read_slice(fp, self.shape[0], self.shape[1],
     #                            rslice.start, rslice.stop, rslice.step,
     #                            cslice.start, cslice.stop, cslice.step,
     #                            pointer)
@@ -118,8 +102,7 @@ class BedPath(MatrixInterface):
     #     return X
 
 def reader(basepath):
-    individuals = _read_fam(basepath + '.fam')
-    # snps = read_map(basepath + '.map')
-    # genotype = BedPath(basepath + '.bed', len(snps['snp_id']),
-    #                    len(individuals['individual_id']))
-    # return (genotype, individuals, snps)
+    sample_tbl = _read_fam(basepath + '.fam')
+    marker_tbl = read_map(basepath + '.map')
+    G = BedPath(basepath + '.bed', sample_tbl.shape[0], marker_tbl.shape[0])
+    return (sample_tbl, marker_tbl, G)

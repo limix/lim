@@ -15,7 +15,10 @@ def test_read():
     root = dirname(realpath(__file__))
     root = join(root, 'data')
 
-    lim.reader.bed(join(root, 'plink', 'test'))
+    (stable, mtable, G) = lim.reader.bed(join(root, 'plink', 'test'))
+    print(stable)
+    print(mtable)
+    print(G)
     # (stable, mtable, G) = lim.reader.bed(join(root, 'plink', 'test'))
 
     # assert_string_equal(stable['family_id']['1_1'], '1')
