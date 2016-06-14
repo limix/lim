@@ -13,6 +13,7 @@ from pandas import read_csv
 from .group import group
 from ..data import Table
 from ..data import Column
+from ..data import NPyMatrix
 
 def _read_ped_genotype(df):
     M = df.as_matrix().astype(bytes)[:,6:]
@@ -133,10 +134,13 @@ def _read_map(filepath):
     # return (samples, G)
 
 def reader(basepath):
-    (sample_attrs, G) = _read_ped(basepath + '.ped')
-    marker_attrs = _read_map(basepath + '.map')
+    (sample_tbl, G) = _read_ped(basepath + '.ped')
+    marker_tbl = _read_map(basepath + '.map')
 
-    return (sample_attrs, marker_attrs, G)
+    NPyMatrix(G, sample_id=sample_tbl.index_values,
+                 marker_id=marker_tbl.index_values)
+
+    return (sample_tbl, marker_tbl, G)
     # marker_attrs = _read_map()
     #
     # samples = group(sample_attrs.values(), 'attr', sample_attrs.keys())
