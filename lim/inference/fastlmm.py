@@ -3,6 +3,7 @@ from __future__ import division
 from numpy import dot
 from numpy import empty
 from numpy import log
+from numpy import var
 
 from scipy.stats import multivariate_normal
 
@@ -10,6 +11,10 @@ from limix_math.linalg import sum2diag
 
 class FastLMM(object):
     def __init__(self, y, Q0, Q1, S0):
+
+        if var(y) < 1e-8:
+            raise ValueError("The phenotype variance is too low: %e." % var(y))
+
         self._n = y.shape[0]
         self._p = self._n - S0.shape[0]
         self._S0 = S0

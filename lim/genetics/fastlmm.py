@@ -1,8 +1,10 @@
 from __future__ import division
 
 from numpy import exp
-from numpy import atleast_2d
 from numpy import clip
+from numpy import isfinite
+from numpy import atleast_2d
+from numpy import all as all_
 
 from limix_math.linalg import qs_decomposition
 
@@ -15,24 +17,33 @@ from ..func import Scalar
 from ..func import FuncData
 
 class FastLMM(Learnable, FuncData):
-    def __init__(self, y, X):
+    def __init__(self, y, X=None, QS=None):
         self._logistic = Scalar(0.0)
         Learnable.__init__(self, Variables(logistic=self._logistic))
         FuncData.__init__(self)
-        self._trans = DesignMatrixTrans(X)
-        X = self._trans.transform(X)
-        QS = qs_decomposition(X)
+
+        assert (X is None) != (QS is None)
+        if not all_(isfinite(y)):
+            raise ValueError("There are non-finite values in the phenotype.")
+
+        if QS is None:
+            self._trans = DesignMatrixTrans(X)
+            X = self._trans.transform(X)
+            QS = qs_decomposition(X)
+            self._X = X
+
         self._flmmc = FastLMMCore(y, QS[0][0], QS[0][1], QS[1][0])
+
+        self._y = y
+        self._QS = QS
+
         self._genetic_variance = None
         self._noise_variance = None
         self._offset = None
 
-        self._y = y
-        self._QS = QS
-        self._X = X
-
     def _delta(self):
-        x = 1 / (1 + exp(-self._logistic.value))
+        v = clip(self._logistic.value, -20, 20)
+        x = 1 / (1 + exp(-v))
         return clip(x, 1e-5, 1-1e-5)
 
     @property
