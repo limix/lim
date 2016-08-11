@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 
 PKG_NAME = 'lim'
-VERSION  = '0.0.1'
+VERSION  = '0.0.2'
 
 try:
     from distutils.command.bdist_conda import CondaDistribution
@@ -19,6 +19,8 @@ except ImportError:
     print("Error: numpy package couldn't be found." +
           " Please, install it so I can proceed.")
     sys.exit(1)
+else:
+    print("Good: numpy %s" % numpy.__version__)
 
 try:
     import scipy
@@ -26,6 +28,8 @@ except ImportError:
     print("Error: scipy package couldn't be found."+
           " Please, install it so I can proceed.")
     sys.exit(1)
+else:
+    print("Good: numpy %s" % scipy.__version__)
 
 try:
     import numba
@@ -33,6 +37,8 @@ except ImportError:
     print("Error: numba package couldn't be found." +
           " Please, install it so I can proceed.")
     sys.exit(1)
+else:
+    print("Good: numba %s" % numba.__version__)
 
 def write_version():
     cnt = """
