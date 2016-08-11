@@ -40,26 +40,12 @@ except ImportError:
 else:
     print("Good: numba %s" % numba.__version__)
 
-def write_version():
-    cnt = """
-# THIS FILE IS GENERATED FROM %(package_name)s SETUP.PY
-version = '%(version)s'
-"""
-    filename = os.path.join(PKG_NAME, 'version.py')
-    a = open(filename, 'w')
-    try:
-        a.write(cnt % {'version': VERSION,
-                       'package_name': PKG_NAME.upper()})
-    finally:
-        a.close()
 
 def setup_package():
     src_path = os.path.dirname(os.path.abspath(sys.argv[0]))
     old_path = os.getcwd()
     os.chdir(src_path)
     sys.path.insert(0, src_path)
-
-    write_version()
 
     install_requires = ['limix_math', 'cffi>=1.0.0', 'bidict']
     setup_requires = ['cffi>=1.0.0']
