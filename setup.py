@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 
 PKG_NAME = 'lim'
-VERSION  = '0.0.3'
+VERSION  = '0.0.4'
 
 try:
     from distutils.command.bdist_conda import CondaDistribution
