@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 
 PKG_NAME = 'lim'
-VERSION  = '0.0.4'
+VERSION  = '0.0.5'
 
 try:
     from distutils.command.bdist_conda import CondaDistribution
@@ -47,7 +47,7 @@ def setup_package():
     os.chdir(src_path)
     sys.path.insert(0, src_path)
 
-    install_requires = ['limix_math', 'cffi>=1.0.0', 'bidict']
+    install_requires = ['limix_math>=0.1.12', 'cffi>=1.0.0', 'bidict']
     setup_requires = ['cffi>=1.0.0']
 
     metadata = dict(
