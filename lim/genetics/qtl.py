@@ -59,7 +59,6 @@ class LRT(object):
         if self._alt_model_ready:
             return
 
-        import ipdb; ipdb.set_trace()
         self._logger.info('Alternative model computation has started.')
 
         X = self._X

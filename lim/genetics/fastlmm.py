@@ -84,9 +84,10 @@ class FastLMM(Learnable, FuncData):
         self._flmmc.delta = self._delta()
         return self._flmmc.lml()
 
-    def predict(self, Xp):
+    def predict(self, covariates, Xp):
+        covariates = atleast_2d(covariates)
         Xp = atleast_2d(Xp)
         Xp = self._trans.transform(Xp)
         Cp = Xp.dot(self._X.T)
         Cpp = Xp.dot(Xp.T)
-        return self._flmmc.predict(Cp, Cpp)
+        return self._flmmc.predict(covariates, Cp, Cpp)

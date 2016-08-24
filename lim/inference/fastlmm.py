@@ -69,16 +69,14 @@ class FastLMM(object):
         return self._covariates.dot(self._beta)
 
     def _Q0tymD0(self):
-        assert False
         if self.__Q0tymD0 is None:
-            Q0tym = self._yTQ0 - self._oneTQ0 * self._beta
+            Q0tym = self._yTQ0 - self._beta.dot(self._oneTQ0)
             self.__Q0tymD0 = Q0tym / self._diag0
         return self.__Q0tymD0
 
     def _Q1tymD1(self):
-        assert False
         if self.__Q1tymD1 is None:
-            Q1tym = self._yTQ1 - self._oneTQ1 * self._beta
+            Q1tym = self._yTQ1 - self._beta.dot(self._oneTQ1)
             self.__Q1tymD1 = Q1tym / self._diag1
         return self.__Q1tymD1
 
@@ -166,7 +164,7 @@ class FastLMM(object):
         self._lml /= 2
         return self._lml
 
-    def predict(self, Cp, Cpp):
+    def predict(self, covariates, Cp, Cpp):
         delta = self.delta
 
         diag0 = self._diag0
@@ -175,7 +173,8 @@ class FastLMM(object):
         CpQ0 = Cp.dot(self._Q0)
         CpQ1 = Cp.dot(self._Q1)
 
-        mean  = self._offset + (1-delta) * CpQ0.dot(self._Q0tymD0())
+        m = covariates.dot(self.beta)
+        mean  = m + (1-delta) * CpQ0.dot(self._Q0tymD0())
         mean += (1-delta) * CpQ1.dot(self._Q1tymD1())
 
         cov = sum2diag(Cpp * (1-self.delta), self.delta)

@@ -45,35 +45,35 @@ def test_learn():
     assert_almost_equal(flmm.genetic_variance, 1.2979613599, decimal=5)
     assert_almost_equal(flmm.noise_variance, 1.6317660354, decimal=5)
 
-# def test_predict_1():
-#     random = np.random.RandomState(228)
-#     N = 800
-#     X = random.randn(N, 900)
-#
-#     offset = 1.2
-#     scale = 3.0
-#     delta = 0.5
-#     y = FastLMMSampler(offset, scale, delta, X).sample(random)
-#
-#     flmm = FastLMM(y, ones((N, 1)), X)
-#     flmm.learn()
-#     assert_almost_equal(flmm.predict(X).logpdf(y), -1092.1273501778442,
-#                         decimal=4)
-#
-# def test_predict_2():
-#     random = np.random.RandomState(228)
-#     N = 200
-#     X = random.randn(N, 300)
-#
-#     offset = 1.2
-#     scale = 3.0
-#     delta = 0.5
-#     y = FastLMMSampler(offset, scale, delta, X).sample(random)
-#
-#     flmm = FastLMM(y, ones((N, 1)), X)
-#     flmm.learn()
-#     p = flmm.predict(X[5,:])
-#     y5 = y[5]
-#     y6 = y[6]
-#     assert_almost_equal(p.logpdf(y5), -1.28820823178)
-#     assert_almost_equal(p.logpdf(y6), -4.28963888498)
+def test_predict_1():
+    random = np.random.RandomState(228)
+    N = 800
+    X = random.randn(N, 900)
+
+    offset = 1.2
+    scale = 3.0
+    delta = 0.5
+    y = FastLMMSampler(offset, scale, delta, X).sample(random)
+
+    flmm = FastLMM(y, ones((N, 1)), X)
+    flmm.learn()
+    assert_almost_equal(flmm.predict(ones((N, 1)), X).logpdf(y),
+                        -1092.1273501778442, decimal=4)
+
+def test_predict_2():
+    random = np.random.RandomState(228)
+    N = 200
+    X = random.randn(N, 300)
+
+    offset = 1.2
+    scale = 3.0
+    delta = 0.5
+    y = FastLMMSampler(offset, scale, delta, X).sample(random)
+
+    flmm = FastLMM(y, ones((N, 1)), X)
+    flmm.learn()
+    p = flmm.predict(ones((N, 1))[5,:], X[5,:])
+    y5 = y[5]
+    y6 = y[6]
+    assert_almost_equal(p.logpdf(y5), -1.28820823178)
+    assert_almost_equal(p.logpdf(y6), -4.28963888498)
