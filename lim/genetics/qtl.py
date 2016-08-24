@@ -3,6 +3,8 @@ from tabulate import tabulate
 import logging
 from numpy import asarray
 from numpy import asarray
+from numpy import newaxis
+from numpy import hstack
 from numpy import sqrt
 from numpy import ones
 from numpy import nan
@@ -10,6 +12,8 @@ from limix_math.linalg import qs_decomposition
 from limix_math.linalg import _QS_from_K_split
 from ..tool.kinship import gower_normalization
 from .fastlmm import FastLMM
+
+import scipy.stats as st
 
 def _get_offset_covariate(covariates, n):
     return ones((n, 1)) if covariates is None else covariates
@@ -30,7 +34,7 @@ class LRT(object):
 
         self._pvals = None
         self._lrs = None
-        self._ep = None
+        self._flmm = None
         self._betas = None
         self._lml_null = nan
         self._X = None
@@ -64,13 +68,14 @@ class LRT(object):
         X = self._X
         covariates = self._covariates
 
+        self._betas = []
         lml_alt = []
-        import ipdb; ipdb.set_trace()
-        for x in X:
+        for x in X.T:
             flmm = self._flmm.copy()
-            flmm.covariates = x
+            flmm.covariates = hstack((covariates, x[:, newaxis]))
             flmm.learn()
             lml_alt.append(flmm.lml())
+            self._betas.append(flmm.beta[-1])
         lml_alt = asarray(lml_alt)
 
         lml_null = self._lml_null
@@ -80,6 +85,7 @@ class LRT(object):
         self._pvals = chi2.sf(lrs)
         self._lrs = lrs
         self._alt_model_ready = True
+        self._betas = asarray(self._betas)
 
     def _compute_null_model(self):
         if self._null_model_ready:
@@ -110,14 +116,10 @@ class LRT(object):
 
     def lrs(self):
         self._compute_statistics()
-        if self._null_model_only:
-            return []
         return self._lrs
 
     def pvals(self):
         self._compute_statistics()
-        if self._null_model_only:
-            return []
         return self._pvals
 
 
@@ -197,17 +199,17 @@ def normal_scan(y, X, G=None, K=None, covariates=None):
     lrt = LRT(y, Q0, Q1, S0, covariates=covariates)
     lrt.candidate_markers = X
     info['lrs'] = lrt.lrs()
-    # info['effsizes'] = lrt.effsizes
-    # info['ep_null_model'] = lrt._ep
-    # info['lml_alt'] = lrt.lml_alt()
-    # return_ = (lrt.pvals(), info)
-    # print("Scan has finished.")
-    #
-    # print("-------------------------- NULL MODEL --------------------------")
-    # print(lrt._ep)
-    # print("----------------------------------------------------------------")
-    # print("")
-    #
+    info['effsizes'] = lrt.effsizes
+    info['null_model'] = lrt._flmm
+    info['lml_alt'] = lrt.lml_alt()
+    return_ = (lrt.pvals(), info)
+    print("Scan has finished.")
+
+    print("-------------------------- NULL MODEL --------------------------")
+    print(lrt._flmm)
+    print("----------------------------------------------------------------")
+    print("")
+
     # table = [info['effsizes'], info['lml_alt'], info['lrs'], lrt.pvals()]
     # table = [list(i) for i in table]
     # table = map(list, zip(*table))
@@ -215,4 +217,4 @@ def normal_scan(y, X, G=None, K=None, covariates=None):
     # print(tabulate(table, headers=('EffSiz', 'LML', 'LR', 'Pval')))
     # print("----------------------------------------------------------------")
     #
-    # return return_
+    return return_

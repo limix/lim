@@ -43,7 +43,7 @@ def test_learn():
 
     assert_almost_equal(flmm.beta[0], 1.2120718670, decimal=6)
     assert_almost_equal(flmm.genetic_variance, 1.2979613599, decimal=5)
-    assert_almost_equal(flmm.noise_variance, 1.6317660354, decimal=5)
+    assert_almost_equal(flmm.environmental_variance, 1.6317660354, decimal=5)
 
 def test_predict_1():
     random = np.random.RandomState(228)

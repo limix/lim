@@ -6,6 +6,7 @@ from numpy import zeros
 from numpy import isfinite
 from numpy import atleast_2d
 from numpy import all as all_
+from numpy import set_printoptions
 
 from limix_math.linalg import qs_decomposition
 
@@ -46,6 +47,9 @@ class FastLMM(Learnable, FuncData):
 
     def copy(self):
         o = FastLMM.__new__(FastLMM)
+        o._logistic = self._logistic.copy()
+        Learnable.__init__(o, Variables(logistic=o._logistic))
+        FuncData.__init__(o)
         o._flmmc = self._flmmc.copy()
         o._trans = self._trans
         return o
@@ -56,11 +60,21 @@ class FastLMM(Learnable, FuncData):
         return clip(x, 1e-5, 1-1e-5)
 
     @property
+    def heritability(self):
+        t = (self.fixed_effects_variance + self.genetic_variance
+             + self.environmental_variance)
+        return self.genetic_variance / t
+
+    @property
+    def fixed_effects_variance(self):
+        return self._flmmc.mean.var()
+
+    @property
     def genetic_variance(self):
         return self._flmmc.scale * (1 - self._flmmc.delta)
 
     @property
-    def noise_variance(self):
+    def environmental_variance(self):
         return self._flmmc.scale * self._flmmc.delta
 
     @property
@@ -90,3 +104,39 @@ class FastLMM(Learnable, FuncData):
         Cp = Xp.dot(self._X.T)
         Cpp = Xp.dot(Xp.T)
         return self._flmmc.predict(covariates, Cp, Cpp)
+
+    def __str__(self):
+        v = self.genetic_variance
+        e = self.environmental_variance
+        beta = self.beta
+        cvar = self.fixed_effects_variance
+        tvar = cvar + v + e
+        h2 = self.heritability
+
+        var_sym = unichr(0x3bd).encode('utf-8')
+        set_printoptions(precision=3, threshold=10)
+        s = """
+Phenotype:
+  y_i = o_i + u_i + e_i
+
+Definitions:
+  o: fixed-effects signal
+     M {b}.T
+  u: background signal
+     Normal(0, {v} * Kinship)
+  e: environmental signal
+     Normal(0, {e} * I)
+
+Log marginal likelihood: {lml}
+
+Statistics (latent space):
+  Total variance:         {tvar}     {vs}_o + {vs}_u + {vs}_e
+  Fixed-effects variance: {cvar}     {vs}_o
+  Heritability:           {h2}     {vs}_u / ({vs}_o + {vs}_u + {vs}_e)
+  """.format(v="%7.4f" % v, e="%7.4f" % e, b=beta,
+             tvar="%7.4f" % tvar, cvar="%7.4f" % cvar, h2="%7.4f" % h2,
+             vs=var_sym, lml="%9.6f" % self.lml())
+        set_printoptions(edgeitems=3, infstr='inf', linewidth=75, nanstr='nan',
+                         precision=8, suppress=False, threshold=1000,
+                         formatter=None)
+        return s

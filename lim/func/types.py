@@ -8,6 +8,9 @@ class Scalar(object):
         self._fixed = False
         self.raw = value
 
+    def copy(self):
+        return Scalar(self.raw)
+
     @property
     def size(self):
         return 1

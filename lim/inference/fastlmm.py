@@ -93,6 +93,29 @@ class FastLMM(object):
         return o
 
     @property
+    def covariates(self):
+        return self._covariates
+
+    @covariates.setter
+    def covariates(self, v):
+        self._covariates = v
+        d = v.shape[1]
+        self._beta = zeros(d)
+
+        self._b1 = zeros(d)
+        self._c1 = zeros((d, d))
+
+        self._b0 = zeros(d)
+        self._c0 = zeros((d, d))
+
+        self._oneTQ0 = v.T.dot(self._Q0)
+        self._oneTQ1 = v.T.dot(self._Q1)
+
+        self._valid_update = 0
+        self.__Q0tymD0 = None
+        self.__Q1tymD1 = None
+
+    @property
     def mean(self):
         return self._covariates.dot(self._beta)
 
