@@ -17,7 +17,7 @@ from ..func import Scalar
 from ..func import FuncData
 
 class FastLMM(Learnable, FuncData):
-    def __init__(self, y, X=None, QS=None):
+    def __init__(self, y, covariates, X=None, QS=None):
         self._logistic = Scalar(0.0)
         Learnable.__init__(self, Variables(logistic=self._logistic))
         FuncData.__init__(self)
@@ -32,14 +32,15 @@ class FastLMM(Learnable, FuncData):
             QS = qs_decomposition(X)
             self._X = X
 
-        self._flmmc = FastLMMCore(y, QS[0][0], QS[0][1], QS[1][0])
+        self._flmmc = FastLMMCore(y, covariates, QS[0][0], QS[0][1], QS[1][0])
 
         self._y = y
+        self._covariates = covariates
         self._QS = QS
 
+        self._beta = None
         self._genetic_variance = None
         self._noise_variance = None
-        self._offset = None
 
     def _delta(self):
         v = clip(self._logistic.value, -20, 20)
@@ -55,8 +56,12 @@ class FastLMM(Learnable, FuncData):
         return self._noise_variance
 
     @property
-    def offset(self):
-        return self._offset
+    def beta(self):
+        return self._beta
+
+    @property
+    def mean(self):
+        return self._flmmc.mean
 
     def learn(self):
         maximize_scalar(self)
@@ -64,14 +69,18 @@ class FastLMM(Learnable, FuncData):
         delta = self._delta()
         self._flmmc.delta = delta
 
-        offset = self._flmmc.offset
+        beta = self._flmmc.beta
         scale = self._flmmc.scale
 
         self._genetic_variance = scale * (1 - delta)
         self._noise_variance = scale * delta
-        self._offset = offset
+        self._beta = beta
 
     def value(self):
+        self._flmmc.delta = self._delta()
+        return self._flmmc.lml()
+
+    def lml(self):
         self._flmmc.delta = self._delta()
         return self._flmmc.lml()
 

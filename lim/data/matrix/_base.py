@@ -57,7 +57,6 @@
 #         return self._create_array_recurse([])
 #
 #     def __eq__(self, rhs):
-#         import ipdb; ipdb.set_trace()
 #         lia = self.get_axis_values(self.indexed_axis)
 #         ria = self.get_axis_values(rhs.indexed_axis)
 #

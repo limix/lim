@@ -3,6 +3,7 @@ from __future__ import division
 from numpy.random import RandomState
 from numpy.testing import assert_almost_equal
 from numpy import sqrt
+from numpy import ones
 
 from limix_math.linalg import qs_decomposition
 
@@ -48,7 +49,7 @@ def test_optimization():
     gp.learn()
     delta = cov_right.scale / (cov_left.scale + cov_right.scale)
     QS = qs_decomposition(DesignMatrixTrans(X).transform(X))
-    flmm = FastLMM(y, QS[0][0], QS[0][1], QS[1][0])
+    flmm = FastLMM(y, ones((N, 1)), QS[0][0], QS[0][1], QS[1][0])
     flmm.delta = delta
     assert_almost_equal(gp.lml(), flmm.lml())
-    assert_almost_equal(mean.offset, flmm.offset, decimal=6)
+    assert_almost_equal(mean.offset, flmm.beta[0], decimal=6)

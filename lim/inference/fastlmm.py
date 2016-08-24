@@ -4,14 +4,15 @@ from numpy import dot
 from numpy import empty
 from numpy import log
 from numpy import var
+from numpy import zeros
 
 from scipy.stats import multivariate_normal
 
 from limix_math.linalg import sum2diag
+from limix_math.linalg import solve
 
 class FastLMM(object):
-    def __init__(self, y, Q0, Q1, S0):
-
+    def __init__(self, y, covariates, Q0, Q1, S0):
         if var(y) < 1e-8:
             raise ValueError("The phenotype variance is too low: %e." % var(y))
 
@@ -23,8 +24,9 @@ class FastLMM(object):
         self._m = empty(self._n)
         self._Q0 = Q0
         self._Q1 = Q1
+        self._covariates = covariates
 
-        self._offset = 0.0
+        self._beta = zeros(covariates.shape[1])
         self._scale = 1.0
         self._delta = 0.5
         self._lml = 0.0
@@ -43,38 +45,50 @@ class FastLMM(object):
         self._yTQ1 = dot(y.T, Q1)
         self._yTQ1_2x = self._yTQ1 ** 2
 
-        self._oneTQ0 = Q0.sum(0)
-        self._oneTQ0_2x = self._oneTQ0 ** 2
+        # m = self.mean
 
-        self._oneTQ1 = Q1.sum(0)
-        self._oneTQ1_2x = self._oneTQ1 ** 2
+        # self._oneTQ0 = Q0.sum(0)
+        # self._oneTQ0_2x = self._oneTQ0 ** 2
+        self._oneTQ0 = covariates.T.dot(Q0)
+        # self._oneTQ0_2x = self._oneTQ0 ** 2
 
-        self._yTQ0_oneTQ0 = self._yTQ0 * self._oneTQ0
-        self._yTQ1_oneTQ1 = self._yTQ1 * self._oneTQ1
+        # self._oneTQ1 = Q1.sum(0)
+        # self._oneTQ1_2x = self._oneTQ1 ** 2
+        self._oneTQ1 = covariates.T.dot(Q1)
+        # self._oneTQ1_2x = self._oneTQ1 ** 2
+
+        # self._yTQ0_oneTQ0 = self._yTQ0 * self._oneTQ0
+        # self._yTQ1_oneTQ1 = self._yTQ1 * self._oneTQ1
 
         self._valid_update = 0
         self.__Q0tymD0 = None
         self.__Q1tymD1 = None
 
+    @property
+    def mean(self):
+        return self._covariates.dot(self._beta)
+
     def _Q0tymD0(self):
+        assert False
         if self.__Q0tymD0 is None:
-            Q0tym = self._yTQ0 - self._oneTQ0 * self._offset
+            Q0tym = self._yTQ0 - self._oneTQ0 * self._beta
             self.__Q0tymD0 = Q0tym / self._diag0
         return self.__Q0tymD0
 
     def _Q1tymD1(self):
+        assert False
         if self.__Q1tymD1 is None:
-            Q1tym = self._yTQ1 - self._oneTQ1 * self._offset
+            Q1tym = self._yTQ1 - self._oneTQ1 * self._beta
             self.__Q1tymD1 = Q1tym / self._diag1
         return self.__Q1tymD1
 
     @property
-    def scale(self):
-        return self._scale
+    def beta(self):
+        return self._beta
 
     @property
-    def offset(self):
-        return self._offset
+    def scale(self):
+        return self._scale
 
     @property
     def delta(self):
@@ -91,30 +105,34 @@ class FastLMM(object):
         yTQ0_2x = self._yTQ0_2x
         yTQ1_2x = self._yTQ1_2x
 
-        oneTQ0_2x = self._oneTQ0_2x
-        oneTQ1_2x = self._oneTQ1_2x
+        # oneTQ0_2x = self._oneTQ0_2x
+        # oneTQ1_2x = self._oneTQ1_2x
 
-        yTQ0_oneTQ0 = self._yTQ0_oneTQ0
-        yTQ1_oneTQ1 = self._yTQ1_oneTQ1
+        yTQ0_oneTQ0 = self._yTQ0_oneTQ0 = self._yTQ0 * self._oneTQ0
+        yTQ1_oneTQ1 = self._yTQ1_oneTQ1 = self._yTQ1 * self._oneTQ1
+
+
 
         self.a1 = yTQ1_2x.sum() / self._diag1
-        self.b1 = yTQ1_oneTQ1.sum() / self._diag1
-        self.c1 = oneTQ1_2x.sum() / self._diag1
+        # self.b1 = yTQ1_oneTQ1.sum() / self._diag1
+        self.b1 = (self._yTQ1 / self._diag1).dot(self._oneTQ1.T)
+        self.c1 = (self._oneTQ1 / self._diag1).dot(self._oneTQ1.T)
 
         self.a0 = (yTQ0_2x / self._diag0).sum()
-        self.b0 = (yTQ0_oneTQ0 / self._diag0).sum()
-        self.c0 = (oneTQ0_2x / self._diag0).sum()
+        # self.b0 = (yTQ0_oneTQ0 / self._diag0).sum()
+        self.b0 = (self._yTQ0 / self._diag0).dot(self._oneTQ0.T)
+        self.c0 = (self._oneTQ0 / self._diag0).dot(self._oneTQ0.T)
 
-    def _update_offset(self):
+    def _update_fixed_effects(self):
         nominator = self.b1 - self.b0
         denominator = self.c1 - self.c0
-        self._offset = nominator / denominator
+        self._beta = solve(denominator, nominator)
 
     def _update_scale(self):
-        o = self._offset
-        o2 = o**2
-        self._scale = (self.a1 - 2 * self.b1 * o + self.c1 * o2 +
-                      self.a0 - 2 * self.b0 * o + self.c0 * o2) / self._n
+        b = self._beta
+        p0 = self.a1 - 2 * self.b1.dot(b) + b.dot(self.c1.dot(b))
+        p1 = self.a0 - 2 * self.b0.dot(b) + b.dot(self.c0).dot(b)
+        self._scale = (p0 + p1) / self._n
 
     def _update_diags(self):
         self._diag0[:] = self._S0
@@ -128,7 +146,7 @@ class FastLMM(object):
 
         self._update_diags()
         self._update_joints()
-        self._update_offset()
+        self._update_fixed_effects()
         self._update_scale()
 
         self._valid_update = 1
