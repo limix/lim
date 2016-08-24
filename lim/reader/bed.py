@@ -4,6 +4,7 @@ from .cplink import read_item
 from .cplink import read_row_slice
 from .cplink import read_col_slice
 from .cplink import read
+from .cplink import read_mslice
 
 from .map import read_map
 
@@ -86,7 +87,7 @@ class BedPath(MatrixInterface):
         if len(args) == 0:
             if 'index_list' in kwargs:
                 mslice = merge_mslices(kwargs['index_list'])
-                return read(self._filepath, self.shape)
+                return read_mslice(self._filepath, self.shape, mslice)
             else:
                 return read(self._filepath, self.shape)
         raise NotImplementedError

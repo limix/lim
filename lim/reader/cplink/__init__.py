@@ -113,6 +113,28 @@ def read(filepath, shape):
 
     return _normalize(G)
 
+def read_mslice(filepath, shape, mslice):
+    # ESSA PORRA NAO FOI IMPLEMENTADA AINDA
+    # import pytest; pytest.set_trace()
+    from . import bed_ffi
+    from numpy import empty
+    from numpy import nan
+
+    fp = bed_ffi.ffi.new("char[]", filepath)
+    nrows = (rslice.stop - rslice.start) // rslice.step
+    ncols = (cslice.stop - cslice.start) // cslice.step
+    G = empty((nrows, ncols), dtype=int)
+    pointer = bed_ffi.ffi.cast("long*", G.ctypes.data)
+
+    bed_ffi.lib.bed_read_slice(fp, shape[0], shape[1], c,
+                                   start, stop, step, pointer)
+
+    # bed_read_slice(char* filepath, int nrows, int ncols,
+    #            int r_start, int r_stop, int r_step,
+    #            int c_start, int c_stop, int c_step,
+    #            long* matrix)
+    return G
+
 def _bed_major(filepath):
     from . import bed_ffi
 

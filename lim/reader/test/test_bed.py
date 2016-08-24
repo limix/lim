@@ -16,9 +16,14 @@ def test_read():
     root = dirname(realpath(__file__))
     root = join(root, 'data')
 
+
     (stable, mtable, G) = lim.reader.bed(join(root, 'plink', 'test'))
 
     assert_array_equal(G.shape, (6, 3))
+    # import pytest
+    # pytest.set_trace()
+    # g = G[0,:]
+    # print(g)
     # assert_array_equal(G[0,:], array([ 0.,  2.,  2.]))
     # assert_array_equal(G[1,:], array([  2.,  nan,   1.]))
     # assert_array_equal(G[2,:], array([ nan,   1.,   1.]))
