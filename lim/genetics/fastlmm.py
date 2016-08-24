@@ -2,6 +2,7 @@ from __future__ import division
 
 from numpy import exp
 from numpy import clip
+from numpy import zeros
 from numpy import isfinite
 from numpy import atleast_2d
 from numpy import all as all_
@@ -26,6 +27,7 @@ class FastLMM(Learnable, FuncData):
         if not all_(isfinite(y)):
             raise ValueError("There are non-finite values in the phenotype.")
 
+        self._trans = None
         if QS is None:
             self._trans = DesignMatrixTrans(X)
             X = self._trans.transform(X)
@@ -34,13 +36,19 @@ class FastLMM(Learnable, FuncData):
 
         self._flmmc = FastLMMCore(y, covariates, QS[0][0], QS[0][1], QS[1][0])
 
-        self._y = y
-        self._covariates = covariates
-        self._QS = QS
+    @property
+    def covariates(self):
+        return self._flmmc.covariates
 
-        self._beta = None
-        self._genetic_variance = None
-        self._noise_variance = None
+    @covariates.setter
+    def covariates(self, v):
+        self._flmmc.covariates = v
+
+    def copy(self):
+        o = FastLMM.__new__(FastLMM)
+        o._flmmc = self._flmmc.copy()
+        o._trans = self._trans
+        return o
 
     def _delta(self):
         v = clip(self._logistic.value, -20, 20)
@@ -49,15 +57,15 @@ class FastLMM(Learnable, FuncData):
 
     @property
     def genetic_variance(self):
-        return self._genetic_variance
+        return self._flmmc.scale * (1 - self._flmmc.delta)
 
     @property
     def noise_variance(self):
-        return self._noise_variance
+        return self._flmmc.scale * self._flmmc.delta
 
     @property
     def beta(self):
-        return self._beta
+        return self._flmmc.beta
 
     @property
     def mean(self):
@@ -65,16 +73,7 @@ class FastLMM(Learnable, FuncData):
 
     def learn(self):
         maximize_scalar(self)
-
-        delta = self._delta()
-        self._flmmc.delta = delta
-
-        beta = self._flmmc.beta
-        scale = self._flmmc.scale
-
-        self._genetic_variance = scale * (1 - delta)
-        self._noise_variance = scale * delta
-        self._beta = beta
+        self._flmmc.delta = self._delta()
 
     def value(self):
         self._flmmc.delta = self._delta()

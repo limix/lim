@@ -65,6 +65,7 @@ class LRT(object):
         covariates = self._covariates
 
         lml_alt = []
+        import ipdb; ipdb.set_trace()
         for x in X:
             flmm = self._flmm.copy()
             flmm.covariates = x

@@ -21,23 +21,23 @@ class FastLMM(object):
         self._S0 = S0
         self._diag0 = S0 * 0.5 + 0.5
         self._diag1 = 0.5
-        self._m = empty(self._n)
         self._Q0 = Q0
         self._Q1 = Q1
         self._covariates = covariates
 
-        self._beta = zeros(covariates.shape[1])
+        d = covariates.shape[1]
+        self._beta = zeros(d)
         self._scale = 1.0
         self._delta = 0.5
         self._lml = 0.0
 
-        self.a1 = 0.0
-        self.b1 = 0.0
-        self.c1 = 0.0
+        self._a1 = 0.0
+        self._b1 = zeros(d)
+        self._c1 = zeros((d, d))
 
-        self.a0 = 0.0
-        self.b0 = 0.0
-        self.c0 = 0.0
+        self._a0 = 0.0
+        self._b0 = zeros(d)
+        self._c0 = zeros((d, d))
 
         self._yTQ0 = dot(y.T, Q0)
         self._yTQ0_2x = self._yTQ0 ** 2
@@ -45,24 +45,52 @@ class FastLMM(object):
         self._yTQ1 = dot(y.T, Q1)
         self._yTQ1_2x = self._yTQ1 ** 2
 
-        # m = self.mean
-
-        # self._oneTQ0 = Q0.sum(0)
-        # self._oneTQ0_2x = self._oneTQ0 ** 2
         self._oneTQ0 = covariates.T.dot(Q0)
-        # self._oneTQ0_2x = self._oneTQ0 ** 2
-
-        # self._oneTQ1 = Q1.sum(0)
-        # self._oneTQ1_2x = self._oneTQ1 ** 2
         self._oneTQ1 = covariates.T.dot(Q1)
-        # self._oneTQ1_2x = self._oneTQ1 ** 2
-
-        # self._yTQ0_oneTQ0 = self._yTQ0 * self._oneTQ0
-        # self._yTQ1_oneTQ1 = self._yTQ1 * self._oneTQ1
 
         self._valid_update = 0
         self.__Q0tymD0 = None
         self.__Q1tymD1 = None
+
+    def copy(self):
+        o = FastLMM.__new__(FastLMM)
+        o._n = self._n
+        o._p = self._p
+        o._S0 = self._S0
+        o._diag0 = self._diag0.copy()
+        o._diag1 = self._diag1
+        o._Q0 = self._Q0
+        o._Q1 = self._Q1
+        o._covariates = self._covariates
+
+        o._beta = self._beta.copy()
+        o._scale = self._scale
+        o._delta = self._delta
+        o._lml = self._lml
+
+        o._a1 = self._a1
+        o._b1 = self._b1.copy()
+        o._c1 = self._c1.copy()
+
+        o._a0 = self._a0
+        o._b0 = self._b0.copy()
+        o._c0 = self._c0.copy()
+
+        o._yTQ0 = self._yTQ0
+        o._yTQ0_2x = self._yTQ0_2x
+
+        o._yTQ1 = self._yTQ1
+        o._yTQ1_2x = self._yTQ1_2x
+
+        o._oneTQ0 = self._oneTQ0
+        o._oneTQ1 = self._oneTQ1
+
+        o._valid_update = self._valid_update
+        from copy import copy
+        o.__Q0tymD0 = copy(self.__Q0tymD0)
+        o.__Q1tymD1 = copy(self.__Q1tymD1)
+
+        return o
 
     @property
     def mean(self):
@@ -103,33 +131,26 @@ class FastLMM(object):
         yTQ0_2x = self._yTQ0_2x
         yTQ1_2x = self._yTQ1_2x
 
-        # oneTQ0_2x = self._oneTQ0_2x
-        # oneTQ1_2x = self._oneTQ1_2x
-
         yTQ0_oneTQ0 = self._yTQ0_oneTQ0 = self._yTQ0 * self._oneTQ0
         yTQ1_oneTQ1 = self._yTQ1_oneTQ1 = self._yTQ1 * self._oneTQ1
 
+        self._a1 = yTQ1_2x.sum() / self._diag1
+        self._b1[:] = (self._yTQ1 / self._diag1).dot(self._oneTQ1.T)
+        self._c1[:] = (self._oneTQ1 / self._diag1).dot(self._oneTQ1.T)
 
-
-        self.a1 = yTQ1_2x.sum() / self._diag1
-        # self.b1 = yTQ1_oneTQ1.sum() / self._diag1
-        self.b1 = (self._yTQ1 / self._diag1).dot(self._oneTQ1.T)
-        self.c1 = (self._oneTQ1 / self._diag1).dot(self._oneTQ1.T)
-
-        self.a0 = (yTQ0_2x / self._diag0).sum()
-        # self.b0 = (yTQ0_oneTQ0 / self._diag0).sum()
-        self.b0 = (self._yTQ0 / self._diag0).dot(self._oneTQ0.T)
-        self.c0 = (self._oneTQ0 / self._diag0).dot(self._oneTQ0.T)
+        self._a0 = (yTQ0_2x / self._diag0).sum()
+        self._b0[:] = (self._yTQ0 / self._diag0).dot(self._oneTQ0.T)
+        self._c0[:] = (self._oneTQ0 / self._diag0).dot(self._oneTQ0.T)
 
     def _update_fixed_effects(self):
-        nominator = self.b1 - self.b0
-        denominator = self.c1 - self.c0
+        nominator = self._b1 - self._b0
+        denominator = self._c1 - self._c0
         self._beta = solve(denominator, nominator)
 
     def _update_scale(self):
         b = self._beta
-        p0 = self.a1 - 2 * self.b1.dot(b) + b.dot(self.c1.dot(b))
-        p1 = self.a0 - 2 * self.b0.dot(b) + b.dot(self.c0).dot(b)
+        p0 = self._a1 - 2 * self._b1.dot(b) + b.dot(self._c1.dot(b))
+        p1 = self._a0 - 2 * self._b0.dot(b) + b.dot(self._c0).dot(b)
         self._scale = (p0 + p1) / self._n
 
     def _update_diags(self):
