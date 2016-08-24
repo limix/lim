@@ -16,7 +16,7 @@ def test_adding_columns():
     t = Table()
 
     labels =['sample01', 'sample02', 'sample03']
-    values = [34.3, 2.3, 103.4, -030.]
+    values = [34.3, 2.3, 103.4]
     c = Column('height', labels, values)
     t.add(c)
 
@@ -42,7 +42,7 @@ def test_column_indexing():
     t = Table()
 
     labels =['sample01', 'sample02', 'sample03']
-    values = [34.3, 2.3, 103.4, -030.]
+    values = [34.3, 2.3, 103.4]
     c = Column('height', labels, values)
     t.add(c)
 
@@ -64,7 +64,7 @@ def test_get_table_by_columns():
     t = Table()
 
     labels =['sample01', 'sample02', 'sample03']
-    values = [34.3, 2.3, 103.4, -030.]
+    values = [34.3, 2.3, 103.4]
     c = Column('height', labels, values)
     t.add(c)
 

@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 
 PKG_NAME = 'lim'
-VERSION  = '0.0.5'
+VERSION  = '0.0.6.dev1'
 
 try:
     from distutils.command.bdist_conda import CondaDistribution
@@ -47,8 +47,10 @@ def setup_package():
     os.chdir(src_path)
     sys.path.insert(0, src_path)
 
-    install_requires = ['limix_math>=0.1.12', 'cffi>=1.0.0', 'bidict']
-    setup_requires = ['cffi>=1.0.0']
+    install_requires = ['limix_math>=0.1.12', 'cffi>=1.0.0', 'bidict',
+                        'pytest']
+    setup_requires = ['cffi>=1.0.0', 'pytest-runner']
+    tests_require = ['pytest']
 
     metadata = dict(
         name=PKG_NAME,
@@ -57,11 +59,11 @@ def setup_package():
         maintainer_email = "horta@ebi.ac.uk",
         license="BSD",
         url='http://pmbio.github.io/limix/',
-        test_suite='setup.get_test_suite',
         packages=find_packages(),
         zip_safe=True,
         install_requires=install_requires,
         setup_requires=setup_requires,
+        tests_require=tests_require,
         cffi_modules=["lim/reader/cplink/bed.py:ffi"],
     )
 

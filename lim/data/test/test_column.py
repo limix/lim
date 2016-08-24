@@ -6,7 +6,7 @@ from numpy.testing import assert_equal
 
 def test_creation():
     labels =['sample01', 'sample02', 'sample03']
-    values = [34.3, 2.3, 103.4, -030.]
+    values = [34.3, 2.3, 103.4]
     c = Column('sample_id', labels, values)
 
     assert_array_equal(c['sample03'], [103.4])
