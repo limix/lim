@@ -31,15 +31,12 @@ class MatrixView(MatrixInterface):
         return self._ref.dtype
 
     def __repr__(self):
-        import ipdb; ipdb.set_trace()
         return repr(self.__array__())
 
     def __str__(self):
-        import ipdb; ipdb.set_trace()
         return bytes(self.__array__())
 
     def __array__(self, *args, **kwargs):
-        import ipdb; ipdb.set_trace()
         kwargs = dict(kwargs)
 
         if 'index_list' not in kwargs:

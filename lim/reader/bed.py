@@ -3,7 +3,6 @@ from pandas import read_csv
 from .cplink import read_item
 from .cplink import read_row_slice
 from .cplink import read_col_slice
-from .cplink import read_slice
 from .cplink import read
 
 from .map import read_map
@@ -84,7 +83,6 @@ class BedPath(MatrixInterface):
         return bytes(self.__array__())
 
     def __array__(self, *args, **kwargs):
-        import ipdb; ipdb.set_trace()
         if len(args) == 0:
             if 'index_list' in kwargs:
                 mslice = merge_mslices(kwargs['index_list'])
