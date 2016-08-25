@@ -21,3 +21,5 @@ def test():
         os.chdir(old_path)
 
     return return_code
+
+__all__ = ['genetics']

@@ -1,3 +1,5 @@
+"""Quantitative trait locus discovery."""
+
 from __future__ import absolute_import
 import sys
 from tabulate import tabulate
@@ -21,6 +23,8 @@ from progressbar import ProgressBar
 from progressbar import Percentage
 
 import scipy.stats as st
+
+__all__ = ['normal_scan']
 
 
 def _get_offset_covariate(covariates, n):
@@ -189,10 +193,10 @@ class InputInfo(object):
 
 
 def normal_scan(y, X, G=None, K=None, covariates=None, verbose=False):
-    """Perform association scan between genetic markers and phenotype.
+    """Association between genetic markers and phenotype for continuous traits.
 
-    Matrix `X` shall contain the genetic markers (e.g., number of minor alleles)
-    with rows and columns representing samples and genetic markers,
+    Matrix `X` shall contain the genetic markers (e.g., number of minor
+    alleles) with rows and columns representing samples and genetic markers,
     respectively.
 
     The user must specify only one of the parameters `G` and `K` for defining
@@ -203,15 +207,17 @@ def normal_scan(y, X, G=None, K=None, covariates=None, verbose=False):
     the number of genetic markers used for Kinship estimation.
 
     Args:
-        y (numpy.ndarray): Phenotype. Dimension (:math:`N\\times 0`).
+        y          (numpy.ndarray): Phenotype. Dimension (:math:`N\\times 0`).
         X          (numpy.ndarray): Candidate genetic markers (or any other
                                     type of explanatory variable) whose
-                                    association with the phenotype will be tested. Dimension
-                                    (:math:`N\\times P_c`).
-        G          (numpy.ndarray): Genetic markers matrix used internally for kinship
-                                    estimation. Dimension (:math:`N\\times P_b`).
-        K          (numpy.ndarray): Kinship matrix. Dimension (:math:`N\\times N`).
-        covariates  (numpy.ndarray): Covariates. Default is an offset.
+                                    association with the phenotype will be
+                                    tested. Dimension (:math:`N\\times P_c`).
+        G          (numpy.ndarray): Genetic markers matrix used internally for
+                                    kinship estimation. Dimension
+                                    (:math:`N\\times P_b`).
+        K          (numpy.ndarray): Kinship matrix. Dimension
+                                    (:math:`N\\times N`).
+        covariates (numpy.ndarray): Covariates. Default is an offset.
                                     Dimension (:math:`N\\times S`).
     Returns:
         tuple: The estimated p-values and additional information, respectively.
