@@ -8,6 +8,7 @@ VERSION = '0.0.6.dev3'
 
 
 def make_sure_install(package):
+    import pip
     try:
         __import__(package)
     except ImportError:
