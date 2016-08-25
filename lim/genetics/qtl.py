@@ -11,6 +11,7 @@ from numpy import nan
 from limix_math.linalg import qs_decomposition
 from limix_math.linalg import _QS_from_K_split
 from ..tool.kinship import gower_normalization
+from ..tool.normalize import stdnorm
 from .fastlmm import FastLMM
 
 import scipy.stats as st
@@ -169,10 +170,7 @@ def normal_scan(y, X, G=None, K=None, covariates=None):
     if G is not None:
         logger.info('Genetic markers normalization.')
         G = asarray(G, dtype=float)
-        G = G - G.mean(0)
-        s = G.std(0)
-        ok = s > 0.
-        G[:, ok] /= s[ok]
+        G = stdnorm(G)
         G /= sqrt(G.shape[1])
         info['G'] = G
 
@@ -186,10 +184,7 @@ def normal_scan(y, X, G=None, K=None, covariates=None):
         QS = _QS_from_K_split(K)
 
     logger.info('Genetic marker candidates normalization.')
-    X = X - X.mean(0)
-    s = X.std(0)
-    ok = s > 0.
-    X[:, ok] /= s[ok]
+    X = stdnorm(X)
     info['X'] = X
 
     Q0, Q1 = QS[0]
