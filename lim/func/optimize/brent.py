@@ -1,18 +1,27 @@
-import numpy as np
+import sys
+
+from numpy import asarray
+
 from scipy.optimize import brent
 
 from ..negative import negative_function
 
-def minimize(function):
+
+def minimize(function, verbose=False):
 
     def func(x):
-        x = np.asarray(x).ravel()
+        if verbose:
+            sys.stdout.write('.')
+        x = asarray(x).ravel()
         function.variables().from_flat(x)
         return function.value()
 
     x = brent(func)
-    function.variables().from_flat(np.asarray(x).ravel())
+    if verbose:
+        print("")
+    function.variables().from_flat(asarray(x).ravel())
 
-def maximize(function):
+
+def maximize(function, verbose=False):
     function = negative_function(function)
-    return minimize(function)
+    return minimize(function, verbose=verbose)

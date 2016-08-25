@@ -18,7 +18,9 @@ from ..func import Variables
 from ..func import Scalar
 from ..func import FuncData
 
+
 class FastLMM(Learnable, FuncData):
+
     def __init__(self, y, covariates, X=None, QS=None):
         self._logistic = Scalar(0.0)
         Learnable.__init__(self, Variables(logistic=self._logistic))
@@ -57,7 +59,7 @@ class FastLMM(Learnable, FuncData):
     def _delta(self):
         v = clip(self._logistic.value, -20, 20)
         x = 1 / (1 + exp(-v))
-        return clip(x, 1e-5, 1-1e-5)
+        return clip(x, 1e-5, 1 - 1e-5)
 
     @property
     def heritability(self):
@@ -85,8 +87,8 @@ class FastLMM(Learnable, FuncData):
     def mean(self):
         return self._flmmc.mean
 
-    def learn(self):
-        maximize_scalar(self)
+    def learn(self, verbose=False):
+        maximize_scalar(self, verbose)
         self._flmmc.delta = self._delta()
 
     def value(self):
@@ -115,27 +117,25 @@ class FastLMM(Learnable, FuncData):
 
         var_sym = unichr(0x3bd).encode('utf-8')
         set_printoptions(precision=3, threshold=10)
-        s = """
-Phenotype:
+        s = """Phenotype:
   y_i = o_i + u_i + e_i
 
 Definitions:
-  o: fixed-effects signal
-     M {b}.T
-  u: background signal
-     Normal(0, {v} * Kinship)
-  e: environmental signal
-     Normal(0, {e} * I)
+  M: covariates
+  o: fixed-effects signal = M {b}.T
+  u: background signal    ~ Normal(0, {v} * Kinship)
+  e: environmental signal ~ Normal(0, {e} * I)
 
 Log marginal likelihood: {lml}
 
 Statistics (latent space):
   Total variance:         {tvar}     {vs}_o + {vs}_u + {vs}_e
-  Fixed-effects variance: {cvar}     {vs}_o
+  Fixed-effect variances: {cvar}     {vs}_o
   Heritability:           {h2}     {vs}_u / ({vs}_o + {vs}_u + {vs}_e)
-  """.format(v="%7.4f" % v, e="%7.4f" % e, b=beta,
-             tvar="%7.4f" % tvar, cvar="%7.4f" % cvar, h2="%7.4f" % h2,
-             vs=var_sym, lml="%9.6f" % self.lml())
+where {vs}_x is the variance of signal x"""\
+        .format(v="%7.4f" % v, e="%7.4f" % e, b=beta,
+                tvar="%7.4f" % tvar, cvar="%7.4f" % cvar, h2="%7.4f" % h2,
+                vs=var_sym, lml="%9.6f" % self.lml())
         set_printoptions(edgeitems=3, infstr='inf', linewidth=75, nanstr='nan',
                          precision=8, suppress=False, threshold=1000,
                          formatter=None)
