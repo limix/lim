@@ -1,2 +1,2 @@
-include lim/reader/cplink/bed.c
-include lim/reader/cplink/bed.h
+recursive-include lim *.py *.c *.h
+include *.py *.txt *.md *.cfg

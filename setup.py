@@ -4,7 +4,7 @@ import sys
 from setuptools import setup, find_packages
 
 PKG_NAME = 'lim'
-VERSION  = '0.0.6.dev1'
+VERSION = '0.0.6.dev2'
 
 try:
     from distutils.command.bdist_conda import CondaDistribution
@@ -25,7 +25,7 @@ else:
 try:
     import scipy
 except ImportError:
-    print("Error: scipy package couldn't be found."+
+    print("Error: scipy package couldn't be found." +
           " Please, install it so I can proceed.")
     sys.exit(1)
 else:
@@ -47,7 +47,7 @@ def setup_package():
     os.chdir(src_path)
     sys.path.insert(0, src_path)
 
-    install_requires = ['limix_math>=0.1.12', 'cffi>=1.0.0', 'bidict',
+    install_requires = ['limix_math>=0.2.1', 'cffi>=1.0.0', 'bidict',
                         'pytest']
     setup_requires = ['cffi>=1.0.0', 'pytest-runner']
     tests_require = ['pytest']
@@ -56,7 +56,7 @@ def setup_package():
         name=PKG_NAME,
         version=VERSION,
         maintainer="Limix Developers",
-        maintainer_email = "horta@ebi.ac.uk",
+        maintainer_email="horta@ebi.ac.uk",
         license="BSD",
         url='http://pmbio.github.io/limix/',
         packages=find_packages(),
