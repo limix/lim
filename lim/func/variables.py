@@ -1,11 +1,13 @@
 from numpy import concatenate
 
+
 class Variables(dict):
+
     def __init__(self, *args, **kw):
         super(Variables, self).__init__(*args, **kw)
 
     def new(self):
-        return Variables({name:None for name in self.names()})
+        return Variables({name: None for name in self.names()})
 
     def flatten(self):
         names = sorted(self.names())
@@ -17,18 +19,18 @@ class Variables(dict):
         offset = 0
         for n in names:
             size = self[n].size
-            self[n].value = x[offset:offset+size]
+            self[n].value = x[offset:offset + size]
             offset += size
 
     def select(self, fixed):
         names = [n for n in self.names() if self[n].isfixed == fixed]
-        return Variables({n:self[n] for n in names})
+        return Variables({n: self[n] for n in names})
 
     def names(self):
         return sorted(super(Variables, self).keys())
 
-    def keys( self ):
-        msg  = "'Variables' object has no attribute 'keys'. "
+    def keys(self):
+        msg = "'Variables' object has no attribute 'keys'. "
         msg += "You might want to use attribute 'names' instead."
         raise AttributeError(msg)
 
@@ -54,11 +56,12 @@ class Variables(dict):
     def __repr__(self):
         return str(self)
 
+
 def merge_variables(variables_dict):
     variables = Variables()
 
-    for (prefix, vs) in variables_dict.iteritems():
-        for (name, value) in vs.iteritems():
+    for (prefix, vs) in iter(variables_dict.items()):
+        for (name, value) in iter(vs.items()):
             variables[prefix + '.' + name] = value
 
     return variables
