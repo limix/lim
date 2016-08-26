@@ -11,7 +11,9 @@ from scipy.stats import multivariate_normal
 from limix_math.linalg import sum2diag
 from limix_math.linalg import solve
 
+
 class FastLMM(object):
+
     def __init__(self, y, covariates, Q0, Q1, S0):
         if var(y) < 1e-8:
             raise ValueError("The phenotype variance is too low: %e." % var(y))
@@ -203,8 +205,8 @@ class FastLMM(object):
         p = self._p
         LOG2PI = 1.837877066409345339081937709124758839607238769531250
 
-        self._lml  = - n * LOG2PI - n - n * log(self._scale)
-        self._lml +=  - sum(log(self._diag0)) - p * log(self._diag1)
+        self._lml = - n * LOG2PI - n - n * log(self._scale)
+        self._lml += - sum(log(self._diag0)) - p * log(self._diag1)
         self._lml /= 2
         return self._lml
 
@@ -218,17 +220,19 @@ class FastLMM(object):
         CpQ1 = Cp.dot(self._Q1)
 
         m = covariates.dot(self.beta)
-        mean  = m + (1-delta) * CpQ0.dot(self._Q0tymD0())
-        mean += (1-delta) * CpQ1.dot(self._Q1tymD1())
+        mean = m + (1 - delta) * CpQ0.dot(self._Q0tymD0())
+        mean += (1 - delta) * CpQ1.dot(self._Q1tymD1())
 
-        cov = sum2diag(Cpp * (1-self.delta), self.delta)
-        cov -= (1-delta)**2 * CpQ0.dot((CpQ0 / diag0).T)
-        cov -= (1-delta)**2 * CpQ1.dot((CpQ1 / diag1).T)
+        cov = sum2diag(Cpp * (1 - self.delta), self.delta)
+        cov -= (1 - delta)**2 * CpQ0.dot((CpQ0 / diag0).T)
+        cov -= (1 - delta)**2 * CpQ1.dot((CpQ1 / diag1).T)
         cov *= self.scale
 
         return FastLMMPredictor(mean, cov)
 
+
 class FastLMMPredictor(object):
+
     def __init__(self, mean, cov):
         self._mean = mean
         self._cov = cov
