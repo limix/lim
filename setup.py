@@ -10,7 +10,6 @@ def make_sure_install(package):
         __import__(package)
     except ImportError:
         pip.main(['install', package, '--upgrade'])
-
 make_sure_install('build_capi')
 make_sure_install('ncephes')
 
@@ -21,14 +20,16 @@ def setup_package():
     os.chdir(src_path)
     sys.path.insert(0, src_path)
 
-    setup_requires = ['cffi>=1.6', 'pytest-runner']
-    install_requires = ['limix_math>=0.2.1', 'cffi>=1.6', 'bidict',
-                        'pytest', 'numpy>=1.9', 'scipy>=0.17', 'numba>=0.27']
+    setup_requires = ['cffi>=1.6', 'pytest-runner', 'build_capi>=0.0.4',
+                      'ncephes>=0.0.29']
+    install_requires = ['limix_math>=0.2.4', 'cffi>=1.6', 'bidict',
+                        'pytest', 'numpy>=1.9', 'scipy>=0.17', 'numba>=0.27',
+                        'ncephes>=0.0.29']
     tests_require = ['pytest']
 
     metadata = dict(
         name='lim',
-        version='0.0.7.dev1',
+        version='0.0.7',
         maintainer="Limix Developers",
         maintainer_email="horta@ebi.ac.uk",
         license="BSD",
