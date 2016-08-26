@@ -12,10 +12,6 @@ def make_sure_install(package):
         pip.main(['install', package, '--upgrade'])
 make_sure_install('build_capi')
 make_sure_install('ncephes')
-# make_sure_install('glob2')
-
-# from glob2 import glob
-# 'glob2>=0.4'
 
 
 def setup_package():
@@ -35,7 +31,7 @@ def setup_package():
 
     metadata = dict(
         name='lim',
-        version='0.0.9',
+        version='0.0.10',
         maintainer="Limix Developers",
         maintainer_email="horta@ebi.ac.uk",
         license="BSD",
@@ -46,7 +42,6 @@ def setup_package():
         setup_requires=setup_requires,
         tests_require=tests_require,
         cffi_modules=["lim/reader/cplink/bed.py:ffi"],
-        # data_files=glob('**/test_*.py'),
         include_package_data=True,
     )
 

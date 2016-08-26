@@ -20,8 +20,8 @@ from lim.genetics import DesignMatrixTrans
 
 def test_optimization():
     random = RandomState(9458)
-    N = 200
-    X = random.randn(N, 400)
+    N = 50
+    X = random.randn(N, 75)
     X -= X.mean(0)
     X /= X.std(0)
     X /= sqrt(X.shape[1])
