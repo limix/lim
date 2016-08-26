@@ -21,10 +21,10 @@ def setup_package():
     sys.path.insert(0, src_path)
 
     setup_requires = ['cffi>=1.6', 'pytest-runner', 'build_capi>=0.0.4',
-                      'ncephes>=0.0.29']
+                      'ncephes>=0.0.32']
     install_requires = ['limix_math>=0.2.4', 'cffi>=1.6', 'bidict',
                         'pytest', 'numpy>=1.9', 'scipy>=0.17', 'numba>=0.27',
-                        'ncephes>=0.0.29', 'tabulate>=0.7', 'pandas>=0.18',
+                        'ncephes>=0.0.32', 'tabulate>=0.7', 'pandas>=0.18',
                         'h5py>=2.6', 'progressbar2>=3.10', 'nose>=1.3']
     tests_require = ['pytest', 'tabulate>=0.7', 'pandas>=0.18', 'h5py>=2.6',
                      'progressbar2>=3.10', 'nose>=1.3']
