@@ -1,7 +1,7 @@
-from __future__ import division, print_function
 import os
 import sys
-from setuptools import setup, find_packages
+from setuptools import setup
+from setuptools import find_packages
 
 
 def make_sure_install(package):
@@ -12,6 +12,10 @@ def make_sure_install(package):
         pip.main(['install', package, '--upgrade'])
 make_sure_install('build_capi')
 make_sure_install('ncephes')
+# make_sure_install('glob2')
+
+# from glob2 import glob
+# 'glob2>=0.4'
 
 
 def setup_package():
@@ -31,17 +35,19 @@ def setup_package():
 
     metadata = dict(
         name='lim',
-        version='0.0.8',
+        version='0.0.9',
         maintainer="Limix Developers",
         maintainer_email="horta@ebi.ac.uk",
         license="BSD",
         url='http://pmbio.github.io/limix/',
         packages=find_packages(),
-        zip_safe=True,
+        zip_safe=False,
         install_requires=install_requires,
         setup_requires=setup_requires,
         tests_require=tests_require,
         cffi_modules=["lim/reader/cplink/bed.py:ffi"],
+        # data_files=glob('**/test_*.py'),
+        include_package_data=True,
     )
 
     try:
