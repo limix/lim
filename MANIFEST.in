@@ -1,2 +1,5 @@
+exclude .gitignore .travis.yml
+include LICENSE.txt
+include README.md
+include setup.cfg
 recursive-include lim *.py *.c *.h
-include *.py *.txt *.md *.cfg

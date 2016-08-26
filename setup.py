@@ -3,9 +3,6 @@ import os
 import sys
 from setuptools import setup, find_packages
 
-PKG_NAME = 'lim'
-VERSION = '0.0.6'
-
 
 def make_sure_install(package):
     import pip
@@ -18,29 +15,20 @@ make_sure_install('build_capi')
 make_sure_install('ncephes')
 
 
-try:
-    from distutils.command.bdist_conda import CondaDistribution
-except ImportError:
-    conda_present = False
-else:
-    conda_present = True
-
-
 def setup_package():
     src_path = os.path.dirname(os.path.abspath(sys.argv[0]))
     old_path = os.getcwd()
     os.chdir(src_path)
     sys.path.insert(0, src_path)
 
-    install_requires = ['limix_math>=0.2.1', 'cffi>=1.0.0', 'bidict',
+    setup_requires = ['cffi>=1.6', 'pytest-runner']
+    install_requires = ['limix_math>=0.2.1', 'cffi>=1.6', 'bidict',
                         'pytest', 'numpy>=1.9', 'scipy>=0.17', 'numba>=0.27']
-
-    setup_requires = ['cffi>=1.0.0', 'pytest-runner']
     tests_require = ['pytest']
 
     metadata = dict(
-        name=PKG_NAME,
-        version=VERSION,
+        name='lim',
+        version='0.0.7.dev1',
         maintainer="Limix Developers",
         maintainer_email="horta@ebi.ac.uk",
         license="BSD",
@@ -53,7 +41,11 @@ def setup_package():
         cffi_modules=["lim/reader/cplink/bed.py:ffi"],
     )
 
-    if conda_present:
+    try:
+        from distutils.command.bdist_conda import CondaDistribution
+    except ImportError:
+        pass
+    else:
         metadata['distclass'] = CondaDistribution
         metadata['conda_buildnum'] = 1
         metadata['conda_features'] = ['mkl']
