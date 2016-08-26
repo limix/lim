@@ -16,7 +16,7 @@ def test_read():
     root = join(root, 'data')
 
     (stable, mtable, G) = lim.reader.ped(join(root, 'plink', 'test'))
-    print G.shape
+    print(G.shape)
 
     # assert_string_equal(stable['family_id']['1_1'], '1')
     # assert_string_equal(stable['family_id']['2_1'], '2')
