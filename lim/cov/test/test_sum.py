@@ -1,9 +1,10 @@
 import numpy as np
 import numpy.testing as npt
 
-from ..sum import SumCov
-from ..linear import LinearCov
-from ...func import check_grad
+from lim.cov.sum import SumCov
+from lim.cov.linear import LinearCov
+from lim.func import check_grad
+
 
 def test_value():
     random = np.random.RandomState(0)
@@ -18,8 +19,9 @@ def test_value():
 
     cov = SumCov([cov_left, cov_right])
     K = cov.data('learn').value()
-    npt.assert_almost_equal(K[0,0], 37.95568923)
-    npt.assert_almost_equal(K[3,1], 4.53034295)
+    npt.assert_almost_equal(K[0, 0], 37.95568923)
+    npt.assert_almost_equal(K[3, 1], 4.53034295)
+
 
 def test_gradient():
     random = np.random.RandomState(0)

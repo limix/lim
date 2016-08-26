@@ -3,8 +3,8 @@ from pkg_resources import get_distribution
 
 __version__ = get_distribution('lim').version
 
-# from . import reader
 # from .data import create_data
+from . import reader
 from . import genetics
 
 
@@ -22,4 +22,4 @@ def test():
 
     return return_code
 
-__all__ = ['genetics']
+__all__ = ['genetics', 'reader']

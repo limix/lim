@@ -4,14 +4,15 @@ import numpy as np
 from numpy import ones
 from numpy.testing import assert_almost_equal
 
-from ..fastlmm import FastLMM
-from ...util.fruits import Apples
-from ...cov import LinearCov
-from ...cov import EyeCov
-from ...cov import SumCov
-from ...mean import OffsetMean
-from ...random import RegGPSampler
-from ...random import FastLMMSampler
+from lim.genetics.fastlmm import FastLMM
+from lim.util.fruits import Apples
+from lim.cov import LinearCov
+from lim.cov import EyeCov
+from lim.cov import SumCov
+from lim.mean import OffsetMean
+from lim.random import RegGPSampler
+from lim.random import FastLMMSampler
+
 
 def test_learn():
     random = np.random.RandomState(9458)
@@ -45,6 +46,7 @@ def test_learn():
     assert_almost_equal(flmm.genetic_variance, 1.2979613599, decimal=5)
     assert_almost_equal(flmm.environmental_variance, 1.6317660354, decimal=5)
 
+
 def test_predict_1():
     random = np.random.RandomState(228)
     N = 800
@@ -60,6 +62,7 @@ def test_predict_1():
     assert_almost_equal(flmm.predict(ones((N, 1)), X).logpdf(y),
                         -1092.1273501778442, decimal=4)
 
+
 def test_predict_2():
     random = np.random.RandomState(228)
     N = 200
@@ -72,7 +75,7 @@ def test_predict_2():
 
     flmm = FastLMM(y, ones((N, 1)), X)
     flmm.learn()
-    p = flmm.predict(ones((N, 1))[5,:], X[5,:])
+    p = flmm.predict(ones((N, 1))[5, :], X[5, :])
     y5 = y[5]
     y6 = y[6]
     assert_almost_equal(p.logpdf(y5), -1.28820823178)

@@ -1,8 +1,9 @@
 import numpy as np
 import numpy.testing as npt
 
-from ...mean import OffsetMean
-from ...cov import LinearCov
+from lim.mean import OffsetMean
+from lim.cov import LinearCov
+
 
 def test_UniFuncWrapper_value():
     mean = OffsetMean()
@@ -11,7 +12,8 @@ def test_UniFuncWrapper_value():
     o = 1.3
     mean.offset = o
     mean.set_data(n)
-    npt.assert_almost_equal(o*np.ones(n), mean.data('learn').value())
+    npt.assert_almost_equal(o * np.ones(n), mean.data('learn').value())
+
 
 def test_BinFuncWrapper_value():
     cov = LinearCov()
@@ -26,6 +28,7 @@ def test_BinFuncWrapper_value():
     cov.set_data((X, X))
     npt.assert_almost_equal(K, cov.data('learn').value())
 
+
 def test_UniFuncWrapper_gradient():
     mean = OffsetMean()
     random = np.random.RandomState(0)
@@ -35,6 +38,7 @@ def test_UniFuncWrapper_gradient():
     mean.set_data(n)
 
     npt.assert_almost_equal(mean.gradient(n), mean.data('learn').gradient())
+
 
 def test_BinFuncWrapper_gradient():
     cov = LinearCov()

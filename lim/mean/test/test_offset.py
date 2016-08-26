@@ -1,9 +1,10 @@
 import numpy as np
 import numpy.testing as npt
 
-from ...func import check_grad
+from lim.func import check_grad
 
-from ..offset import OffsetMean
+from lim.mean.offset import OffsetMean
+
 
 def test_value():
     random = np.random.RandomState(0)
@@ -15,6 +16,7 @@ def test_value():
     oarr = offset * np.ones(n)
 
     npt.assert_almost_equal(mean.value(n), oarr)
+
 
 def test_gradient():
     random = np.random.RandomState(0)

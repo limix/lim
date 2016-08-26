@@ -7,15 +7,16 @@ from numpy import ones
 
 from limix_math.linalg import qs_decomposition
 
-from ..fastlmm import FastLMM
-from ..regression import RegGP
-from ...util.fruits import Apples
-from ...cov import LinearCov
-from ...cov import EyeCov
-from ...cov import SumCov
-from ...mean import OffsetMean
-from ...random import RegGPSampler
-from ...genetics import DesignMatrixTrans
+from lim.inference.fastlmm import FastLMM
+from lim.inference.regression import RegGP
+from lim.util.fruits import Apples
+from lim.cov import LinearCov
+from lim.cov import EyeCov
+from lim.cov import SumCov
+from lim.mean import OffsetMean
+from lim.random import RegGPSampler
+from lim.genetics import DesignMatrixTrans
+
 
 def test_optimization():
     random = RandomState(9458)

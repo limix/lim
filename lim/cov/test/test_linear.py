@@ -1,8 +1,9 @@
 import numpy as np
 import numpy.testing as npt
 
-from ..linear import LinearCov
-from ...func import check_grad
+from lim.cov.linear import LinearCov
+from lim.func import check_grad
+
 
 def test_value():
     random = np.random.RandomState(0)
@@ -14,6 +15,7 @@ def test_value():
     npt.assert_almost_equal(cov.value(x0, x1), np.dot(x0, x1))
     cov.scale = 2.
     npt.assert_almost_equal(cov.value(x0, x1), 2 * np.dot(x0, x1))
+
 
 def test_gradient():
     random = np.random.RandomState(0)
