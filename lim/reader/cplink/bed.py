@@ -1,10 +1,11 @@
 from os.path import join
 from os.path import dirname
+from os.path import relpath
 from os.path import realpath
 
 from cffi import FFI
 
-root = dirname(realpath(__file__))
+root = relpath(dirname(realpath(__file__)))
 
 ffi = FFI()
 
@@ -12,10 +13,10 @@ include_dirs = [root]
 src_files = [join(root, 'bed.c')]
 
 ffi.set_source('lim.reader.cplink.bed_ffi',
-        '#include "bed.h"',
-        include_dirs=include_dirs,
-        sources=src_files,
-        libraries=[])
+               '#include "bed.h"',
+               include_dirs=include_dirs,
+               sources=src_files,
+               libraries=[])
 
 ffi.cdef("""
 int bed_read_item(char* filepath, int nrows, int ncols, int row, int col);
