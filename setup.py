@@ -25,8 +25,9 @@ def setup_package():
     install_requires = ['limix_math>=0.2.4', 'cffi>=1.6', 'bidict',
                         'pytest', 'numpy>=1.9', 'scipy>=0.17', 'numba>=0.27',
                         'ncephes>=0.0.29', 'tabulate>=0.7', 'pandas>=0.18',
-                        'h5py>=2.6']
-    tests_require = ['pytest', 'tabulate>=0.7', 'pandas>=0.18', 'h5py>=2.6']
+                        'h5py>=2.6', 'progressbar>=3.10']
+    tests_require = ['pytest', 'tabulate>=0.7', 'pandas>=0.18', 'h5py>=2.6',
+                     'progressbar>=3.10']
 
     metadata = dict(
         name='lim',
