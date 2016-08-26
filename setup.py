@@ -24,8 +24,8 @@ def setup_package():
                       'ncephes>=0.0.29']
     install_requires = ['limix_math>=0.2.4', 'cffi>=1.6', 'bidict',
                         'pytest', 'numpy>=1.9', 'scipy>=0.17', 'numba>=0.27',
-                        'ncephes>=0.0.29']
-    tests_require = ['pytest']
+                        'ncephes>=0.0.29', 'tabulate>=0.7']
+    tests_require = ['pytest', 'tabulate>=0.7']
 
     metadata = dict(
         name='lim',
