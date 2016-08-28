@@ -6,13 +6,14 @@ from pandas import read_sql
 from numpy import asarray
 from numpy import arange
 
-from .scalar import npy2py_type
 from ..reader.group import group
+
 
 def _make_sure_ids(ids, n):
     if ids is None:
         ids = arange(n, dtype=int)
     return ids
+
 
 def create_data():
     return Data()
@@ -40,7 +41,9 @@ def create_data():
 #     def __str_(self):
 #         return bytes(self._sample_attrs) + '\n' + bytes(self._marker_attrs)
 
+
 class DictAccessor(object):
+
     def __init__(self, dict_):
         self._dict = dict_
 
@@ -49,7 +52,9 @@ class DictAccessor(object):
             return self._dict[attr]
         raise AttributeError
 
+
 class Data(object):
+
     def __init__(self):
         self._sample_groups = dict()
         self._marker_groups = dict()

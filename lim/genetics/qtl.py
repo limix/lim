@@ -219,6 +219,7 @@ def normal_scan(y, X, G=None, K=None, covariates=None, verbose=False):
                                     (:math:`N\\times N`).
         covariates (numpy.ndarray): Covariates. Default is an offset.
                                     Dimension (:math:`N\\times S`).
+        verbose                   : Defaults to `True`.
     Returns:
         tuple: The estimated p-values and additional information, respectively.
     """
