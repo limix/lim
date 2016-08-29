@@ -10,13 +10,13 @@ from numpy import set_printoptions
 
 from limix_math.linalg import qs_decomposition
 
-from .transformation import DesignMatrixTrans
-from ..inference import FastLMM as FastLMMCore
-from ..func import maximize_scalar
-from ..func import Learnable
-from ..func import Variables
-from ..func import Scalar
-from ..func import FuncData
+from ..transformation import DesignMatrixTrans
+from ...inference import FastLMM as FastLMMCore
+from ...func import maximize_scalar
+from ...func import Learnable
+from ...func import Variables
+from ...func import Scalar
+from ...func import FuncData
 
 
 class FastLMM(Learnable, FuncData):
@@ -87,7 +87,7 @@ class FastLMM(Learnable, FuncData):
     def mean(self):
         return self._flmmc.mean
 
-    def learn(self, verbose=False):
+    def learn(self, progress=None, verbose=False):
         maximize_scalar(self, verbose)
         self._flmmc.delta = self._delta()
 

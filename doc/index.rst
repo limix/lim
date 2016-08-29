@@ -1,21 +1,17 @@
-.. lim documentation master file, created by
-   sphinx-quickstart on Sun Aug 28 14:48:47 2016.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Lim's documentation
+===================
 
-Welcome to lim's documentation!
-===============================
+Installation
+------------
 
-Contents:
+.. code-block:: console
 
-.. toctree::
-    :maxdepth: 2
-    :caption: Table of Contents
-    :name: mastertoc
+    pip install lim
 
-    qtl_analysis
+Tutorials
+---------
 
-
+    - :doc:`tutorial.qtl_analysis`
 
 Indices and tables
 ==================

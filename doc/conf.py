@@ -33,7 +33,9 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon'
 ]
+napoleon_google_docstring = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -115,7 +117,8 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'alabaster'
+# html_theme = 'alabaster'
+html_theme = 'nature'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -293,7 +296,7 @@ texinfo_documents = [
 #texinfo_no_detailmenu = False
 
 
-# Example configuration for intersphinx: refer to the Python standard library.
+# Example configuration for intersphinx: refer to the Python standard library.nature
 intersphinx_mapping = {'python': ('http://docs.python.org/', None),
                        'numpy': ('http://docs.scipy.org/doc/numpy/', None),
                        'scipy': ('http://docs.scipy.org/doc/scipy/reference/', None),
