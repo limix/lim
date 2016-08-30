@@ -1,3 +1,6 @@
+from numpy import ndarray
+
+
 class NormalModel(object):
 
     def __init__(self, covariate_effect_sizes, fixed_effects_variance,
@@ -18,12 +21,31 @@ class NormalModel(object):
         d['gva'] = self.genetic_variance
         d['eva'] = self.environmental_variance
         d['tva'] = self.total_variance
-        d = {k: "%7.4f" % v for (k, v) in d.items()}
-        s = """Model statistics:
-  Covariate effect sizes: {ces}
-  Fixed-effect variances: {fev}
-  Heritability:           {her}
-  Genetic variance:       {gva}
-  Environmental variance: {eva}
-  Total variance:         {tva}"""
+
+        def stringit(v):
+            if isinstance(v, ndarray):
+                return '[' + (', '.join(["%7.4f" % vi for vi in v])) + ']'
+            return "%7.4f" % v
+
+        d = {k: stringit(v) for (k, v) in d.items()}
+
+        s = """Phenotype:
+    y_i = o_i + u_i + e_i
+
+Definitions:
+    M: covariates
+    o: fixed-effects signal = M {ces}.T
+    u: background signal    ~ Normal(0,  {gva} * Kinship)
+    e: environmental signal ~ Normal(0,  {eva} * I)"""
+
+        s += "\n\n"
+
+        s += """Model statistics:
+    Covariate effect sizes: {ces}
+    Fixed-effect variances: {fev}
+    Heritability:           {her}
+    Genetic variance:       {gva}
+    Environmental variance: {eva}
+    Total variance:         {tva}"""
+
         return s.format(**d)

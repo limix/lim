@@ -37,7 +37,8 @@ association scan between markers contained in `X` and the phenotype defined by
 
     G = X[:,3:].copy()
 
-    info = lim.genetics.qtl.normal_scan(y, X, G, verbose=False)
+    lrt = lim.genetics.qtl.normal_scan(y, X, G, verbose=False)
+    print(lrt)
 
 The output should be similar to::
 

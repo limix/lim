@@ -140,7 +140,7 @@ def genetic_preprocess(X, G, K, covariates, input_info):
     input_info.effective_K = K
 
 
-def normal_scan(y, X, G=None, K=None, covariates=None, verbose=False):
+def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
     """Association between genetic markers and phenotype for continuous traits.
 
     Matrix `X` shall contain the genetic markers (e.g., number of minor
@@ -167,11 +167,10 @@ def normal_scan(y, X, G=None, K=None, covariates=None, verbose=False):
                                  (:math:`N\\times N`).
         covariates (array_like): Covariates. Default is an offset.
                                  Dimension (:math:`N\\times S`).
-        verbose    (bool)      : Defaults to `True`.
+        progress    (bool)     : Shows progress. Defaults to `True`.
 
     Returns:
-        A :obj:`tuple` with the estimated p-values and additional information,
-        respectively.
+        A :class:`lim.genetics.qtl.LikelihoodRatioTest` instance.
     """
     logger = logging.getLogger(__name__)
     logger.info('Normal association scan has started.')
@@ -182,7 +181,8 @@ def normal_scan(y, X, G=None, K=None, covariates=None, verbose=False):
 
     genetic_preprocess(X, G, K, covariates, ii)
 
-    lrt = NormalLRT(y, ii.Q[0], ii.Q[1], ii.S[0], covariates=covariates)
+    lrt = NormalLRT(y, ii.Q[0], ii.Q[1], ii.S[0], covariates=covariates,
+                    progress=progress)
     lrt.candidate_markers = ii.effective_X
     lrt.pvals()
     return lrt

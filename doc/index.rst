@@ -13,6 +13,15 @@ Tutorials
 
     - :doc:`tutorial.qtl_analysis`
 
+Table of Contents
+-----------------
+
+   .. toctree::
+      :maxdepth: 2
+
+      tutorial.qtl_analysis
+      lim.genetics.qtl
+
 Indices and tables
 ==================
 
