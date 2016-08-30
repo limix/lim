@@ -1,0 +1,5 @@
+python:
+   version: 2
+   
+conda:
+    file: environment.yml
