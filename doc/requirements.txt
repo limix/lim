@@ -1,13 +1,13 @@
 Sphinx>=1.4
 sphinxcontrib-programoutput
-cffi>=1.6
-build_capi>=0.0.4
-ncephes>=0.0.33
-limix_math>=0.2.4
 bidict
 pytest
 numpy>=1.9
 scipy>=0.17
+cffi>=1.6
+build_capi>=0.0.4
+ncephes>=0.0.33
+limix_math>=0.2.4
 numba>=0.27
 tabulate>=0.7
 pandas>=0.18
