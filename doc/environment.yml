@@ -133,7 +133,6 @@ dependencies:
 - pyparsing=2.1.4=py27_0
 - pyqt=4.11.4=py27_3
 - pytables=3.2.3.1=np111py27_0
-- pytest=2.9.2=py27_0
 - python=2.7.12=1
 - python-dateutil=2.5.3=py27_0
 - pytz=2016.4=py27_0
@@ -217,3 +216,4 @@ dependencies:
   - sphinxcontrib-programoutput==0.8
   - tables==3.2.3.1
   - tabulate==0.7.5
+  - pytest==3.0.1
