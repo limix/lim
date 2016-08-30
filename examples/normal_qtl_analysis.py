@@ -7,8 +7,8 @@ from numpy import sqrt
 from numpy import ones
 
 random = random.RandomState(0)
-N = 500
-P = 900
+N = 50
+P = 100
 
 # genetic markers
 X = random.randn(N, P)
@@ -24,12 +24,12 @@ u[3] = -1
 u[4] = -1
 u[5] = +1
 
-offset = 0.8
+offset = 0.4
 
 # phenotype definition
-y = offset + X.dot(u) + 0.9 * random.randn(N)
+y = offset + X.dot(u) + 0.2 * random.randn(N)
 
-G = X[:, 3:].copy()
+G = X[:, 2:].copy()
 
 lrt = lim.genetics.qtl.normal_scan(y, X, G, progress=False)
 print(lrt)
