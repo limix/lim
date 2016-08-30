@@ -10,6 +10,9 @@ from numpy import hstack
 
 from progressbar import ProgressBar
 from progressbar import Percentage
+from progressbar import UnknownLength
+from progressbar import Counter
+from progressbar import AdaptiveETA
 
 from ..core import FastLMM
 
@@ -43,7 +46,7 @@ class LikelihoodRatioTest(object):
         self._alt_model_ready = False
 
     def _compute_statistics(self):
-        self._logger.info('Likelihood-ratio test Statistics computation ' +
+        self._logger.info('Likelihood-ratio test Statistics computation: ' +
                           'has started.')
         self._compute_null_model()
         self._compute_alt_models()
@@ -53,7 +56,10 @@ class LikelihoodRatioTest(object):
             return
         self._logger.info('Null model computation has started.')
 
-        progress = ProgressBar(widgets=["Null model fitting ", Percentage()])
+        print("Null model fitting: ")
+        progress = ProgressBar(widgets=["  ", Counter(),
+                                        " function evaluations"],
+                               max_value=UnknownLength)
 
         self._learn_null_model(progress)
 
@@ -65,8 +71,9 @@ class LikelihoodRatioTest(object):
         self._logger.info('Alternative model computation has started.')
 
         nmarkers = self._X.shape[1]
-        progress = ProgressBar(widgets=["Candidate markers analysis ",
-                                        Percentage()], max_value=nmarkers)
+        print("Candidate markers analysis:")
+        progress = ProgressBar(widgets=["  ",
+                                        AdaptiveETA()], max_value=nmarkers)
 
         self._prepare_for_scan()
         for i in progress((i for i in range(nmarkers))):
@@ -132,6 +139,9 @@ class NormalLRT(LikelihoodRatioTest):
         self._alt_lmls.append(flmm.lml())
         self._candidate_effect_sizes.append(flmm.beta[-1])
 
+    def model(self):
+        return self._flmm.model()
+
 
 class BinomialLRT(LikelihoodRatioTest):
 
@@ -148,3 +158,6 @@ class BinomialLRT(LikelihoodRatioTest):
 
     def _process_marker(self, x):
         pass
+
+    def model(self):
+        return self._ep.model()

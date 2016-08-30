@@ -11,6 +11,7 @@ from numpy import set_printoptions
 from limix_math.linalg import qs_decomposition
 
 from ..transformation import DesignMatrixTrans
+from ..model import NormalModel
 from ...inference import FastLMM as FastLMMCore
 from ...func import maximize_scalar
 from ...func import Learnable
@@ -87,8 +88,8 @@ class FastLMM(Learnable, FuncData):
     def mean(self):
         return self._flmmc.mean
 
-    def learn(self, progress=None, verbose=False):
-        maximize_scalar(self, verbose)
+    def learn(self, progress=None):
+        maximize_scalar(self, progress)
         self._flmmc.delta = self._delta()
 
     def value(self):
@@ -106,6 +107,13 @@ class FastLMM(Learnable, FuncData):
         Cp = Xp.dot(self._X.T)
         Cpp = Xp.dot(Xp.T)
         return self._flmmc.predict(covariates, Cp, Cpp)
+
+    def model(self):
+        total_var = (self.fixed_effects_variance + self.genetic_variance
+                     + self.environmental_variance)
+        return NormalModel(self.beta, self.fixed_effects_variance,
+                           self.heritability, self.genetic_variance,
+                           self.environmental_variance, total_var)
 
     def __str__(self):
         v = self.genetic_variance

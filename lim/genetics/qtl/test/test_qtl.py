@@ -42,13 +42,13 @@ def test_qtl_normal_scan():
     from lim.genetics.qtl import normal_scan
 
     lrt = normal_scan(y, X=X, G=X, covariates=ones((N, 1)))
-    import pytest
-    pytest.set_trace()
-    # lrt.pvals()
 
-    # flmm = FastLMM(y, ones((N, 1)), X)
-    # flmm.learn()
+    model = lrt.model()
+    effsizes = lrt.candidate_effect_sizes()
+    assert_almost_equal(effsizes[0], 0.00881056802261)
+    print(model)
 
-    # assert_almost_equal(flmm.beta[0], 1.2120718670, decimal=6)
-    # assert_almost_equal(flmm.genetic_variance, 1.2979613599, decimal=5)
-    # assert_almost_equal(flmm.environmental_variance, 1.6317660354, decimal=5)
+    #
+    # # assert_almost_equal(flmm.beta[0], 1.2120718670, decimal=6)
+    # # assert_almost_equal(flmm.genetic_variance, 1.2979613599, decimal=5)
+    # # assert_almost_equal(flmm.environmental_variance, 1.6317660354, decimal=5)
