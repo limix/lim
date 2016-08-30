@@ -3,7 +3,7 @@ QTL Analysis
 
 The first example uses :func:`lim.genetics.qtl.normal_scan` to perform an
 association scan between markers contained in `X` and the phenotype defined by
-`y`, while account for background signal via `G`:
+`y`, while accounting for background signal via `G`:
 
 .. literalinclude:: /../examples/normal_qtl_analysis.py
 

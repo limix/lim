@@ -25,6 +25,10 @@ def _offset_covariate(covariates, n):
     return ones((n, 1)) if covariates is None else covariates
 
 
+def _indent(msg):
+    return '\n'.join(['    ' + s for s in msg.split('\n')])
+
+
 class LikelihoodRatioTest(object):
 
     def __init__(self, Q0, Q1, S0, covariates=None, progress=True):
@@ -137,19 +141,30 @@ class LikelihoodRatioTest(object):
         """Model of the null hypothesis."""
         raise NotImplementError
 
+    def alt_model(self):
+        """Model of the alternative hypotheses."""
+        raise NotImplementError
+
     def __str__(self):
         snull = str(self.null_model())
+        snull = 'Null model:\n\n' + _indent(snull)
+
+        salt = self.alt_model()
+        salt = 'Alternative model:\n\n' + _indent(salt)
 
         sces = 'Candidate effect sizes:\n'
-        sces += quantile_summary(self._candidate_effect_sizes)
+        sces += _indent(quantile_summary(self._candidate_effect_sizes))
+        sces = _indent(sces)
 
         salmls = 'Candidate log marginal likelihoods:\n'
-        salmls += quantile_summary(self._alt_lmls)
+        salmls += _indent(quantile_summary(self._alt_lmls))
+        salmls = _indent(salmls)
 
         spval = 'Candidate p-values:\n'
-        spval += quantile_summary(self.pvals(), "e")
+        spval += _indent(quantile_summary(self.pvals(), "e"))
+        spval = _indent(spval)
 
-        return '\n\n'.join([snull, sces, salmls, spval])
+        return '\n\n'.join([snull, salt, sces, salmls, spval])
 
 
 class NormalLRT(LikelihoodRatioTest):
@@ -184,6 +199,14 @@ class NormalLRT(LikelihoodRatioTest):
 
     def null_model(self):
         return self._flmm.model()
+
+    def alt_model(self):
+        s = "Phenotype:\n"
+        s += "    y_i = o_i + b_j x_{i,j} + u_i + e_i\n\n"
+        s += "Definitions:\n"
+        s += "    b_j    : effect-size of the j-th candidate marker\n"
+        s += "    x_{i,j}: j-th candidate marker of the i-th sample\n"
+        return s
 
 
 class BinomialLRT(LikelihoodRatioTest):
