@@ -189,7 +189,7 @@ dependencies:
   - backports-abc==0.4
   - backports.shutil-get-terminal-size==1.0.0
   - backports.ssl-match-hostname==3.4.0.2
-  - bidict==0.12.0
+  - bidict
   - build-capi==0.0.5
   - colour==0.1.2
   - dynd==0.7.3.dev1
