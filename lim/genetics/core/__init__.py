@@ -1,1 +1,1 @@
-from fastlmm import FastLMM
+from .fastlmm import FastLMM
