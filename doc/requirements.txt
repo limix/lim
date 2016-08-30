@@ -1,7 +1,6 @@
 Sphinx>=1.4
 sphinxcontrib-programoutput
 cffi>=1.6
-pytest-runner
 build_capi>=0.0.4
 ncephes>=0.0.33
 limix_math>=0.2.4
