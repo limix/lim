@@ -1,5 +1,5 @@
 QTL Analysis
-============
+------------
 
 The first example uses :func:`lim.genetics.qtl.normal_scan` to perform an
 association scan between markers contained in `X` and the phenotype defined by

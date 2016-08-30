@@ -1,30 +1,15 @@
 Lim's documentation
 ===================
 
-Installation
-------------
+You can get the source and open issues `on Github.`_
 
-.. code-block:: console
+.. _on Github.: https://github.com/Horta/lim
 
-    pip install lim
+.. toctree::
+    :caption: Table of contents
+    :name: mastertoc
+    :maxdepth: 2
 
-Tutorials
----------
-
-    - :doc:`tutorial.qtl_analysis`
-
-Table of Contents
------------------
-
-   .. toctree::
-      :maxdepth: 2
-
-      tutorial.qtl_analysis
-      lim.genetics.qtl
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+    installation
+    tutorial.qtl_analysis
+    lim.genetics.qtl
