@@ -4,16 +4,6 @@ from setuptools import setup
 from setuptools import find_packages
 
 
-def make_sure_install(package):
-    import pip
-    try:
-        __import__(package)
-    except ImportError:
-        pip.main(['install', package, '--upgrade'])
-make_sure_install('build_capi')
-make_sure_install('ncephes')
-
-
 def setup_package():
     src_path = os.path.dirname(os.path.abspath(sys.argv[0]))
     old_path = os.getcwd()
@@ -23,20 +13,17 @@ def setup_package():
     needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
     pytest_runner = ['pytest-runner'] if needs_pytest else []
 
-    setup_requires = ['cffi>=1.6', 'build_capi>=0.0.5',
-                      'ncephes>=0.0.37', 'cffi>=1.6'] + pytest_runner
-    install_requires = ['limix_math>=0.2.7', 'cffi>=1.6', 'bidict',
-                        'pytest>=2.9,<3', 'numpy>=1.9', 'scipy>=0.17',
-                        'numba>=0.27', 'ncephes>=0.0.37', 'tabulate>=0.7',
-                        'pandas>=0.18', 'h5py>=2.6', 'progressbar2>=3.10',
-                        'nose>=1.3']
-    tests_require = ['limix_math>=0.2.7', 'pytest>=2.9,<3', 'tabulate>=0.7',
-                     'pandas>=0.18', 'h5py>=2.6', 'progressbar2>=3.10',
-                     'nose>=1.3']
+    setup_requires = ['build_capi>=0.0.8', 'ncephes>=0.1',
+                      'cffi>=1.6'] + pytest_runner
+    install_requires = ['pytest', 'ncephes>=0.1', 'scipy>=0.17',
+                        'numpy>=1.9', 'numba>=0.27', 'cffi>=1.6',
+                        'limix_math>=0.3', 'bidict', 'progressbar2>=3.10',
+                        'h5py>=2.6', 'pandas>=0.18', 'nose>=1.3']
+    tests_require = install_requires
 
     metadata = dict(
         name='lim',
-        version='0.0.10',
+        version='0.1.0',
         maintainer="Limix Developers",
         maintainer_email="horta@ebi.ac.uk",
         license="BSD",

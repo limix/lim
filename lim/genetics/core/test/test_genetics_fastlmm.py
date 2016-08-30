@@ -4,7 +4,7 @@ import numpy as np
 from numpy import ones
 from numpy.testing import assert_almost_equal
 
-from lim.genetics.fastlmm import FastLMM
+from lim.genetics import FastLMM
 from lim.util.fruits import Apples
 from lim.cov import LinearCov
 from lim.cov import EyeCov
