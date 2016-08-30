@@ -23,11 +23,11 @@ def setup_package():
     setup_requires = ['cffi>=1.6', 'build_capi>=0.0.4',
                       'ncephes>=0.0.33']
     install_requires = ['limix_math>=0.2.4', 'cffi>=1.6', 'bidict',
-                        'pytest>=3.0.1', 'numpy>=1.9', 'scipy>=0.17',
+                        'pytest', 'numpy>=1.9', 'scipy>=0.17',
                         'numba>=0.27', 'ncephes>=0.0.33', 'tabulate>=0.7',
                         'pandas>=0.18', 'h5py>=2.6', 'progressbar2>=3.10',
                         'nose>=1.3']
-    tests_require = ['pytest>=3.0.1', 'tabulate>=0.7', 'pandas>=0.18',
+    tests_require = ['pytest', 'tabulate>=0.7', 'pandas>=0.18',
                      'h5py>=2.6', 'progressbar2>=3.10', 'nose>=1.3']
 
     metadata = dict(
