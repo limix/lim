@@ -20,7 +20,7 @@ def setup_package():
     os.chdir(src_path)
     sys.path.insert(0, src_path)
 
-    setup_requires = ['cffi>=1.6', 'pytest>=3.0.1', 'build_capi>=0.0.4',
+    setup_requires = ['cffi>=1.6', 'build_capi>=0.0.4',
                       'ncephes>=0.0.33']
     install_requires = ['limix_math>=0.2.4', 'cffi>=1.6', 'bidict',
                         'pytest>=3.0.1', 'numpy>=1.9', 'scipy>=0.17',
