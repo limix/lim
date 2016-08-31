@@ -1,8 +1,8 @@
 import numpy as np
 import numpy.testing as npt
 
-from lim.cov.sum import SumCov
-from lim.cov.linear import LinearCov
+from lim.cov import SumCov
+from lim.cov import LinearCov
 from lim.func import check_grad
 
 

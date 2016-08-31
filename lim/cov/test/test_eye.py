@@ -2,7 +2,7 @@ import numpy.testing as npt
 from numpy.random import RandomState
 from numpy import exp
 
-from lim.cov.eye import EyeCov
+from lim.cov import EyeCov
 from lim.util.fruits import Oranges
 from lim.util.fruits import Apples
 from lim.func import check_grad

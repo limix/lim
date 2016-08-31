@@ -4,8 +4,18 @@ from pkg_resources import get_distribution
 __version__ = get_distribution('lim').version
 
 # from .data import create_data
-from . import reader
+
+from . import cov
+from . import data
+from . import func
 from . import genetics
+from . import inference
+from . import math
+from . import mean
+from . import random
+from . import reader
+from . import tool
+from . import util
 
 
 def test():

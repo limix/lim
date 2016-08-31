@@ -3,7 +3,7 @@ import numpy.testing as npt
 
 from lim.func import check_grad
 
-from lim.mean.offset import OffsetMean
+from lim.mean import OffsetMean
 
 
 def test_value():
