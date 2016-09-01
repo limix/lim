@@ -40,5 +40,5 @@ ntrials = asarray(ntrials, float)
 
 G = X[:, 2:].copy()
 
-lrt = lim.genetics.qtl.binomial_scan(nsuccesses, ntrials, X, G)
+lrt = lim.genetics.qtl.binomial_scan(nsuccesses, ntrials, X, G, progress=False)
 print(lrt)
