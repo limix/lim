@@ -3,8 +3,6 @@ from __future__ import unicode_literals
 
 import sys
 
-import six
-
 import logging
 
 from numpy import concatenate
@@ -151,10 +149,10 @@ class LikelihoodRatioTest(object):
         raise NotImplementError
 
     def __str__(self):
-        return six.u(self).encode('utf-8')
+        return self.__unicode__().encode('utf-8')
 
     def __unicode__(self):
-        snull = six.u(self.null_model())
+        snull = self.null_model().__unicode__()
         snull = 'Null model:\n\n' + _indent(snull)
 
         salt = self.alt_model()

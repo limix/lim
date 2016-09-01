@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-import six
 from six import string_types
 
 from numpy import ndarray
@@ -21,7 +20,7 @@ class NormalModel(object):
         self.total_variance = total_variance
 
     def __str__(self):
-        return six.u(self).encode('utf-8')
+        return self.__unicode__().encode('utf-8')
 
     def __unicode__(self):
         d = dict()
@@ -80,7 +79,7 @@ class BinomialModel(object):
         self.heritability = heritability
 
     def __str__(self):
-        return six.u(self).encode('utf-8')
+        return self.__unicode__().encode('utf-8')
 
     def __unicode__(self):
         d = dict()
