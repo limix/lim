@@ -1,6 +1,15 @@
 Installation
 ------------
 
+Before anything, we recommend that the package Numba is installed
+(and up-to-date) before hand
+
+.. code-block:: console
+
+    conda install numba
+
+if you are using a Conda distribution.
+
 You can install via
 
 .. code-block:: console
