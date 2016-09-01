@@ -32,3 +32,16 @@ and that it is actually working
 .. code-block:: console
 
     python -c "import lim; lim.test()"
+
+Binomial phenotype
+^^^^^^^^^^^^^^^^^^
+
+Lim is also able to analyse count phenotype via a
+Binomial likelihood via an extra package that can be
+installed via
+
+.. code-block:: console
+
+    pip install git+https://github.com/Horta/limix-qep.git
+
+as long as you have the right privileges.
