@@ -1,6 +1,7 @@
 from . import block
 from . import fruits
-from . import greek
+
+from .greek import get_greek
 
 from .quantile_summary import quantile_summary
 

@@ -1,12 +1,15 @@
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import sys
 
 import logging
 
+from numpy import concatenate
 from numpy import asarray
 from numpy import newaxis
 from numpy import hstack
+from numpy import array
 from numpy import ones
 
 from progressbar import ProgressBar
@@ -146,7 +149,10 @@ class LikelihoodRatioTest(object):
         raise NotImplementError
 
     def __str__(self):
-        snull = str(self.null_model())
+        return unicode(self).encode('utf-8')
+
+    def __unicode__(self):
+        snull = unicode(self.null_model())
         snull = 'Null model:\n\n' + _indent(snull)
 
         salt = self.alt_model()
@@ -213,19 +219,63 @@ class BinomialLRT(LikelihoodRatioTest):
 
     def __init__(self, nsuccesses, ntrials, Q0, Q1, S0, covariates=None,
                  progress=True):
-        super(BinomialLRT, self).__init__(X, Q0, Q1, S0, covariates=covariates,
+        super(BinomialLRT, self).__init__(Q0, Q1, S0, covariates=covariates,
                                           progress=progress)
-        self._nsuccess = nsuccesses
+        self._nsuccesses = nsuccesses
         self._ntrials = ntrials
 
-    def candidate_effect_sizes(self):
-        raise NotImplementedError
+    def _learn_null_model(self, progress):
+        from limix_qep.ep import BinomialEP
 
-    def _prepare_for_processing_nmarkers(self):
-        pass
+        nsuccesses = self._nsuccesses
+        ntrials = self._ntrials
 
-    def _process_marker(self, x):
-        pass
+        Q0, Q1 = self._Q0, self._Q1
+        S0 = self._S0
+        covariates = self._covariates
+
+        ep = BinomialEP(nsuccesses, ntrials, covariates, Q0, Q1, S0)
+        ep.optimize(progress=progress)
+        self._ep = ep
+        self._null_lml = ep.lml()
+
+    def _prepare_for_scan(self):
+        self._alt_lmls = array([])
+        self._candidate_effect_sizes = array([])
+        self._markers_buffer = []
+        self._fep = self._ep.fixed_ep()
+
+    def _process_marker(self, i):
+        self._markers_buffer.append(self._X[:, i])
+        covariates = self._covariates
+        fep = self._fep
+
+        if len(self._markers_buffer) == 1000000 or i + 1 == self._X.shape[1]:
+
+            X = array(self._markers_buffer, float).T
+
+            p = covariates.shape[1]
+
+            acov = hstack((covariates, X))
+            if p == 1:
+                betas = fep.optimal_betas(acov, 1)
+            else:
+                betas = fep.optimal_betas_general(acov, p)
+
+            ms = covariates.dot(betas[:p, :]) + X * betas[p, :]
+
+            self._alt_lmls = concatenate((self._alt_lmls, fep.lmls(ms)))
+
+            ces = self._candidate_effect_sizes
+            self._candidate_effect_sizes = concatenate((ces, betas[p, :]))
 
     def null_model(self):
         return self._ep.model()
+
+    def alt_model(self):
+        s = "Latent phenotype:\n"
+        s += "    f_i = o_i + b_j x_{i,j} + u_i + e_i\n\n"
+        s += "Definitions:\n"
+        s += "    b_j    : effect-size of the j-th candidate marker\n"
+        s += "    x_{i,j}: j-th candidate marker of the i-th sample\n"
+        return s

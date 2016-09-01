@@ -1,3 +1,6 @@
+from __future__ import unicode_literals
+
+
 def get_greek(name):
     d = dict(alpha=0x3b1,
              beta=0x3b2,
@@ -22,6 +25,7 @@ def get_greek(name):
              phi=0x3c6,
              chi=0x3c7,
              psi=0x3c8,
-             omega=0x3c9)
+             omega=0x3c9,
+             Sigma=0x2211)
     d['lambda'] = 0x3bb
-    return unichr(d[name]).encode('utf-8')
+    return unichr(d[name])

@@ -28,14 +28,30 @@ from ...util.block import Block
 from ...util.greek import get_greek
 from ..core import FastLMM
 from .lrt import NormalLRT
+from .lrt import BinomialLRT
 
 
-class PhenotypeInfo(object):
+class NormalPhenotypeInfo(object):
 
-    def __init__(self, likelihood, phenotype):
-        assert likelihood in ['normal', 'bernoulli', 'binomial']
-        self.likelihood = likelihood
-        self.phenotype = phenotype
+    def __init__(self, y):
+        self.y = y
+
+    def get_info(self):
+        lik = self.likelihood
+        t = [['Likelihood', lik[0].upper() + lik[1:]]]
+        if self.likelihood == 'normal':
+            t.append(['Phenotype mean', self.phenotype.mean()])
+            t.append(['Phenotype std', self.phenotype.std()])
+            mima = (self.phenotype.min(), self.phenotype.max())
+            t.append(['Phenotype (min, max)', mima])
+        return t
+
+
+class BinomialPhenotypeInfo(object):
+
+    def __init__(self, nsuccesses, ntrials):
+        self.nsuccesses = nsuccesses
+        self.ntrials = ntrials
 
     def get_info(self):
         lik = self.likelihood
@@ -177,7 +193,7 @@ def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
     y = asarray(y, dtype=float)
 
     ii = InputInfo()
-    ii.phenotype_info = PhenotypeInfo('normal', y)
+    ii.phenotype_info = NormalPhenotypeInfo(y)
 
     genetic_preprocess(X, G, K, covariates, ii)
 
@@ -187,33 +203,9 @@ def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
     lrt.pvals()
     return lrt
 
-#     with Block('INPUT INFO') as print_:
-#         print_(ii)
-#
-#     with Block('NULL MODEL') as print_:
-#         print_(lrt._flmm)
-#
-#     with Block('ALTERNATIVE MODEL') as print_:
-#         am = """
-# Phenotype:
-#   y_i = o_i + x_j {beta}_j + u_i + e_i
-#
-# Definitions:
-#   {beta}_j: fixed-effect sizes of the j-th marker candidate
-# """.format(beta=get_greek('beta'))
-#         print_(am.strip())
-#
-#     if verbose:
-#         table = [info['effsizes'], info['lml_alt'], lrt.pvals()]
-#         table = [list(i) for i in table]
-#         table = map(list, zip(*table))
-#         print(tabulate(table, headers=('effect-sizes', 'lml', 'pvals'), floatfmt='e'))
-
-    # return return_
-
 
 def binomial_scan(nsuccesses, ntrials, X, G=None, K=None, covariates=None,
-                  verbose=False):
+                  progress=True):
     """Association between genetic markers and phenotype for continuous traits.
 
     Matrix `X` shall contain the genetic markers (e.g., number of minor
@@ -245,11 +237,10 @@ def binomial_scan(nsuccesses, ntrials, X, G=None, K=None, covariates=None,
                                  (:math:`N\\times N`).
         covariates (array_like): Covariates. Default is an offset.
                                  Dimension (:math:`N\\times S`).
-        verbose    (bool)      : Defaults to `True`.
+        progress         (bool): Shows progress. Defaults to `True`.
 
     Returns:
-        A :obj:`tuple` with the estimated p-values and additional information,
-        respectively.
+        A :class:`lim.genetics.qtl.LikelihoodRatioTest` instance.
     """
 
     logger = logging.getLogger(__name__)
@@ -257,62 +248,13 @@ def binomial_scan(nsuccesses, ntrials, X, G=None, K=None, covariates=None,
     nsuccesses = asarray(nsuccesses, dtype=float)
     ntrials = asarray(ntrials, dtype=float)
 
-    info = dict()
+    ii = InputInfo()
+    ii.phenotype_info = BinomialPhenotypeInfo(nsuccesses, ntrials)
 
-    if K is not None:
-        logger.info('Covariace matrix normalization.')
-        K = gower_kinship_normalization(K)
-        info['K'] = K
+    genetic_preprocess(X, G, K, covariates, ii)
 
-    if G is not None:
-        logger.info('Genetic markers normalization.')
-        G = G - np.mean(G, 0)
-        s = np.std(G, 0)
-        ok = s > 0.
-        G[:, ok] /= s[ok]
-        G /= np.sqrt(G.shape[1])
-        info['G'] = G
-
-    if G is None and K is None:
-        raise Exception('G, K, and QS cannot be all None.')
-
-    logger.info('Computing the economic eigen decomposition.')
-    if K is None:
-        QS = qs_decomposition(G)
-    else:
-        QS = _QS_from_K_split(K)
-
-    logger.info('Genetic marker candidates normalization.')
-    X = X - np.mean(X, 0)
-    s = np.std(X, 0)
-    ok = s > 0.
-    X[:, ok] /= s[ok]
-    info['X'] = X
-
-    Q0, Q1 = QS[0]
-    S0 = QS[1][0]
-
-    print("Scan has began...")
-    lrt = _create_LRT(nsuccesses, Q0, Q1, S0, covariate, Binomial(ntrials),
-                      null_model_only=False)
-    lrt.candidate_markers = X
-    info['lrs'] = lrt.lrs()
-    info['effsizes'] = lrt.effsizes
-    info['ep_null_model'] = lrt._ep
-    info['lml_alt'] = lrt.lml_alt()
-    return_ = (lrt.pvals(), info)
-    print("Scan has finished.")
-
-    print("-------------------------- NULL MODEL --------------------------")
-    print(lrt._ep)
-    print("----------------------------------------------------------------")
-    print("")
-
-    table = [info['effsizes'], info['lml_alt'], info['lrs'], lrt.pvals()]
-    table = [list(i) for i in table]
-    table = map(list, zip(*table))
-    print("---------------------- ALTERNATIVE MODELs ----------------------")
-    print(tabulate(table, headers=('EffSiz', 'LML', 'LR', 'Pval')))
-    print("----------------------------------------------------------------")
-
-    return return_
+    lrt = BinomialLRT(nsuccesses, ntrials, ii.Q[0], ii.Q[1], ii.S[0],
+                      covariates=covariates, progress=progress)
+    lrt.candidate_markers = ii.effective_X
+    lrt.pvals()
+    return lrt
