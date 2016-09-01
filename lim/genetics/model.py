@@ -21,7 +21,7 @@ class NormalModel(object):
         self.total_variance = total_variance
 
     def __str__(self):
-        return six.unicode(self).encode('utf-8')
+        return six.u(self).encode('utf-8')
 
     def __unicode__(self):
         d = dict()
@@ -80,7 +80,7 @@ class BinomialModel(object):
         self.heritability = heritability
 
     def __str__(self):
-        return six.unicode(self).encode('utf-8')
+        return six.u(self).encode('utf-8')
 
     def __unicode__(self):
         d = dict()

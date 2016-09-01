@@ -151,10 +151,10 @@ class LikelihoodRatioTest(object):
         raise NotImplementError
 
     def __str__(self):
-        return six.unicode(self).encode('utf-8')
+        return six.u(self).encode('utf-8')
 
     def __unicode__(self):
-        snull = six.unicode(self.null_model())
+        snull = six.u(self.null_model())
         snull = 'Null model:\n\n' + _indent(snull)
 
         salt = self.alt_model()
