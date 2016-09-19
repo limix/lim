@@ -2,20 +2,27 @@ from __future__ import division
 
 from numpy import log
 from numpy import pi
+from numpy import var
 from numpy.linalg import solve
 from numpy.linalg import slogdet
 
 from scipy.stats import multivariate_normal
-
-from limix_math.linalg import sum2diag
 
 from ..math import epsilon
 from ..func import merge_variables
 from ..func import maximize_scalar
 from ..func import maximize
 
-class RegGP(object):
+from limix_math.linalg import solve
+from limix_math.linalg import sum2diag
+
+
+class SlowLMM(object):
+
     def __init__(self, y, mean, cov):
+        if var(y) < 1e-8:
+            raise ValueError("The phenotype variance is too low: %e." % var(y))
+
         self._y = y
         self._cov = cov
         self._mean = mean
@@ -32,7 +39,7 @@ class RegGP(object):
         assert s == 1.
 
         n = len(y)
-        return - (logdet + ym.dot(Kiym) + n * log(2*pi)) / 2
+        return - (logdet + ym.dot(Kiym) + n * log(2 * pi)) / 2
 
     def lml_gradient(self):
         grad_cov = self._lml_gradient_cov()
@@ -104,10 +111,11 @@ class RegGP(object):
         K = self._cov.data('learn').value()
         ecov = K_pp - K_lp.T.dot(solve(K, K_lp))
 
-        return RegGPPredictor(emean, ecov)
+        return SlowLMMPredictor(emean, ecov)
 
 
-class RegGPPredictor(object):
+class SlowLMMPredictor(object):
+
     def __init__(self, mean, cov):
         self._mean = mean
         self._cov = cov

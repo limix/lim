@@ -1,2 +1,2 @@
 from .fastlmm import FastLMM
-from .regression import RegGP
+from .slowlmm import SlowLMM

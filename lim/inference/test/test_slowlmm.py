@@ -1,111 +1,110 @@
-# from __future__ import division
-#
-# import numpy as np
-# from numpy.testing import assert_almost_equal
-#
-# from scipy.stats import pearsonr
-#
-# from ..regression import RegGP
-# from ...util.fruits import Apples
-# from ...cov import LinearCov
-# from ...cov import EyeCov
-# from ...cov import SumCov
-# from ...mean import OffsetMean
-# from ...func import check_grad
-# from ...random import RegGPSampler
-#
-# def test_regression_value():
-#     random = np.random.RandomState(94584)
-#     N = 400
-#     X = random.randn(N, 500)
-#     offset = 0.5
-#
-#     mean = OffsetMean()
-#     mean.offset = offset
-#     mean.fix('offset')
-#     mean.set_data(N)
-#
-#     cov = LinearCov()
-#     cov.scale = 1.0
-#     cov.set_data((X, X))
-#
-#     y = random.randn(N)
-#
-#     gp = RegGP(y, mean, cov)
-#     assert_almost_equal(gp.lml(), -1495.12790401)
-#
-# def test_regression_gradient():
-#     random = np.random.RandomState(94584)
-#     N = 400
-#     X = random.randn(N, 500)
-#     offset = 0.5
-#
-#     mean = OffsetMean()
-#     mean.offset = offset
-#     mean.fix('offset')
-#     mean.set_data(N)
-#
-#     cov = LinearCov()
-#     cov.scale = 1.0
-#     cov.set_data((X, X))
-#
-#     y = random.randn(N)
-#
-#     gp = RegGP(y, mean, cov)
-#
-#     def func(x):
-#         cov.scale = np.exp(x[0])
-#         return gp.lml()
-#
-#     def grad(x):
-#         cov.scale = np.exp(x[0])
-#         return gp.lml_gradient()
-#
-#     assert_almost_equal(check_grad(func, grad, [0]), 0)
-#
-# def test_maximize_1():
-#     random = np.random.RandomState(94584)
-#     N = 400
-#     X = random.randn(N, 500)
-#     offset = 0.5
-#
-#     mean = OffsetMean()
-#     mean.offset = offset
-#     mean.fix('offset')
-#     mean.set_data(N)
-#
-#     cov = LinearCov()
-#     cov.scale = 1.0
-#     cov.set_data((X, X))
-#
-#     y = random.randn(N)
-#
-#     gp = RegGP(y, mean, cov)
-#
-#     gp.learn()
-#     assert_almost_equal(gp.lml(), -805.453722549)
-#
-# def test_maximize_2():
-#     random = np.random.RandomState(94584)
-#     N = 400
-#     X = random.randn(N, 500)
-#     offset = 0.5
-#
-#     mean = OffsetMean()
-#     mean.offset = offset
-#     mean.set_data(N)
-#
-#     cov = LinearCov()
-#     cov.scale = 1.0
-#     cov.set_data((X, X))
-#
-#     y = random.randn(N)
-#
-#     gp = RegGP(y, mean, cov)
-#
-#     gp.learn()
-#     assert_almost_equal(gp.lml(), -761.517250775)
-#
+from __future__ import division
+
+from numpy import exp
+from numpy.random import RandomState
+from numpy.testing import assert_almost_equal
+
+from lim.inference import SlowLMM
+from lim.func import check_grad
+from lim.cov import LinearCov
+from lim.mean import OffsetMean
+
+
+def test_slowlmm_value():
+    random = RandomState(94584)
+    N = 400
+    X = random.randn(N, 500)
+    offset = 0.5
+
+    mean = OffsetMean()
+    mean.offset = offset
+    mean.fix('offset')
+    mean.set_data(N)
+
+    cov = LinearCov()
+    cov.scale = 1.0
+    cov.set_data((X, X))
+
+    y = random.randn(N)
+
+    lmm = SlowLMM(y, mean, cov)
+    assert_almost_equal(lmm.lml(), -1495.12790401)
+
+
+def test_regression_gradient():
+    random = RandomState(94584)
+    N = 400
+    X = random.randn(N, 500)
+    offset = 0.5
+
+    mean = OffsetMean()
+    mean.offset = offset
+    mean.fix('offset')
+    mean.set_data(N)
+
+    cov = LinearCov()
+    cov.scale = 1.0
+    cov.set_data((X, X))
+
+    y = random.randn(N)
+
+    lmm = SlowLMM(y, mean, cov)
+
+    def func(x):
+        cov.scale = exp(x[0])
+        return lmm.lml()
+
+    def grad(x):
+        cov.scale = exp(x[0])
+        return lmm.lml_gradient()
+
+    assert_almost_equal(check_grad(func, grad, [0]), 0)
+
+
+def test_maximize_1():
+    random = RandomState(94584)
+    N = 400
+    X = random.randn(N, 500)
+    offset = 0.5
+
+    mean = OffsetMean()
+    mean.offset = offset
+    mean.fix('offset')
+    mean.set_data(N)
+
+    cov = LinearCov()
+    cov.scale = 1.0
+    cov.set_data((X, X))
+
+    y = random.randn(N)
+
+    lmm = SlowLMM(y, mean, cov)
+
+    lmm.learn()
+    assert_almost_equal(lmm.lml(), -805.453722549)
+
+
+def test_maximize_2():
+    random = RandomState(94584)
+    N = 400
+    X = random.randn(N, 500)
+    offset = 0.5
+
+    mean = OffsetMean()
+    mean.offset = offset
+    mean.set_data(N)
+
+    cov = LinearCov()
+    cov.scale = 1.0
+    cov.set_data((X, X))
+
+    y = random.randn(N)
+
+    lmm = SlowLMM(y, mean, cov)
+
+    lmm.learn()
+    assert_almost_equal(lmm.lml(), -761.517250775)
+
 # def test_predict_1():
 #     random = np.random.RandomState(94584)
 #     N = 400
