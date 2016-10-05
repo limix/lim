@@ -5,8 +5,18 @@ from six import string_types
 from numpy import ndarray
 
 from ..util import get_greek
+from ..util import unicode_compatible
 
 
+def _stringit(v):
+    if isinstance(v, ndarray):
+        return '[' + (', '.join(["%7.4f" % vi for vi in v])) + ']'
+    elif isinstance(v, string_types):
+        return v
+    return "%7.4f" % v
+
+
+@unicode_compatible
 class NormalModel(object):
 
     def __init__(self, covariate_effect_sizes, fixed_effects_variance,
@@ -20,9 +30,6 @@ class NormalModel(object):
         self.total_variance = total_variance
 
     def __str__(self):
-        return self.__unicode__().encode('utf-8')
-
-    def __unicode__(self):
         d = dict()
         d['ces'] = self.covariate_effect_sizes
         d['fev'] = self.fixed_effects_variance
@@ -31,12 +38,7 @@ class NormalModel(object):
         d['eva'] = self.environmental_variance
         d['tva'] = self.total_variance
 
-        def stringit(v):
-            if isinstance(v, ndarray):
-                return '[' + (', '.join(["%7.4f" % vi for vi in v])) + ']'
-            return "%7.4f" % v
-
-        d = {k: stringit(v) for (k, v) in d.items()}
+        d = {k: _stringit(v) for (k, v) in d.items()}
 
         s = """Phenotype:
     y_i = o_i + u_i + e_i
@@ -60,6 +62,7 @@ Definitions:
         return s.format(**d)
 
 
+@unicode_compatible
 class BinomialModel(object):
 
     def __init__(self, covariate_effect_sizes, fixed_effects_variance,
@@ -79,9 +82,6 @@ class BinomialModel(object):
         self.heritability = heritability
 
     def __str__(self):
-        return self.__unicode__().encode('utf-8')
-
-    def __unicode__(self):
         d = dict()
         d['ces'] = self.covariate_effect_sizes
         d['fev'] = self.fixed_effects_variance
@@ -98,14 +98,7 @@ class BinomialModel(object):
         d['sum'] = get_greek('Sigma')
         d['bone'] = u'\U0001d7cf'
 
-        def stringit(v):
-            if isinstance(v, ndarray):
-                return '[' + (', '.join(["%7.4f" % vi for vi in v])) + ']'
-            elif isinstance(v, string_types):
-                return v
-            return "%7.4f" % v
-
-        d = {k: stringit(v) for (k, v) in d.items()}
+        d = {k: _stringit(v) for (k, v) in d.items()}
 
         s = """Phenotype:
     y_i = {sum}_{{j=1}}^{{n_i}} {bone}(f_i + {eps}_{{i,j}} > 0)

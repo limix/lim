@@ -22,6 +22,7 @@ from progressbar import AdaptiveETA
 from ..core import FastLMM
 
 from ...util import quantile_summary
+from ...util import unicode_compatible
 
 
 def _offset_covariate(covariates, n):
@@ -32,6 +33,7 @@ def _indent(msg):
     return '\n'.join(['    ' + s for s in msg.split('\n')])
 
 
+@unicode_compatible
 class LikelihoodRatioTest(object):
 
     def __init__(self, Q0, Q1, S0, covariates=None, progress=True):
@@ -149,9 +151,6 @@ class LikelihoodRatioTest(object):
         raise NotImplementError
 
     def __str__(self):
-        return self.__unicode__().encode('utf-8')
-
-    def __unicode__(self):
         snull = self.null_model().__unicode__()
         snull = 'Null model:\n\n' + _indent(snull)
 
