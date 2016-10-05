@@ -1,1 +1,1 @@
-from decomposition import normal_decomposition
+from .decomposition import normal_decomposition
