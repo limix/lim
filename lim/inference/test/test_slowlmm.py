@@ -12,8 +12,8 @@ from lim.mean import OffsetMean
 
 def test_slowlmm_value():
     random = RandomState(94584)
-    N = 400
-    X = random.randn(N, 500)
+    N = 50
+    X = random.randn(N, 100)
     offset = 0.5
 
     mean = OffsetMean()
@@ -28,13 +28,13 @@ def test_slowlmm_value():
     y = random.randn(N)
 
     lmm = SlowLMM(y, mean, cov)
-    assert_almost_equal(lmm.lml(), -1495.12790401)
+    assert_almost_equal(lmm.lml(), -153.623791551399108)
 
 
 def test_regression_gradient():
     random = RandomState(94584)
-    N = 400
-    X = random.randn(N, 500)
+    N = 50
+    X = random.randn(N, 100)
     offset = 0.5
 
     mean = OffsetMean()
@@ -63,8 +63,8 @@ def test_regression_gradient():
 
 def test_maximize_1():
     random = RandomState(94584)
-    N = 400
-    X = random.randn(N, 500)
+    N = 50
+    X = random.randn(N, 100)
     offset = 0.5
 
     mean = OffsetMean()
@@ -81,13 +81,13 @@ def test_maximize_1():
     lmm = SlowLMM(y, mean, cov)
 
     lmm.learn()
-    assert_almost_equal(lmm.lml(), -805.453722549)
+    assert_almost_equal(lmm.lml(), -79.899212241487504)
 
 
 def test_maximize_2():
     random = RandomState(94584)
-    N = 400
-    X = random.randn(N, 500)
+    N = 50
+    X = random.randn(N, 100)
     offset = 0.5
 
     mean = OffsetMean()
@@ -103,7 +103,7 @@ def test_maximize_2():
     lmm = SlowLMM(y, mean, cov)
 
     lmm.learn()
-    assert_almost_equal(lmm.lml(), -761.517250775)
+    assert_almost_equal(lmm.lml(), -79.365136339619610)
 
 # def test_predict_1():
 #     random = np.random.RandomState(94584)
