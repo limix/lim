@@ -12,4 +12,4 @@ You can get the source and open issues `on Github.`_
 
     installation
     tutorial.qtl_analysis
-    lim.genetics.qtl
+    reference
