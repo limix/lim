@@ -5,8 +5,10 @@ import logging
 from tabulate import tabulate
 
 from numpy import asarray
+from numpy import sqrt
 
 from ...tool.kinship import gower_normalization
+from ...tool.normalize import stdnorm
 
 
 class InputInfo(object):
@@ -61,11 +63,7 @@ def tuple_it(GK):
     return tuple(r)
 
 
-def preprocess(X, GK, covariates, input_info):
-    logger = logging.getLogger(__name__)
-
-    input_info.covariates_user_provided = covariates is not None
-
+def normalize_covariance_list(GK):
     if not isinstance(GK, (list, tuple, dict)):
         GK = (GK,)
 
@@ -74,7 +72,17 @@ def preprocess(X, GK, covariates, input_info):
     if not isinstance(GK, dict):
         GK = {'K%d' % i: GK[i] for i in range(len(GK))}
 
-    for (name, GKi) in iter(GK.items):
+    return GK
+
+
+def preprocess(GK, covariates, input_info):
+    logger = logging.getLogger(__name__)
+
+    input_info.covariates_user_provided = covariates is not None
+    import ipdb
+    ipdb.set_trace()
+
+    for (name, GKi) in iter(GK.items()):
         if GKi[1]:
             logger.info('Covariace matrix normalization on %s.' % name)
             K = asarray(GKi[0], dtype=float)
@@ -97,7 +105,8 @@ def normal_decomposition(y, GK, covariates=None, progress=True):
 
     ii = InputInfo()
 
-    preprocess(X, GK, covariates, ii)
+    GK = normalize_covariance_list(GK)
+    preprocess(GK, covariates, ii)
 
     # lrt = NormalLRT(y, ii.Q[0], ii.Q[1], ii.S[0], covariates=covariates,
     #                 progress=progress)
