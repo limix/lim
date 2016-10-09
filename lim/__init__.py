@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import as _absolute_import
 from . import cov
 from . import data
 from . import func
@@ -10,9 +10,13 @@ from . import random
 from . import reader
 from . import tool
 from . import util
-from pkg_resources import get_distribution
+from pkg_resources import get_distribution as _get_distribution
+from pkg_resources import DistributionNotFound as _DistributionNotFound
 
-__version__ = get_distribution('lim').version
+try:
+    __version__ = _get_distribution('lim').version
+except _DistributionNotFound:
+    __version__ = 'unkown'
 
 
 def test():
@@ -28,5 +32,3 @@ def test():
         os.chdir(old_path)
 
     return return_code
-
-__all__ = ['genetics', 'reader']
