@@ -6,7 +6,9 @@ from ..func import Variables
 from ..func import Scalar
 from ..func import FuncData
 
+
 class EyeCov(Learnable, FuncData):
+
     def __init__(self):
         self._logscale = Scalar(0.0)
         Learnable.__init__(self, Variables(logscale=self._logscale))

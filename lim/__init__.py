@@ -16,7 +16,7 @@ from pkg_resources import DistributionNotFound as _DistributionNotFound
 try:
     __version__ = _get_distribution('lim').version
 except _DistributionNotFound:
-    __version__ = 'unkown'
+    __version__ = 'unknown'
 
 
 def test():
