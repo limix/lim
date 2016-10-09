@@ -1,7 +1,9 @@
 from .variables import Variables
 from .variables import merge_variables
 
+
 class Learnable(object):
+
     def __init__(self, variables):
         assert isinstance(variables, Variables)
         self.__variables = variables
@@ -26,7 +28,9 @@ class Learnable(object):
     def variables(self):
         return self.__variables
 
+
 class LearnableReduce(object):
+
     def __init__(self, learnables, prefix='noname'):
         self.__learnables = learnables
         self.__prefix = prefix

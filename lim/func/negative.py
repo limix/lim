@@ -1,4 +1,5 @@
 class NegativeFunction(object):
+
     def __init__(self, function):
         self._function = function
 
@@ -11,6 +12,7 @@ class NegativeFunction(object):
 
     def variables(self):
         return self._function.variables()
+
 
 def negative_function(function):
     return NegativeFunction(function)
