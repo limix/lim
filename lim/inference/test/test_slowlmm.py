@@ -8,9 +8,10 @@ from lim.inference import SlowLMM
 from lim.func import check_grad
 from lim.cov import LinearCov
 from lim.mean import OffsetMean
+from lim.mean import LinearMean
 
 
-def test_slowlmm_value():
+def test_slowlmm_value_1():
     random = RandomState(94584)
     N = 50
     X = random.randn(N, 100)
@@ -29,6 +30,28 @@ def test_slowlmm_value():
 
     lmm = SlowLMM(y, mean, cov)
     assert_almost_equal(lmm.lml(), -153.623791551399108)
+
+
+def test_slowlmm_value_2():
+    random = RandomState(94584)
+    N = 50
+    X1 = random.randn(N, 3)
+    X2 = random.randn(N, 100)
+
+    mean = LinearMean(3)
+    mean.set_data(X1)
+
+    cov = LinearCov()
+    cov.scale = 1.0
+    cov.set_data((X2, X2))
+
+    y = random.randn(N)
+
+    lmm = SlowLMM(y, mean, cov)
+    assert_almost_equal(lmm.lml(), -153.091074766)
+
+    mean.effsizes = [3.4, 1.11, -6.1]
+    assert_almost_equal(lmm.lml(), -178.273116338)
 
 
 def test_regression_gradient():
@@ -105,123 +128,23 @@ def test_maximize_2():
     lmm.learn()
     assert_almost_equal(lmm.lml(), -79.365136339619610)
 
-# def test_predict_1():
-#     random = np.random.RandomState(94584)
-#     N = 400
-#     nlearn = N - N//5
-#     npred = N//5
-#     X = random.randn(N, 500)
-#     offset = 0.5
+
+# def test_maximize_3():
+#     random = RandomState(94584)
+#     N = 50
+#     X = random.randn(N, 100)
 #
-#     mean = OffsetMean()
+#     mean = LinearMean(3)
 #     mean.offset = offset
-#     mean.set_data(N, purpose='sample')
-#     mean.set_data(nlearn, purpose='learn')
-#     mean.set_data(npred, purpose='predict')
+#     mean.set_data(N)
 #
 #     cov = LinearCov()
 #     cov.scale = 1.0
-#     cov.set_data((X, X), purpose='sample')
-#     cov.set_data((X[:nlearn, :], X[:nlearn, :]), purpose='learn')
-#     cov.set_data((X[:nlearn, :], X[-npred:, :]), purpose='learn_predict')
-#     cov.set_data((X[-npred:, :], X[-npred:, :]), purpose='predict')
+#     cov.set_data((X, X))
 #
-#     y = RegGPSampler(mean, cov).sample(random)
+#     y = random.randn(N)
 #
-#     gp = RegGP(y[:nlearn], mean, cov)
+#     lmm = SlowLMM(y, mean, cov)
 #
-#     gp.learn()
-#     assert_almost_equal(gp.lml(), -1377.9245876374036)
-#
-#     pred = gp.predict()
-#     (corr, pval) = pearsonr(y[-npred:], pred.mean)
-#
-#     assert_almost_equal(corr, 0.81494179361621788)
-#     assert_almost_equal(pval, 0)
-#
-# def test_predict_2():
-#     random = np.random.RandomState(94584)
-#     N = 400
-#     nlearn = N - N//5
-#     npred = N//5
-#     X = random.randn(N, 500)
-#     offset = 0.5
-#
-#     mean = OffsetMean()
-#     mean.offset = offset
-#     mean.set_data(N, purpose='sample')
-#     mean.set_data(nlearn, purpose='learn')
-#     mean.set_data(npred, purpose='predict')
-#
-#     cov_left = LinearCov()
-#     cov_left.scale = 1.0
-#     cov_left.set_data((X, X), purpose='sample')
-#     cov_left.set_data((X[:nlearn, :], X[:nlearn, :]), purpose='learn')
-#     cov_left.set_data((X[:nlearn, :], X[-npred:, :]), purpose='learn_predict')
-#     cov_left.set_data((X[-npred:, :], X[-npred:, :]), purpose='predict')
-#
-#     cov_right = EyeCov()
-#     cov_right.scale = 0.2
-#     cov_right.set_data((Apples(N), Apples(N)), purpose='sample')
-#     cov_right.set_data((Apples(nlearn), Apples(nlearn)), purpose='learn')
-#     cov_right.set_data((Apples(nlearn), Apples(npred)), purpose='learn_predict')
-#     cov_right.set_data((Apples(npred), Apples(npred)), purpose='predict')
-#
-#     cov = SumCov([cov_left, cov_right])
-#
-#     y = RegGPSampler(mean, cov).sample(random)
-#
-#     gp = RegGP(y[:nlearn], mean, cov)
-#
-#     cov_left.scale = 0.1
-#     cov_right.scale = 5.0
-#     gp.learn()
-#     assert_almost_equal(gp.lml(), -1379.03320103)
-#
-#     pred = gp.predict()
-#
-#     (corr, pval) = pearsonr(y[-npred:], pred.mean)
-#
-#     assert_almost_equal(corr, 0.81700837814)
-#     assert_almost_equal(pval, 0)
-#
-# def test_predict_3():
-#     random = np.random.RandomState(1)
-#     N = 400
-#     nlearn = N - N//5
-#     npred = N//5
-#     X = random.randn(N, 500)
-#     offset = 0.5
-#
-#     mean = OffsetMean()
-#     mean.offset = offset
-#     mean.set_data(N, purpose='sample')
-#     mean.set_data(nlearn, purpose='learn')
-#     mean.set_data(npred, purpose='predict')
-#
-#     cov_left = LinearCov()
-#     cov_left.scale = 1.2
-#     cov_left.set_data((X, X), purpose='sample')
-#     cov_left.set_data((X[:nlearn, :], X[:nlearn, :]), purpose='learn')
-#     cov_left.set_data((X[:nlearn, :], X[-npred:, :]), purpose='learn_predict')
-#     cov_left.set_data((X[-npred:, :], X[-npred:, :]), purpose='predict')
-#
-#     cov_right = EyeCov()
-#     cov_right.scale = 0.1
-#     cov_right.set_data((Apples(N), Apples(N)), purpose='sample')
-#     cov_right.set_data((Apples(nlearn), Apples(nlearn)), purpose='learn')
-#     cov_right.set_data((Apples(nlearn), Apples(npred)), purpose='learn_predict')
-#     cov_right.set_data((Apples(npred), Apples(npred)), purpose='predict')
-#
-#     cov = SumCov([cov_left, cov_right])
-#
-#     y = RegGPSampler(mean, cov).sample(random)
-#
-#     gp = RegGP(y[:nlearn], mean, cov)
-#
-#     cov_left.scale = 0.1
-#     cov_right.scale = 5.0
-#
-#     gp.learn()
-#     pred = gp.predict()
-#     assert_almost_equal(pred.logpdf(y[-npred:]), -316.470733059)
+#     lmm.learn()
+#     assert_almost_equal(lmm.lml(), -79.365136339619610)
