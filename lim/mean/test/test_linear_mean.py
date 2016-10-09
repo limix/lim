@@ -42,7 +42,7 @@ def test_gradient():
     # # print(approx_fprime([1.2], func, 1e-4))
     # import pytest
     # pytest.set_trace()
-    # mean.effsizes[0] = 1.0
+    mean.effsizes[0] = 1.0
     # print(mean.effsizes)
     # print(mean.value(array([1.5, 0, 0, 0, 0])))
     # mean.effsizes[0] = 2.0
