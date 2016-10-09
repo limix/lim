@@ -129,22 +129,23 @@ def test_maximize_2():
     assert_almost_equal(lmm.lml(), -79.365136339619610)
 
 
-# def test_maximize_3():
-#     random = RandomState(94584)
-#     N = 50
-#     X = random.randn(N, 100)
-#
-#     mean = LinearMean(3)
-#     mean.offset = offset
-#     mean.set_data(N)
-#
-#     cov = LinearCov()
-#     cov.scale = 1.0
-#     cov.set_data((X, X))
-#
-#     y = random.randn(N)
-#
-#     lmm = SlowLMM(y, mean, cov)
-#
-#     lmm.learn()
-#     assert_almost_equal(lmm.lml(), -79.365136339619610)
+def test_maximize_3():
+    random = RandomState(94584)
+    N = 50
+
+    X1 = random.randn(N, 3)
+    X2 = random.randn(N, 100)
+
+    mean = LinearMean(3)
+    mean.set_data(X1)
+
+    cov = LinearCov()
+    cov.scale = 1.0
+    cov.set_data((X2, X2))
+
+    y = random.randn(N)
+
+    lmm = SlowLMM(y, mean, cov)
+
+    lmm.learn()
+    assert_almost_equal(lmm.lml(), -73.5638040543)

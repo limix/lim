@@ -55,7 +55,7 @@ class SlowLMM(object):
         g = []
         for i in range(len(vars_)):
             dm = mean.data('learn').gradient()[i]
-            g.append(dm.dot(Kiym))
+            g.append(dm.T.dot(Kiym))
         return g
 
     def _lml_gradient_cov(self):

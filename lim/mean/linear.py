@@ -31,5 +31,5 @@ class LinearMean(Learnable, FuncData):
     def value(self, x):
         return x.dot(self._effsizes)
 
-    def derivative_offset(self, x):
+    def derivative_effsizes(self, x):
         return x

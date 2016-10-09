@@ -78,6 +78,9 @@ class Vector(object):
     def size(self):
         return self.raw.size
 
+    def to_ndarray(self):
+        return array([self.raw])
+
     @property
     def isfixed(self):
         return self._fixed
