@@ -1,6 +1,8 @@
 from numpy import array
 from numpy import asarray
 
+from ndarray_listener import ndarray_listener
+
 
 class Scalar(object):
     __slots__ = ['raw', '_listeners', '_fixed', 'value']
@@ -61,20 +63,20 @@ class Scalar(object):
 
 
 class Vector(object):
-    __slots__ = ['raw', '_listeners', '_fixed', '__array_interface__']
+
+    __slots__ = ['raw', '_listeners', '_fixed', '__array_interface__',
+                 '__array_struct__']
 
     def __init__(self, value):
         self._listeners = []
         self._fixed = False
         self.raw = value
         self.__array_interface__ = value.__array_interface__
+        self.__array_struct__ = value.__array_struct__
 
     @property
     def size(self):
         return self.raw.size
-
-    def to_ndarray(self):
-        return asarray([self.raw])
 
     @property
     def isfixed(self):
@@ -97,13 +99,20 @@ class Vector(object):
                                 " object has no attribute" +
                                 " '__array_interface__'")
             Vector.__dict__['raw'].__set__(self, value)
+            t = Vector.__dict__['__array_interface__']
+            t.__set__(self, value.__array_interface__)
+            t = Vector.__dict__['__array_struct__']
+            t.__set__(self, value.__array_struct__)
             self._notify()
         else:
             Vector.__dict__[name].__set__(self, value)
 
     def __getattr__(self, name):
         if name == 'value':
-            name = 'raw'
+            v = ndarray_listener(Vector.__dict__['raw'].__get__(self))
+            for l in self._listeners:
+                v.talk_to(l)
+            return v
         return Vector.__dict__[name].__get__(self)
 
     def listen(self, you):

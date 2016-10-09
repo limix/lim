@@ -52,7 +52,6 @@ def test_eye_gradient_2():
 def test_eye_gradient_3():
     cov = EyeCov()
     cov.scale = 2.1
-    random = RandomState()
     a = Apples(5)
     o = Oranges(4)
     cov.set_data((a, o))
