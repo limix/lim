@@ -20,7 +20,7 @@ class LinearMean(Learnable, FuncData):
         return self._effsizes.value
 
     @effsizes.setter
-    def offset(self, effsizes):
+    def effsizes(self, effsizes):
         self._effsizes.value = ascontiguousarray(effsizes, float)
 
     def value(self, x):

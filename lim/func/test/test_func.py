@@ -7,7 +7,6 @@ from lim.cov import LinearCov
 
 def test_UniFuncWrapper_value():
     mean = OffsetMean()
-    random = np.random.RandomState(0)
     n = 10
     o = 1.3
     mean.offset = o
@@ -31,7 +30,6 @@ def test_BinFuncWrapper_value():
 
 def test_UniFuncWrapper_gradient():
     mean = OffsetMean()
-    random = np.random.RandomState(0)
     n = 10
     o = 1.3
     mean.offset = o

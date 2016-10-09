@@ -61,12 +61,13 @@ class Scalar(object):
 
 
 class Vector(object):
-    __slots__ = ['raw', '_listeners', '_fixed']
+    __slots__ = ['raw', '_listeners', '_fixed', '__array_interface__']
 
     def __init__(self, value):
         self._listeners = []
         self._fixed = False
         self.raw = value
+        self.__array_interface__ = value.__array_interface__
 
     @property
     def size(self):
