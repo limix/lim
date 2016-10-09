@@ -19,7 +19,8 @@ def setup_package():
                         'numpy>=1.9', 'numba>=0.27', 'cffi>=1.6',
                         'limix_math>=0.3', 'bidict', 'progressbar2>=3.10',
                         'h5py>=2.6', 'pandas>=0.18', 'nose>=1.3',
-                        'tabulate>=0.7', 'six']
+                        'tabulate>=0.7', 'six',
+                        'ndarray_listener>=1.0']
     tests_require = install_requires
 
     metadata = dict(

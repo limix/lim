@@ -1,10 +1,4 @@
 from __future__ import absolute_import
-from pkg_resources import get_distribution
-
-__version__ = get_distribution('lim').version
-
-# from .data import create_data
-
 from . import cov
 from . import data
 from . import func
@@ -16,6 +10,9 @@ from . import random
 from . import reader
 from . import tool
 from . import util
+from pkg_resources import get_distribution
+
+__version__ = get_distribution('lim').version
 
 
 def test():
