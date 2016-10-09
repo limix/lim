@@ -6,7 +6,9 @@ from numpy import atleast_1d
 from ..util import npy2py_cast
 from ..util import npy2py_type
 
+
 class Vector(object):
+
     def __init__(self, labels, values):
         cvalues = [npy2py_cast(v) for v in values]
         self._map = dict(zip(labels, cvalues))
@@ -41,7 +43,9 @@ class Vector(object):
     def dtype(self):
         return npy2py_type(self._data.dtype)
 
+
 class VectorView(MutableMapping):
+
     def __init__(self, _ref, map_):
         self._ref, self._map = _ref, map_
 

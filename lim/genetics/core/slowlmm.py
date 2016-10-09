@@ -1,5 +1,7 @@
 from __future__ import division
 
+from collections import OrderedSet
+
 from numpy import exp
 from numpy import clip
 from numpy import zeros
@@ -12,33 +14,37 @@ from limix_math.linalg import qs_decomposition
 
 from ..transformation import DesignMatrixTrans
 from ..model import NormalModel
-from ...inference import FastLMM as FastLMMCore
+from ...inference import SlowLMM as SlowLMMCore
 from ...func import maximize_scalar
 from ...func import Learnable
 from ...func import Variables
 from ...func import Scalar
 from ...func import FuncData
+from ...cov import LinearCov
+from ...cov import SumCov
 
 
-class FastLMM(Learnable, FuncData):
+class SlowLMM(Learnable, FuncData):
 
-    def __init__(self, y, covariates, X=None, QS=None):
-        self._logistic = Scalar(0.0)
-        Learnable.__init__(self, Variables(logistic=self._logistic))
+    def __init__(self, y, covariates, Gs):
+        variables = Variables()
+        Learnable.__init__(self, variables)
         FuncData.__init__(self)
 
-        assert (X is None) != (QS is None)
-        if not all_(isfinite(y)):
-            raise ValueError("There are non-finite values in the phenotype.")
+        # cov = SumCov()
+        #
+        # covs = []
+        # for G in Gs:
+        #     linear = LinearCov()
+        #     linear.set_data((G, G))
+        #     covs += [linear]
 
-        self._trans = None
-        if QS is None:
-            self._trans = DesignMatrixTrans(X)
-            X = self._trans.transform(X)
-            QS = qs_decomposition(X)
-            self._X = X
+        # cov = SumCov(covs)
 
-        self._flmmc = FastLMMCore(y, covariates, QS[0][0], QS[0][1], QS[1][0])
+        # self._slowlmmc = FastLMMCore(
+        #     y, covariates, QS[0][0], QS[0][1], QS[1][0])
+
+        # self._slowlmmc = FastLMMCore(y, mean, cov)
 
     @property
     def covariates(self):
@@ -48,14 +54,14 @@ class FastLMM(Learnable, FuncData):
     def covariates(self, v):
         self._flmmc.covariates = v
 
-    def copy(self):
-        o = FastLMM.__new__(FastLMM)
-        o._logistic = self._logistic.copy()
-        Learnable.__init__(o, Variables(logistic=o._logistic))
-        FuncData.__init__(o)
-        o._flmmc = self._flmmc.copy()
-        o._trans = self._trans
-        return o
+    # def copy(self):
+    #     o = FastLMM.__new__(FastLMM)
+    #     o._logistic = self._logistic.copy()
+    #     Learnable.__init__(o, Variables(logistic=o._logistic))
+    #     FuncData.__init__(o)
+    #     o._flmmc = self._flmmc.copy()
+    #     o._trans = self._trans
+    #     return o
 
     def _delta(self):
         v = clip(self._logistic.value, -20, 20)

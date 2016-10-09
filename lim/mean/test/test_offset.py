@@ -1,5 +1,6 @@
-import numpy as np
-import numpy.testing as npt
+from numpy import ones
+from numpy.random import RandomState
+from numpy.testing import assert_almost_equal
 
 from lim.func import check_grad
 
@@ -7,19 +8,18 @@ from lim.mean import OffsetMean
 
 
 def test_value():
-    random = np.random.RandomState(0)
+    random = RandomState(0)
     mean = OffsetMean()
     offset = random.randn()
     mean.offset = offset
 
     n = 10
-    oarr = offset * np.ones(n)
+    oarr = offset * ones(n)
 
-    npt.assert_almost_equal(mean.value(n), oarr)
+    assert_almost_equal(mean.value(n), oarr)
 
 
 def test_gradient():
-    random = np.random.RandomState(0)
     mean = OffsetMean()
 
     n = 10
@@ -32,4 +32,4 @@ def test_gradient():
         mean.offset = x[0]
         return [mean.derivative_offset(n)]
 
-    npt.assert_almost_equal(check_grad(func, grad, [2.0]), 0, decimal=6)
+    assert_almost_equal(check_grad(func, grad, [2.0]), 0, decimal=6)

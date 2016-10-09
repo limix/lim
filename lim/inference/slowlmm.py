@@ -13,7 +13,6 @@ from ..func import merge_variables
 from ..func import maximize_scalar
 from ..func import maximize
 
-from limix_math.linalg import solve
 from limix_math.linalg import sum2diag
 
 
@@ -69,8 +68,8 @@ class SlowLMM(object):
         g = []
         for i in range(len(vars_)):
             dK = self._cov.data('learn').gradient()[i]
-            g.append(- solve(K, dK).diagonal().sum()
-                     + Kiym.dot(dK.dot(Kiym)))
+            g.append(- solve(K, dK).diagonal().sum() +
+                     Kiym.dot(dK.dot(Kiym)))
         return [gi / 2 for gi in g]
 
     def _Kim(self):

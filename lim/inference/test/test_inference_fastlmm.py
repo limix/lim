@@ -8,7 +8,7 @@ from numpy import ones
 from limix_math.linalg import qs_decomposition
 
 from lim.inference.fastlmm import FastLMM
-from lim.inference.regression import RegGP
+from lim.inference import SlowLMM
 from lim.util.fruits import Apples
 from lim.cov import LinearCov
 from lim.cov import EyeCov
@@ -46,7 +46,7 @@ def test_optimization():
 
     y = RegGPSampler(mean, cov).sample(random)
 
-    gp = RegGP(y, mean, cov)
+    gp = SlowLMM(y, mean, cov)
     gp.learn()
     delta = cov_right.scale / (cov_left.scale + cov_right.scale)
     QS = qs_decomposition(DesignMatrixTrans(X).transform(X))

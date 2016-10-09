@@ -1,11 +1,16 @@
 from __future__ import absolute_import
 
+from collections import OrderedDict
+
 import logging
 
 from tabulate import tabulate
 
 from numpy import asarray
 from numpy import sqrt
+
+
+# from ..core import SlowLMM
 
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
@@ -70,7 +75,8 @@ def normalize_covariance_list(GK):
     GK = tuple_it(GK)
 
     if not isinstance(GK, dict):
-        GK = {'K%d' % i: GK[i] for i in range(len(GK))}
+        GK = [('K%d' % i, GK[i]) for i in range(len(GK))]
+        GK = OrderedDict(GK)
 
     return GK
 
@@ -79,8 +85,6 @@ def preprocess(GK, covariates, input_info):
     logger = logging.getLogger(__name__)
 
     input_info.covariates_user_provided = covariates is not None
-    import ipdb
-    ipdb.set_trace()
 
     for (name, GKi) in iter(GK.items()):
         if GKi[1]:
@@ -107,9 +111,3 @@ def normal_decomposition(y, GK, covariates=None, progress=True):
 
     GK = normalize_covariance_list(GK)
     preprocess(GK, covariates, ii)
-
-    # lrt = NormalLRT(y, ii.Q[0], ii.Q[1], ii.S[0], covariates=covariates,
-    #                 progress=progress)
-    # lrt.candidate_markers = ii.effective_X
-    # lrt.pvals()
-    # return lrt

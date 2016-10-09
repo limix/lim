@@ -1,6 +1,8 @@
 import collections
 
+
 class FuncDataWrapper(object):
+
     def __init__(self, target, data):
         self._target = target
         self.raw = data
@@ -11,7 +13,9 @@ class FuncDataWrapper(object):
     def gradient(self):
         return self._target.gradient(*self.raw)
 
+
 class FuncData(object):
+
     def __init__(self):
         self.__data = dict()
 
@@ -26,7 +30,9 @@ class FuncData(object):
     def unset_data(self, purpose='learn'):
         del self.__data[purpose]
 
+
 class FuncDataReduceWrapper(object):
+
     def __init__(self, target, functions):
         self._target = target
         self._functions = functions
@@ -40,7 +46,9 @@ class FuncDataReduceWrapper(object):
             grad += f.gradient()
         return grad
 
+
 class FuncDataReduce(object):
+
     def __init__(self, functions):
         self.__functions = functions
 

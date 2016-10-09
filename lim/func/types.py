@@ -1,8 +1,10 @@
 from numpy import array
 from numpy import asarray
 
+
 class Scalar(object):
     __slots__ = ['raw', '_listeners', '_fixed', 'value']
+
     def __init__(self, value):
         self._listeners = []
         self._fixed = False
@@ -57,8 +59,10 @@ class Scalar(object):
     def __repr__(self):
         return repr(self.raw)
 
+
 class Vector(object):
     __slots__ = ['raw', '_listeners', '_fixed']
+
     def __init__(self, value):
         self._listeners = []
         self._fixed = False
@@ -106,8 +110,10 @@ class Vector(object):
     def __repr__(self):
         return repr(self.raw)
 
+
 class Matrix(object):
     __slots__ = ['raw', '_listeners', '_fixed']
+
     def __init__(self, value):
         self._listeners = []
         self._fixed = False
