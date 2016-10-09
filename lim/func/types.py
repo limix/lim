@@ -86,8 +86,16 @@ class Vector(object):
     def unfix(self):
         self._fixed = False
 
+    @property
+    def shape(self):
+        return self.raw.shape
+
     def __setattr__(self, name, value):
         if name == 'value':
+            if not hasattr(value, "__array_interface__"):
+                raise TypeError(("'%s'" % type(value)) +
+                                " object has no attribute" +
+                                " '__array_interface__'")
             Vector.__dict__['raw'].__set__(self, value)
             self._notify()
         else:

@@ -21,7 +21,12 @@ class LinearMean(Learnable, FuncData):
 
     @effsizes.setter
     def effsizes(self, effsizes):
-        self._effsizes.value = ascontiguousarray(effsizes, float)
+        effsizes = ascontiguousarray(effsizes, float)
+        if effsizes.shape != self._effsizes.shape:
+            raise ValueError("could not broadcast input array" +
+                             " from shape %s into shape %s" %
+                             (effsizes.shape, self._effsizes.shape))
+        self._effsizes.value = effsizes
 
     def value(self, x):
         return x.dot(self._effsizes)

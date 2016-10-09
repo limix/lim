@@ -5,3 +5,4 @@ from .matrix import MatrixView
 from .matrix import NPyMatrix
 from .matrix import normalize_access
 from .matrix import Slice
+from .util import asarray
