@@ -67,6 +67,10 @@ def test_GLMMSampler_poisson():
 
     assert_equal(sampler.sample(random), [2, 0, 1, 2, 1, 1, 1, 2, 0, 0])
 
+    cov2.scale = 100.
+    sampler = GLMMSampler(lik, mean, cov)
+    assert_equal(sampler.sample(random), [0, 0, 0, 0, 1, 0, 0, 1196, 0, 0])
+
 
 def test_GLMMSampler_binomial():
     random = RandomState(4503)
