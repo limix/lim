@@ -3,7 +3,9 @@ from numpy import add
 from ..func import LearnableReduce
 from ..func import FuncDataReduce
 
+
 class SumCov(LearnableReduce, FuncDataReduce):
+
     def __init__(self, covariances):
         self._covariances = [c for c in covariances]
         LearnableReduce.__init__(self, self._covariances, 'sum')

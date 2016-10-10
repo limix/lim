@@ -10,6 +10,7 @@ from lim.lik import Binomial
 from lim.lik import Poisson
 from lim.link import LogitLink
 from lim.link import LogLink
+from lim.util.fruits import Apples
 
 
 def test_binomial_sampler():
@@ -54,14 +55,13 @@ def test_GLMMSampler_poisson():
     cov1.set_data((X, X), 'sample')
 
     cov2 = EyeCov()
-    cov2.set_data(10, 'sample')
+    a = Apples(10)
+    cov2.set_data((a, a), 'sample')
 
     cov = SumCov([cov1, cov2])
 
     sampler = GLMMSampler(lik, mean, cov)
 
-    import pytest
-    pytest.set_trace()
     print(sampler.sample(random))
 
 
