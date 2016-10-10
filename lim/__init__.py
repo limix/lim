@@ -1,9 +1,4 @@
-from __future__ import absolute_import
-from pkg_resources import get_distribution
-
-__version__ = get_distribution('lim').version
-
-# from .data import create_data
+from __future__ import absolute_import as _absolute_import
 
 from . import cov
 from . import data
@@ -16,6 +11,14 @@ from . import random
 from . import reader
 from . import tool
 from . import util
+
+from pkg_resources import get_distribution as _get_distribution
+from pkg_resources import DistributionNotFound as _DistributionNotFound
+
+try:
+    __version__ = _get_distribution('lim').version
+except _DistributionNotFound:
+    __version__ = 'unknown'
 
 
 def test():
@@ -34,5 +37,3 @@ def test():
         print("Congratulations. All tests have passed!")
 
     return return_code
-
-__all__ = ['genetics', 'reader']

@@ -18,4 +18,4 @@ class GLMMSampler(object):
         K = self._cov.data('sample').value()
         u = random_state.multivariate_normal(m, K)
 
-        return self._lik.sample(u)
+        return self._lik.sample(u, random_state)
