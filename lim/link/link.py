@@ -26,3 +26,15 @@ class Logit(Link):
 
     def inv(self, x):
         return 1 / (1 + exp(-x))
+
+
+class Log(Link):
+
+    def __init__(self):
+        super(Log, self).__init__()
+
+    def value(self, x):
+        return log(x)
+
+    def inv(self, x):
+        return exp(x)
