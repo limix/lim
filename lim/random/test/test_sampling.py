@@ -4,15 +4,17 @@ from numpy.testing import assert_equal
 from lim.random import GLMMSampler
 from lim.mean import OffsetMean
 from lim.cov import LinearCov
+from lim.cov import EyeCov
+from lim.cov import SumCov
 from lim.lik import Binomial
 from lim.lik import Poisson
-from lim.link import LogLinkitLink
+from lim.link import LogitLink
 from lim.link import LogLink
 
 
 def test_binomial_sampler():
     random = RandomState(4503)
-    link = LogLinkitLink()
+    link = LogitLink()
     binom = Binomial(5, 12, link)
     assert_equal(binom.sample(0, random), 7)
 
@@ -29,7 +31,7 @@ def test_poisson_sampler():
     assert_equal(poisson.sample(+5, random), 158)
 
 
-def test_GLMMSampler():
+def test_GLMMSampler_poisson():
     random = RandomState(4503)
     X = random.randn(10, 15)
     link = LogLink()
@@ -43,6 +45,44 @@ def test_GLMMSampler():
     sampler = GLMMSampler(lik, mean, cov)
     assert_equal(sampler.sample(random),
                  [0, 289, 0, 11, 0, 0, 176, 0, 228, 82])
+
+    mean = OffsetMean()
+    mean.offset = 0.0
+    mean.set_data(10, 'sample')
+
+    cov1 = LinearCov()
+    cov1.set_data((X, X), 'sample')
+
+    cov2 = EyeCov()
+    cov2.set_data(10, 'sample')
+
+    cov = SumCov([cov1, cov2])
+
+    sampler = GLMMSampler(lik, mean, cov)
+
+    import pytest
+    pytest.set_trace()
+    print(sampler.sample(random))
+
+
+def test_GLMMSampler_binomial():
+    random = RandomState(4503)
+    X = random.randn(10, 15)
+    link = LogitLink()
+    lik = Binomial(3, 5, link)
+
+    mean = OffsetMean()
+    mean.offset = 1.2
+    mean.set_data(10, 'sample')
+    cov = LinearCov()
+    cov.set_data((X, X), 'sample')
+    sampler = GLMMSampler(lik, mean, cov)
+    assert_equal(sampler.sample(random),
+                 [0, 5, 0, 5, 1, 1, 5, 0, 5, 5])
+
+    mean.offset = 0.
+    assert_equal(sampler.sample(random), [5, 4, 1, 0, 0, 1, 4, 5, 5, 0])
+
 
 if __name__ == '__main__':
     __import__('pytest').main([__file__, '-s'])

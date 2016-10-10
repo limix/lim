@@ -16,10 +16,10 @@ class Link(object):
         raise NotImplementedError
 
 
-class LogLinkitLink(Link):
+class LogitLink(Link):
 
     def __init__(self):
-        super(LogLinkitLink, self).__init__()
+        super(LogitLink, self).__init__()
 
     def value(self, x):
         return log(x / (1 - x))

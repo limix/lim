@@ -1,2 +1,2 @@
-from .link import LogLinkitLink
+from .link import LogitLink
 from .link import LogLink
