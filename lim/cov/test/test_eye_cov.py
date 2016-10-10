@@ -27,11 +27,11 @@ def test_eye_value():
 #
 #     def func(x):
 #         cov.scale = exp(x[0])
-#         return cov.data().value()
+#         return as_data_function(cov).value()
 #
 #     def grad(x):
 #         cov.scale = exp(x[0])
-#         return cov.data().gradient()
+#         return as_data_function(cov).gradient()
 #
 #     npt.assert_almost_equal(check_grad(func, grad, [0.1]), 0)
 #
@@ -44,11 +44,11 @@ def test_eye_value():
 #
 #     def func(x):
 #         cov.scale = exp(x[0])
-#         return cov.data().value()
+#         return as_data_function(cov).value()
 #
 #     def grad(x):
 #         cov.scale = exp(x[0])
-#         return cov.data().gradient()
+#         return as_data_function(cov).gradient()
 #
 #     npt.assert_almost_equal(check_grad(func, grad, [0.1]), 0)
 #
@@ -62,11 +62,11 @@ def test_eye_value():
 #
 #     def func(x):
 #         cov.scale = exp(x[0])
-#         return cov.data().value()
+#         return as_data_function(cov).value()
 #
 #     def grad(x):
 #         cov.scale = exp(x[0])
-#         return cov.data().gradient()
+#         return as_data_function(cov).gradient()
 #
 #     npt.assert_almost_equal(check_grad(func, grad, [0.1]), 0)
 #

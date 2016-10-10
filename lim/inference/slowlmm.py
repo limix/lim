@@ -13,6 +13,7 @@ from limix_math.linalg import sum2diag
 from optimix import merge_variables
 from optimix import maximize_scalar
 from optimix import maximize
+from optimix import as_data_function
 
 from ..math import epsilon
 
@@ -33,9 +34,9 @@ class SlowLMM(object):
         cov = self._cov
         Kiym = self._Kim()
 
-        ym = y - mean.data('learn').value()
+        ym = y - as_data_function(mean).value()
 
-        (s, logdet) = slogdet(cov.data('learn').value())
+        (s, logdet) = slogdet(as_data_function(cov).value())
         assert s == 1.
 
         n = len(y)
@@ -55,7 +56,7 @@ class SlowLMM(object):
 
         g = []
         for i in range(len(vars_)):
-            dm = mean.data('learn').gradient()[i]
+            dm = as_data_function(mean).gradient()[i]
             g.append(dm.T.dot(Kiym))
         return g
 
@@ -63,19 +64,19 @@ class SlowLMM(object):
         cov = self._cov
 
         vars_ = cov.variables().select(fixed=False)
-        K = cov.data('learn').value()
+        K = as_data_function(cov).value()
         Kiym = self._Kim()
 
         g = []
         for i in range(len(vars_)):
-            dK = self._cov.data('learn').gradient()[i]
+            dK = as_data_function(cov).gradient()[i]
             g.append(- solve(K, dK).diagonal().sum() +
                      Kiym.dot(dK.dot(Kiym)))
         return [gi / 2 for gi in g]
 
     def _Kim(self):
-        m = self._mean.data('learn').value()
-        K = self._cov.data('learn').value()
+        m = as_data_function(self._mean).value()
+        K = as_data_function(self._cov).value()
         return solve(K, self._y - m)
 
     def variables(self):
@@ -108,7 +109,7 @@ class SlowLMM(object):
         K_lp = cov.data('learn_predict').value()
 
         emean = m_p + K_lp.T.dot(_Kim)
-        K = self._cov.data('learn').value()
+        K = as_data_function(cov).value()
         ecov = K_pp - K_lp.T.dot(solve(K, K_lp))
 
         return SlowLMMPredictor(emean, ecov)

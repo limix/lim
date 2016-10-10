@@ -12,11 +12,11 @@ class EyeCov(Function):
 
     @property
     def scale(self):
-        return exp(self.get('logscale').value)
+        return exp(self.get('logscale'))
 
     @scale.setter
     def scale(self, scale):
-        self.get('logscale').value = log(scale)
+        self.set('logscale', log(scale))
 
     def value(self, x0, x1):
         return self.scale * (x0 == x1)

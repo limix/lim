@@ -173,5 +173,5 @@ def test_maximize_4():
 
     cov = SumCov([cov1, cov2])
 
-    assert_almost_equal(cov.data('learn').value(),
+    assert_almost_equal(as_data_function(cov).value(),
                         1.0 * X2.dot(X2.T) + 0.5 * X3.dot(X3.T))

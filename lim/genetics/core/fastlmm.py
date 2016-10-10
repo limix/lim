@@ -22,8 +22,7 @@ from ...inference import FastLMM as FastLMMCore
 class FastLMM(Function):
 
     def __init__(self, y, covariates, X=None, QS=None):
-        self._logistic = Scalar(0.0)
-        super(FastLMM, self).__init__(logistic=self._logistic)
+        super(FastLMM, self).__init__(logistic=Scalar(0.0))
 
         assert (X is None) != (QS is None)
         if not all_(isfinite(y)):
@@ -48,14 +47,13 @@ class FastLMM(Function):
 
     def copy(self):
         o = FastLMM.__new__(FastLMM)
-        o._logistic = self._logistic.copy()
-        super(FastLMM, self).__init__(o, logistic=o._logistic)
+        super(FastLMM, self).__init__(logistic=Scalar(self.get('logistic')))
         o._flmmc = self._flmmc.copy()
         o._trans = self._trans
         return o
 
     def _delta(self):
-        v = clip(self._logistic.value, -20, 20)
+        v = clip(self.get('logistic'), -20, 20)
         x = 1 / (1 + exp(-v))
         return clip(x, 1e-5, 1 - 1e-5)
 
