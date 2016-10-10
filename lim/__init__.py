@@ -12,6 +12,7 @@ from . import reader
 from . import tool
 from . import util
 from . import link
+from . import lik
 
 from pkg_resources import get_distribution as _get_distribution
 from pkg_resources import DistributionNotFound as _DistributionNotFound
