@@ -134,7 +134,7 @@ Definitions:
   u: background signal    ~ Normal(0, {v} * Kinship)
   e: environmental signal ~ Normal(0, {e} * I)
 
-Log marginal likelihood: {lml}
+LogLink marginal likelihood: {lml}
 
 Statistics (latent space):
   Total variance:         {tvar}     {vs}_o + {vs}_u + {vs}_e

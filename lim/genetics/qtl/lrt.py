@@ -114,12 +114,12 @@ class LikelihoodRatioTest(object):
         self._alt_model_ready = True
 
     def null_lml(self):
-        """Log marginal likelihood for the null hypothesis."""
+        """LogLink marginal likelihood for the null hypothesis."""
         self._compute_statistics()
         return self._null_lml
 
     def alt_lmls(self):
-        """Log marginal likelihoods for the alternative hypothesis."""
+        """LogLink marginal likelihoods for the alternative hypothesis."""
         self._compute_statistics()
         return self._alt_lmls
 
