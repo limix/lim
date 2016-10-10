@@ -5,7 +5,7 @@ from numpy.random import RandomState
 from numpy.testing import assert_almost_equal
 
 from lim.inference import SlowLMM
-from lim.func import check_grad
+from optimix import check_grad
 from lim.cov import LinearCov
 from lim.cov import SumCov
 from lim.mean import OffsetMean

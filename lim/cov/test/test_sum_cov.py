@@ -3,7 +3,7 @@ import numpy.testing as npt
 
 from lim.cov import SumCov
 from lim.cov import LinearCov
-from lim.func import check_grad
+from optimix import check_grad
 
 
 def test_value():

@@ -12,25 +12,21 @@ from numpy import set_printoptions
 
 from limix_math.linalg import qs_decomposition
 
+from optimix import maximize_scalar
+from optimix import Scalar
+from optimix import Function
+
 from ..transformation import DesignMatrixTrans
 from ..model import NormalModel
 from ...inference import SlowLMM as SlowLMMCore
-from ...func import maximize_scalar
-from ...func import Learnable
-from ...func import Variables
-from ...func import Scalar
-from ...func import FuncData
 from ...cov import LinearCov
 from ...cov import SumCov
 
 
-class SlowLMM(Learnable, FuncData):
+class SlowLMM(Function):
 
     def __init__(self, y, covariates, Gs):
-        variables = Variables()
-        Learnable.__init__(self, variables)
-        FuncData.__init__(self)
-
+        super(SlowLMM, self).__init__()
         # cov = SumCov()
         #
         # covs = []

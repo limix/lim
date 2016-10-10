@@ -1,26 +1,22 @@
 from numpy import exp
 from numpy import log
 
-from ..func import Learnable
-from ..func import Variables
-from ..func import Scalar
-from ..func import FuncData
+from optimix import Scalar
+from optimix import Function
 
 
-class LinearCov(Learnable, FuncData):
+class LinearCov(Function):
 
     def __init__(self):
-        self._logscale = Scalar(0.0)
-        Learnable.__init__(self, Variables(logscale=self._logscale))
-        FuncData.__init__(self)
+        Function.__init__(self, logscale=Scalar(0.0))
 
     @property
     def scale(self):
-        return exp(self._logscale.value)
+        return exp(self.get('logscale').value)
 
     @scale.setter
     def scale(self, scale):
-        self._logscale.value = log(scale)
+        self.get('logscale').value = log(scale)
 
     def value(self, x0, x1):
         return self.scale * x0.dot(x1.T)

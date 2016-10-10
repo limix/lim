@@ -8,12 +8,13 @@ from numpy.linalg import slogdet
 
 from scipy.stats import multivariate_normal
 
-from ..math import epsilon
-from ..func import merge_variables
-from ..func import maximize_scalar
-from ..func import maximize
-
 from limix_math.linalg import sum2diag
+
+from optimix import merge_variables
+from optimix import maximize_scalar
+from optimix import maximize
+
+from ..math import epsilon
 
 
 class SlowLMM(object):

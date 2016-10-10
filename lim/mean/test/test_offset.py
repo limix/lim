@@ -2,7 +2,7 @@ from numpy import ones
 from numpy.random import RandomState
 from numpy.testing import assert_almost_equal
 
-from lim.func import check_grad
+from optimix import check_grad
 
 from lim.mean import OffsetMean
 

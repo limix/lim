@@ -1,15 +1,13 @@
 from numpy import add
 
-from ..func import LearnableReduce
-from ..func import FuncDataReduce
+from optimix import FunctionReduce
 
 
-class SumCov(LearnableReduce, FuncDataReduce):
+class SumCov(FunctionReduce):
 
     def __init__(self, covariances):
         self._covariances = [c for c in covariances]
-        LearnableReduce.__init__(self, self._covariances, 'sum')
-        FuncDataReduce.__init__(self, self._covariances)
+        FunctionReduce.__init__(self, self._covariances, 'sum')
 
     def value_reduce(self, values):
         return add.reduce(values)

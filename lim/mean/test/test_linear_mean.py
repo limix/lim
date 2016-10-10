@@ -3,8 +3,8 @@ from numpy import array
 from numpy.random import RandomState
 from numpy.testing import assert_almost_equal
 
-from lim.func import check_grad
-from lim.func.check_grad import approx_fprime
+from optimix import check_grad
+from optimix import approx_fprime
 
 from lim.mean import LinearMean
 

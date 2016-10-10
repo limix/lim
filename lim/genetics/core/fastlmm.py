@@ -10,22 +10,20 @@ from numpy import set_printoptions
 
 from limix_math.linalg import qs_decomposition
 
+from optimix import maximize_scalar
+from optimix import Function
+from optimix import Scalar
+
 from ..transformation import DesignMatrixTrans
 from ..model import NormalModel
 from ...inference import FastLMM as FastLMMCore
-from ...func import maximize_scalar
-from ...func import Learnable
-from ...func import Variables
-from ...func import Scalar
-from ...func import FuncData
 
 
-class FastLMM(Learnable, FuncData):
+class FastLMM(Function):
 
     def __init__(self, y, covariates, X=None, QS=None):
         self._logistic = Scalar(0.0)
-        Learnable.__init__(self, Variables(logistic=self._logistic))
-        FuncData.__init__(self)
+        super(FastLMM, self).__init__(logistic=self._logistic)
 
         assert (X is None) != (QS is None)
         if not all_(isfinite(y)):
@@ -51,8 +49,7 @@ class FastLMM(Learnable, FuncData):
     def copy(self):
         o = FastLMM.__new__(FastLMM)
         o._logistic = self._logistic.copy()
-        Learnable.__init__(o, Variables(logistic=o._logistic))
-        FuncData.__init__(o)
+        super(FastLMM, self).__init__(o, logistic=o._logistic)
         o._flmmc = self._flmmc.copy()
         o._trans = self._trans
         return o
