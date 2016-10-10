@@ -58,11 +58,14 @@ def test_GLMMSampler_poisson():
     a = Apples(10)
     cov2.set_data((a, a), 'sample')
 
+    cov1.scale = 1e-4
+    cov2.scale = 1e-4
+
     cov = SumCov([cov1, cov2])
 
     sampler = GLMMSampler(lik, mean, cov)
 
-    print(sampler.sample(random))
+    assert_equal(sampler.sample(random), [2, 0, 1, 2, 1, 1, 1, 2, 0, 0])
 
 
 def test_GLMMSampler_binomial():
@@ -83,6 +86,31 @@ def test_GLMMSampler_binomial():
     mean.offset = 0.
     assert_equal(sampler.sample(random), [5, 4, 1, 0, 0, 1, 4, 5, 5, 0])
 
+    mean = OffsetMean()
+    mean.offset = 0.0
+    mean.set_data(10, 'sample')
+
+    cov1 = LinearCov()
+    cov1.set_data((X, X), 'sample')
+
+    cov2 = EyeCov()
+    a = Apples(10)
+    cov2.set_data((a, a), 'sample')
+
+    cov1.scale = 1e-4
+    cov2.scale = 1e-4
+
+    cov = SumCov([cov1, cov2])
+
+    lik = Binomial(3, 100, link)
+    sampler = GLMMSampler(lik, mean, cov)
+    assert_equal(sampler.sample(random), [
+                 56, 56, 55, 51, 59, 45, 47, 43, 51, 38])
+
+    cov2.scale = 100.
+    sampler = GLMMSampler(lik, mean, cov)
+    assert_equal(sampler.sample(random), [99, 93, 99, 75, 77, 0, 0, 100, 99,
+                                          12])
 
 if __name__ == '__main__':
     __import__('pytest').main([__file__, '-s'])
