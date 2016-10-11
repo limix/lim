@@ -36,6 +36,7 @@ class FastLMM(Function):
             self._X = X
 
         self._flmmc = FastLMMCore(y, covariates, QS[0][0], QS[0][1], QS[1][0])
+        self.set_nodata()
 
     @property
     def covariates(self):
@@ -47,9 +48,10 @@ class FastLMM(Function):
 
     def copy(self):
         o = FastLMM.__new__(FastLMM)
-        super(FastLMM, self).__init__(logistic=Scalar(self.get('logistic')))
+        super(FastLMM, o).__init__(logistic=Scalar(self.get('logistic')))
         o._flmmc = self._flmmc.copy()
         o._trans = self._trans
+        o.set_nodata()
         return o
 
     def _delta(self):
@@ -84,7 +86,7 @@ class FastLMM(Function):
         return self._flmmc.mean
 
     def learn(self, progress=None):
-        maximize_scalar(self, progress)
+        maximize_scalar(self, progress=progress)
         self._flmmc.delta = self._delta()
 
     def value(self):
