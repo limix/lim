@@ -19,8 +19,7 @@ def setup_package():
                         'numpy>=1.9', 'numba>=0.27', 'cffi>=1.6',
                         'limix_math>=1.0', 'bidict', 'progressbar2>=3.10',
                         'h5py>=2.6', 'pandas>=0.18', 'nose>=1.3',
-                        'tabulate>=0.7', 'six', 'ndarray_listener>=1.0',
-                        'optimix>=1.0.12']
+                        'tabulate>=0.7', 'six', 'optimix>=1.0.12']
     tests_require = install_requires
 
     metadata = dict(
@@ -35,7 +34,6 @@ def setup_package():
         install_requires=install_requires,
         setup_requires=setup_requires,
         tests_require=tests_require,
-        cffi_modules=["lim/reader/cplink/bed.py:ffi"],
         include_package_data=True,
     )
 

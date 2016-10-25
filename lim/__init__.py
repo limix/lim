@@ -1,13 +1,11 @@
 from __future__ import absolute_import as _absolute_import
 
 from . import cov
-from . import data
 from . import genetics
 from . import inference
 from . import math
 from . import mean
 from . import random
-from . import reader
 from . import tool
 from . import util
 from pkg_resources import get_distribution as _get_distribution
