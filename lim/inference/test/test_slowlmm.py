@@ -6,7 +6,6 @@ from numpy.testing import assert_almost_equal
 
 from lim.inference import SlowLMM
 from optimix import check_grad
-from optimix import as_data_function
 from lim.cov import LinearCov
 from lim.cov import SumCov
 from lim.mean import OffsetMean
@@ -31,7 +30,7 @@ def test_slowlmm_value_1():
     y = random.randn(N)
 
     lmm = SlowLMM(y, mean, cov)
-    assert_almost_equal(lmm.lml(), -153.623791551399108)
+    assert_almost_equal(lmm.feed().value(), -153.623791551399108)
 
 
 def test_slowlmm_value_2():
@@ -50,10 +49,10 @@ def test_slowlmm_value_2():
     y = random.randn(N)
 
     lmm = SlowLMM(y, mean, cov)
-    assert_almost_equal(lmm.lml(), -153.091074766)
+    assert_almost_equal(lmm.feed().value(), -153.091074766)
 
     mean.effsizes = [3.4, 1.11, -6.1]
-    assert_almost_equal(lmm.lml(), -178.273116338)
+    assert_almost_equal(lmm.feed().value(), -178.273116338)
 
 
 def test_regression_gradient():
@@ -77,15 +76,15 @@ def test_regression_gradient():
 
     def func(x):
         cov.scale = exp(x[0])
-        return lmm.value(as_data_function(mean).value(),
-                         as_data_function(cov).value())
+        return lmm.value(mean.feed().value(),
+                         cov.feed().value())
 
     def grad(x):
         cov.scale = exp(x[0])
-        return lmm.gradient(as_data_function(mean).value(),
-                            as_data_function(cov).value(),
-                            as_data_function(mean).gradient(),
-                            as_data_function(cov).gradient())
+        return lmm.gradient(mean.feed().value(),
+                            cov.feed().value(),
+                            mean.feed().gradient(),
+                            cov.feed().gradient())
 
     assert_almost_equal(check_grad(func, grad, [0]), 0)
 
@@ -108,17 +107,12 @@ def test_maximize_1():
     y = random.randn(N)
 
     lmm = SlowLMM(y, mean, cov)
-    m = as_data_function(mean).value()
-    K = as_data_function(cov).value()
+    m = mean.feed().value()
+    K = cov.feed().value()
     assert_almost_equal(lmm.value(m, K), -153.62379155139911)
 
-
-    lmm.learn()
-    m = as_data_function(mean).value()
-    K = as_data_function(cov).value()
-    assert_almost_equal(lmm.value(m, K), -79.899212241487518)
-    assert_almost_equal(as_data_function(lmm).value(), -79.899212241487518)
-
+    lmm.feed().maximize()
+    assert_almost_equal(lmm.feed().value(), -79.899212241487518)
 
 
 def test_maximize_2():
@@ -138,8 +132,8 @@ def test_maximize_2():
     y = random.randn(N)
 
     lmm = SlowLMM(y, mean, cov)
-    lmm.learn()
-    assert_almost_equal(as_data_function(lmm).value(), -79.365136339619610)
+    lmm.feed().maximize()
+    assert_almost_equal(lmm.feed().value(), -79.365136339619610)
 
 def test_maximize_3():
     random = RandomState(94584)
@@ -159,9 +153,9 @@ def test_maximize_3():
 
     lmm = SlowLMM(y, mean, cov)
 
-    lmm.learn()
+    lmm.feed().maximize()
 
-    assert_almost_equal(as_data_function(lmm).value(), -73.5638040543)
+    assert_almost_equal(lmm.feed().value(), -73.5638040543)
 
 
 def test_maximize_4():
@@ -185,5 +179,5 @@ def test_maximize_4():
 
     cov = SumCov([cov1, cov2])
 
-    assert_almost_equal(as_data_function(cov).value(),
+    assert_almost_equal(cov.feed().value(),
                         1.0 * X2.dot(X2.T) + 0.5 * X3.dot(X3.T))

@@ -1,8 +1,5 @@
 from numpy.random import RandomState
 
-from optimix import as_data_function
-
-
 class RegGPSampler(object):
 
     def __init__(self, mean, cov):
@@ -13,6 +10,6 @@ class RegGPSampler(object):
         if random_state is None:
             random_state = RandomState()
 
-        m = as_data_function(self._mean, 'sample').value()
-        K = as_data_function(self._cov, 'sample').value()
+        m = self._mean.feed('sample').value()
+        K = self._cov.feed('sample').value()
         return random_state.multivariate_normal(m, K)
