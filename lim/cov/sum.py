@@ -4,7 +4,6 @@ from optimix import FunctionReduce
 
 
 class SumCov(FunctionReduce):
-
     def __init__(self, covariances):
         self._covariances = [c for c in covariances]
         FunctionReduce.__init__(self, self._covariances, 'sum')

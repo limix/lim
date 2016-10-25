@@ -1,9 +1,12 @@
+from __future__ import division
+
 from numpy.random import RandomState
 
 
-class RegGPSampler(object):
+class GLMMSampler(object):
 
-    def __init__(self, mean, cov):
+    def __init__(self, lik, mean, cov):
+        self._lik = lik
         self._mean = mean
         self._cov = cov
 
@@ -13,4 +16,6 @@ class RegGPSampler(object):
 
         m = self._mean.feed('sample').value()
         K = self._cov.feed('sample').value()
-        return random_state.multivariate_normal(m, K)
+        u = random_state.multivariate_normal(m, K)
+
+        return self._lik.sample(u, random_state)
