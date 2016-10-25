@@ -9,5 +9,4 @@ from . import heritability
 from . import phenotype
 from . import qtl
 from . import variance
-from .model import NormalModel
-from .model import BinomialModel
+from .model import CanonicalModel
