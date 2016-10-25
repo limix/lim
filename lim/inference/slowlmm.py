@@ -12,9 +12,6 @@ from limix_math.linalg import sum2diag
 
 from optimix import Composite
 
-from ..math import epsilon
-
-
 class SlowLMM(Composite):
 
     def __init__(self, y, mean, cov):

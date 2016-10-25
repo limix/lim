@@ -3,7 +3,6 @@ from __future__ import absolute_import as _absolute_import
 from . import cov
 from . import genetics
 from . import inference
-from . import math
 from . import mean
 from . import random
 from . import tool
