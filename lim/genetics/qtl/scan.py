@@ -25,7 +25,6 @@ from limix_math.linalg import _QS_from_K_split
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
 from ...util.block import Block
-from ...util.greek import get_greek
 from ..core import FastLMM
 from .lrt import NormalLRT
 from .lrt import BinomialLRT

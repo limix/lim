@@ -4,7 +4,7 @@ from six import string_types
 
 from numpy import ndarray
 
-from ..util import get_greek
+from limix_util import symbol
 from ..util import unicode_compatible
 
 
@@ -94,9 +94,9 @@ class BinomialModel(object):
         d['gra'] = self.genetic_ratio
         d['her'] = self.heritability
 
-        d['eps'] = get_greek('epsilon')
-        d['sum'] = get_greek('Sigma')
-        d['bone'] = u'\U0001d7cf'
+        d['eps'] = symbol.epsilon
+        d['sum'] = symbol.nsum
+        d['bone'] = symbol.bone
 
         d = {k: _stringit(v) for (k, v) in d.items()}
 
