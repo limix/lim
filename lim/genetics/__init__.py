@@ -9,5 +9,6 @@ from .core import FastLMM
 from .transformation import DesignMatrixTrans
 from . import heritability
 from . import qtl
+from . import variance
 from .model import NormalModel
 from .model import BinomialModel

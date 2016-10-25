@@ -120,6 +120,7 @@ def test_maximize_1():
     assert_almost_equal(as_data_function(lmm).value(), -79.899212241487518)
 
 
+
 def test_maximize_2():
     random = RandomState(94584)
     N = 50
@@ -159,6 +160,7 @@ def test_maximize_3():
     lmm = SlowLMM(y, mean, cov)
 
     lmm.learn()
+
     assert_almost_equal(as_data_function(lmm).value(), -73.5638040543)
 
 
