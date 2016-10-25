@@ -25,7 +25,6 @@ from limix_math.linalg import _QS_from_K_split
 from ..phenotype import NormalPhenotype
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
-from ...util.block import Block
 
 
 class InputInfo(object):
