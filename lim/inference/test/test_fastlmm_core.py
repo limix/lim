@@ -15,7 +15,7 @@ from lim.cov import EyeCov
 from lim.cov import SumCov
 from lim.mean import OffsetMean
 from lim.random import RegGPSampler
-from lim.genetics import DesignMatrixTrans
+from lim.util import DesignMatrixTrans
 
 
 def test_optimization():

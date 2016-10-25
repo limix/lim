@@ -6,6 +6,7 @@ The provided analysis are:
 """
 
 from . import heritability
+from . import phenotype
 from . import qtl
 from . import variance
 from .model import NormalModel

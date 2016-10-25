@@ -22,42 +22,10 @@ from numpy import nan
 from limix_math.linalg import qs_decomposition
 from limix_math.linalg import _QS_from_K_split
 
+from ..phenotype import NormalPhenotype
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
 from ...util.block import Block
-
-
-class NormalPhenotypeInfo(object):
-
-    def __init__(self, y):
-        self.y = y
-
-    def get_info(self):
-        lik = self.likelihood
-        t = [['Likelihood', lik[0].upper() + lik[1:]]]
-        if self.likelihood == 'normal':
-            t.append(['Phenotype mean', self.phenotype.mean()])
-            t.append(['Phenotype std', self.phenotype.std()])
-            mima = (self.phenotype.min(), self.phenotype.max())
-            t.append(['Phenotype (min, max)', mima])
-        return t
-
-
-class BinomialPhenotypeInfo(object):
-
-    def __init__(self, nsuccesses, ntrials):
-        self.nsuccesses = nsuccesses
-        self.ntrials = ntrials
-
-    def get_info(self):
-        lik = self.likelihood
-        t = [['Likelihood', lik[0].upper() + lik[1:]]]
-        if self.likelihood == 'normal':
-            t.append(['Phenotype mean', self.phenotype.mean()])
-            t.append(['Phenotype std', self.phenotype.std()])
-            mima = (self.phenotype.min(), self.phenotype.max())
-            t.append(['Phenotype (min, max)', mima])
-        return t
 
 
 class InputInfo(object):
@@ -182,22 +150,22 @@ def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
         progress    (bool)     : Shows progress. Defaults to `True`.
 
     Returns:
-        A :class:`lim.genetics.qtl.LikelihoodRatioTest` instance.
+        A :class:`lim.genetics.qtl._canonical.CanonicalLRTScan` instance.
     """
     logger = logging.getLogger(__name__)
     logger.info('Normal association scan has started.')
     y = asarray(y, dtype=float)
 
     ii = InputInfo()
-    ii.phenotype_info = NormalPhenotypeInfo(y)
+    ii.phenotype_info = NormalPhenotype(y)
 
     genetic_preprocess(X, G, K, covariates, ii)
 
-    from .canonical import CanonicalLRTScan
+    from ._canonical import CanonicalLRTScan
     lrt = CanonicalLRTScan(y, ii.Q[0], ii.Q[1], ii.S[0], covariates=covariates,
                            progress=progress)
     lrt.candidate_markers = ii.effective_X
-    lrt.pvals()
+    lrt.pvalues()
     return lrt
 
 
@@ -250,9 +218,9 @@ def binomial_scan(nsuccesses, ntrials, X, G=None, K=None, covariates=None,
 
     genetic_preprocess(X, G, K, covariates, ii)
 
-    from .lrt import BinomialLRT
+    # from .lrt import BinomialLRT
     lrt = BinomialLRT(nsuccesses, ntrials, ii.Q[0], ii.Q[1], ii.S[0],
                       covariates=covariates, progress=progress)
     lrt.candidate_markers = ii.effective_X
-    lrt.pvals()
+    lrt.pvalues()
     return lrt

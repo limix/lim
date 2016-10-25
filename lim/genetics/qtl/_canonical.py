@@ -8,7 +8,7 @@ from numpy import hstack
 from numpy import array
 from numpy import ones
 
-from .lrt import LikelihoodRatioTestScan
+from ._lrt import LikelihoodRatioTestScan
 from ...inference import FastLMM
 from ...util import offset_covariate
 
@@ -20,7 +20,7 @@ class CanonicalLRTScan(LikelihoodRatioTestScan):
         self._Q0 = Q0
         self._Q1 = Q1
         self._S0 = S0
-        self._covariates = offset_covariate(covariates)
+        self._covariates = offset_covariate(covariates, len(y))
 
     def _learn_null_model(self, progress):
         y = self._y

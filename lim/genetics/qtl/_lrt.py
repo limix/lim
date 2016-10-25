@@ -95,10 +95,6 @@ class LikelihoodRatioTestScan(object):
         else:
             progress = NullBar()
 
-        # self._prepare_for_scan()
-        # for i in progress((i for i in range(nmarkers))):
-        #     self._process_marker(i)
-
         self._learn_alt_models(progress)
 
         self._alt_model_ready = True
@@ -146,23 +142,23 @@ class LikelihoodRatioTestScan(object):
     def _learn_alt_models(self, progress):
         raise NotImplementError
 
-    def __str__(self):
-        snull = str(self.null_model())
-        snull = 'Null model:\n\n' + _indent(snull)
-
-        salt = self.alt_models()
-        salt = 'Alternative model:\n\n' + _indent(salt)
-
-        sces = 'Candidate effect sizes:\n'
-        sces += _indent(quantile_summary(self._candidate_effect_sizes))
-        sces = _indent(sces)
-
-        salmls = 'Candidate log marginal likelihoods:\n'
-        salmls += _indent(quantile_summary(self._alt_lmls))
-        salmls = _indent(salmls)
-
-        spval = 'Candidate p-values:\n'
-        spval += _indent(quantile_summary(self.pvals(), "e"))
-        spval = _indent(spval)
-
-        return '\n\n'.join([snull, salt, sces, salmls, spval])
+    # def __str__(self):
+    #     snull = str(self.null_model())
+    #     snull = 'Null model:\n\n' + _indent(snull)
+    #
+    #     salt = self.alt_models()
+    #     salt = 'Alternative model:\n\n' + _indent(salt)
+    #
+    #     sces = 'Candidate effect sizes:\n'
+    #     sces += _indent(quantile_summary(self._candidate_effect_sizes))
+    #     sces = _indent(sces)
+    #
+    #     salmls = 'Candidate log marginal likelihoods:\n'
+    #     salmls += _indent(quantile_summary(self._alt_lmls))
+    #     salmls = _indent(salmls)
+    #
+    #     spval = 'Candidate p-values:\n'
+    #     spval += _indent(quantile_summary(self.pvalues(), "e"))
+    #     spval = _indent(spval)
+    #
+    #     return '\n\n'.join([snull, salt, sces, salmls, spval])
