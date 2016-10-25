@@ -24,7 +24,6 @@ before_install:
 install:
 - export PATH="$HOME/miniconda/bin:$PATH"
 - source activate travisci
-- travis_retry conda install pycparser -y --name travisci
 before_script:
 - export PATH="$HOME/miniconda/bin:$PATH"
 - source activate travisci
@@ -37,16 +36,16 @@ script:
 - pushd /
 - python -c "import lim; lim.test()"
 - popd
-deploy:
-  provider: pypi
-  skip_cleanup: true
-  user: danilo.horta
-  password:
-    secure: qvuxeijNzni0wYRI1AbHF4l/Qfupk1Y2Ihg6w+hLYUvA8OaBqj2HIeecopjkk14Rv2gH7cWSCLp8rs0N06J3rYGH87u1GoLv3Tu5VdbvYaXWCY9aoeEGcoh7XkKTWZ2t4zBpft1nnXjAx68FDQCEr5NDi/EYM9AVrUez7nLB8yQYLV58uWEBp61rKJebiS2wiFJJytc6bTgSvGQfRk5vssxtdblJzajTz+fR6MYmYhN68j7rrwnr7zjxqEgcgRzGBQjNv7DOciAjpXy7S0okBTARopbQugrC0hVtghvwKsbu02XOAnLOM/M5S5SKPKHDp8JsNJtkMIAqViuoKWmp1Qzo4ITbs3+MpMZ6suc8Xj7QEMO/26gEhhTPWz8iNiy9CUYXxc50qP8QIZH4PYoOusTXXllsSiScHHR8NGAWcmeVmN9rswu+lkX/k/VL2cB2Prinmh52JJdCSzmO2tMfpz/1W1LiYj2iNLmZm3hcCls7OnS0oZJiH4gEv7EjoYfkxVRmuWWmXXwTQSP+PKnwJghyQPfHBhQzDOEqSU+ez+kQ2Bx21V1vj0TBxticJdN2X/y+WN1o1Li++dIgWjVZxiqw8FN8yiL8ltq1/6n8GR8y0C8GuJIO882HIWfobm/Qnywkvdowicv8ab2ClpvxPmL8aV1LqkpOB75dE1ompzs=
-  on:
-    branch: master
 notifications:
   email: false
 branches:
   only:
-    - master
+  - master
+deploy:
+  provider: pypi
+  user: dhorta
+  password:
+    secure: GcthRfoJgsaywQBCmLr8lyudOHmPl9aBBWQ52SN+tTmahsfDth5YP2zKVSPy3MWa0Bf9gp4QGH26pPz6udmc2AfjehcQqDpy4ep1pstU/VAHhKAhlsl50ttrKekSHQyAMqev1/YlkgalgooOw+TEmX/KUHFii0CBiXyNUjtEcpDRuPhkXMjUvZwG90WAoyByglqGe65thabJYS18OJi9jHSfPbu2fYJvwCHtglzNZgTKyPyXNbUCJGVPazFXbIqyUtZ03JHLOiNygCLrtuXtjqZ5twJGJnAI4GmTHIcgD3AIaiEVguAs2msMQIWmhg3b2G0bEPfp8CgYxWDq3OSLC/RTixwMjGWJu3pjG2tTpxFjRhVWZ7FwSh/IVE/YFR7qRkuBth9Gf6BCRX0Cb4IzTWdys+OK2DFAL8AlRu3JRp5swQF9lTEQKL/UvUuniBukbqFsL9qcCq+/2iHe+FGq0OELOtfGg7o01hv/9YpGm3v4zb3hsTw0Iof9y0n5y6ycMpVNxrpNcqwmoXqjBx0autHH/zPduyvHRdBSqd/zMybU0ijmtbh3ZuS0bVvW+Ys6fgMgpvvXFsPedkmlUImcjFlqc9p1GkiiAI6nBhkoZLFeSAdyBhjsXo97MH6a8xXTHA6O9gKFn3P1vAtaBEkyq37TwFVt8SPXqG6v9ZMnWlY=
+  on:
+    distributions: sdist bdist_wheel
+    repo: Horta/lim
