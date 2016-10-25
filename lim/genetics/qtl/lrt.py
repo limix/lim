@@ -19,7 +19,7 @@ from progressbar import UnknownLength
 from progressbar import Counter
 from progressbar import AdaptiveETA
 
-from ..core import FastLMM
+from ...inference.fastlmm import FastLMM
 
 from ...util import quantile_summary
 from ...util import unicode_compatible

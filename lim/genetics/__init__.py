@@ -5,8 +5,6 @@ The provided analysis are:
     - Quantitative trait locus (QTL) discovery.
 """
 
-from .core import FastLMM
-from .transformation import DesignMatrixTrans
 from . import heritability
 from . import qtl
 from . import variance

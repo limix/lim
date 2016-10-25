@@ -3,7 +3,7 @@ from numpy.random import RandomState
 
 from limix_math.linalg import sum2diag_inplace
 
-from ..genetics import DesignMatrixTrans
+from ..util.transformation import DesignMatrixTrans
 
 class FastLMMSampler(object):
     def __init__(self, offset, scale, delta, X):

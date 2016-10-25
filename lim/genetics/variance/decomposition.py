@@ -20,7 +20,6 @@ from numpy import ones
 from numpy.linalg import cholesky
 
 
-# from ..core import SlowLMM
 from limix_math.linalg import economic_svd
 
 from ...tool.kinship import gower_normalization
