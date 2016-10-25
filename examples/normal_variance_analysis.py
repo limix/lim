@@ -22,7 +22,8 @@ G2 /= sqrt(G2.shape[1])
 u = 0.8 * random.randn(150)
 y = G1.dot(u) + 0.2 * random.randn(N)
 
-lim.genetics.variance.normal_decomposition(y, [G0, G1, G2])
+var = lim.genetics.variance.normal_decomposition(y, [G0, G1, G2])
+print(var)
 # var = lim.genetics.variance.normal_decomposition(y, dict(Genetic=G0,
 #                                                             Cage=G1,
 #                                                             Weather=G2))

@@ -151,7 +151,7 @@ class LikelihoodRatioTest(object):
         raise NotImplementError
 
     def __str__(self):
-        snull = self.null_model().__unicode__()
+        snull = str(self.null_model())
         snull = 'Null model:\n\n' + _indent(snull)
 
         salt = self.alt_model()
