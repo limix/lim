@@ -16,6 +16,7 @@ from optimix import Scalar
 
 from ..util.transformation import DesignMatrixTrans
 from .fastlmm_core import FastLMMCore
+from ..genetics.model import CanonicalModel
 
 
 class FastLMM(Function):
@@ -107,9 +108,9 @@ class FastLMM(Function):
     def model(self):
         total_var = (self.fixed_effects_variance + self.genetic_variance +
                      self.environmental_variance)
-        return NormalModel(self.beta, self.fixed_effects_variance,
-                           self.heritability, self.genetic_variance,
-                           self.environmental_variance, total_var)
+        return CanonicalModel(self.beta, self.fixed_effects_variance,
+                              self.heritability, self.genetic_variance,
+                              self.environmental_variance, total_var)
 
     def __str__(self):
         v = self.genetic_variance
