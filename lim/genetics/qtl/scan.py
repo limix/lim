@@ -25,9 +25,6 @@ from limix_math.linalg import _QS_from_K_split
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
 from ...util.block import Block
-from ...inference import FastLMM
-from .lrt import NormalLRT
-from .lrt import BinomialLRT
 
 
 class NormalPhenotypeInfo(object):
@@ -196,8 +193,9 @@ def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
 
     genetic_preprocess(X, G, K, covariates, ii)
 
-    lrt = NormalLRT(y, ii.Q[0], ii.Q[1], ii.S[0], covariates=covariates,
-                    progress=progress)
+    from .canonical import CanonicalLRTScan
+    lrt = CanonicalLRTScan(y, ii.Q[0], ii.Q[1], ii.S[0], covariates=covariates,
+                           progress=progress)
     lrt.candidate_markers = ii.effective_X
     lrt.pvals()
     return lrt
@@ -252,6 +250,7 @@ def binomial_scan(nsuccesses, ntrials, X, G=None, K=None, covariates=None,
 
     genetic_preprocess(X, G, K, covariates, ii)
 
+    from .lrt import BinomialLRT
     lrt = BinomialLRT(nsuccesses, ntrials, ii.Q[0], ii.Q[1], ii.S[0],
                       covariates=covariates, progress=progress)
     lrt.candidate_markers = ii.effective_X

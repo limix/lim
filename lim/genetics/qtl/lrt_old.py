@@ -23,10 +23,7 @@ from ...inference.fastlmm import FastLMM
 
 from ...util import quantile_summary
 from ...util import unicode_compatible
-
-
-def _offset_covariate(covariates, n):
-    return ones((n, 1)) if covariates is None else covariates
+from ...util import offset_covariate
 
 
 def _indent(msg):
@@ -45,7 +42,7 @@ class LikelihoodRatioTest(object):
         self._Q0 = Q0
         self._Q1 = Q1
         self._S0 = S0
-        self._covariates = _offset_covariate(covariates, Q0.shape[0])
+        self._covariates = offset_covariate(covariates, Q0.shape[0])
         self._candidate_effect_sizes = None
 
         self._null_lml = None
