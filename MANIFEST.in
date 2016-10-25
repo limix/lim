@@ -1,5 +1,5 @@
 exclude .gitignore .travis.yml
-include LICENSE
+include LICENSE.txt
 include README.md
 include setup.cfg
 recursive-include lim *.py *.c *.h *.csv *.h5 *.map *.ped *.fam *.bim *.bed

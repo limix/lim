@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def npy2py_type(npy_type):
     int_types = [
         np.int_,

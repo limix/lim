@@ -5,7 +5,9 @@ from bidict import bidict
 
 from .interface import MatrixInterface
 
+
 class NPyMatrix(MatrixInterface):
+
     def __init__(self, arr, sample_id=None, marker_id=None):
         super(NPyMatrix, self).__init__()
         self._arr = atleast_2d(arr)
@@ -51,8 +53,8 @@ class NPyMatrix(MatrixInterface):
     def __str__(self):
         return self._arr.__str__()
 
-    def __array__(self, *args):
-        return self._arr[args]
+    def __array__(self, *args, **kwargs):
+        return self._arr.__array__(*args, **kwargs)
 
     @property
     def sample_id(self):

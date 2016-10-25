@@ -7,7 +7,7 @@ from numpy import ones
 
 from limix_math.linalg import qs_decomposition
 
-from lim.inference import FastLMM
+from lim.inference.fastlmm import FastLMM
 from lim.inference import SlowLMM
 from lim.util.fruits import Apples
 from lim.cov import LinearCov
@@ -46,11 +46,11 @@ def test_optimization():
 
     y = RegGPSampler(mean, cov).sample(random)
 
-    slmm = SlowLMM(y, mean, cov)
-    slmm.learn()
+    gp = SlowLMM(y, mean, cov)
+    gp.learn()
     delta = cov_right.scale / (cov_left.scale + cov_right.scale)
     QS = qs_decomposition(DesignMatrixTrans(X).transform(X))
     flmm = FastLMM(y, ones((N, 1)), QS[0][0], QS[0][1], QS[1][0])
     flmm.delta = delta
-    assert_almost_equal(slmm.lml(), flmm.lml())
+    assert_almost_equal(gp.lml(), flmm.lml())
     assert_almost_equal(mean.offset, flmm.beta[0], decimal=6)

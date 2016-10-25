@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def npy2py_type(npy_type):
     int_types = [
         np.int_,
@@ -42,3 +43,8 @@ def npy2py_type(npy_type):
 def npy2py_cast(npy_value):
     type_ = npy2py_type(type(npy_value))
     return type_(npy_value)
+
+
+def asarray(*args, **kwargs):
+    from . import NPyMatrix
+    return NPyMatrix(np.asarray(*args, **kwargs))

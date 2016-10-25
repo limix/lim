@@ -21,7 +21,7 @@ def test_learn():
     X -= X.mean(0)
     X /= X.std(0)
     X /= np.sqrt(X.shape[1])
-    offset = 1.2
+    offset = 1.0
 
     mean = OffsetMean()
     mean.offset = offset
@@ -40,11 +40,12 @@ def test_learn():
     y = RegGPSampler(mean, cov).sample(random)
 
     flmm = FastLMM(y, ones((N, 1)), X)
+
     flmm.learn()
 
-    assert_almost_equal(flmm.beta[0], 1.2120718670, decimal=6)
-    assert_almost_equal(flmm.genetic_variance, 1.2979613599, decimal=5)
-    assert_almost_equal(flmm.environmental_variance, 1.6317660354, decimal=5)
+    assert_almost_equal(flmm.beta[0], 1.01207186704, decimal=6)
+    assert_almost_equal(flmm.genetic_variance, 1.29796143002, decimal=5)
+    assert_almost_equal(flmm.environmental_variance, 1.63176598726, decimal=5)
 
 
 def test_predict_1():
@@ -80,3 +81,7 @@ def test_predict_2():
     y6 = y[6]
     assert_almost_equal(p.logpdf(y5), -1.28820823178)
     assert_almost_equal(p.logpdf(y6), -4.28963888498)
+
+
+if __name__ == '__main__':
+    __import__('pytest').main([__file__, '-s'])

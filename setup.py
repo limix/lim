@@ -1,7 +1,7 @@
 import os
 import sys
-from setuptools import setup
-from setuptools import find_packages
+
+from setuptools import find_packages, setup
 
 
 def setup_package():
@@ -17,14 +17,15 @@ def setup_package():
                       'cffi>=1.6'] + pytest_runner
     install_requires = ['pytest', 'ncephes>=1.0', 'scipy>=0.17',
                         'numpy>=1.9', 'numba>=0.27', 'cffi>=1.6',
-                        'limix_math>=1.0.2', 'bidict', 'progressbar2>=3.10',
-                        'h5py>=2.6', 'pandas>=0.18',
-                        'tabulate>=0.7', 'six', 'nose>=1.3']
+                        'limix_math>=1.0', 'bidict', 'progressbar2>=3.10',
+                        'h5py>=2.6', 'pandas>=0.18', 'nose>=1.3',
+                        'tabulate>=0.7', 'six', 'ndarray_listener>=1.0',
+                        'optimix>=1.0.6']
     tests_require = install_requires
 
     metadata = dict(
         name='lim',
-        version='1.0.1',
+        version='1.0.2',
         maintainer="Limix Developers",
         maintainer_email="horta@ebi.ac.uk",
         license="MIT",
