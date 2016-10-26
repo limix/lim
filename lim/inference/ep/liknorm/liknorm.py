@@ -1,12 +1,8 @@
 from __future__ import division
 
-# from numba import cffi_support as _cffi_support
 from numpy import ndarray
 
 from . import _liknorm_ffi
-
-# _cffi_support.register_module(_liknorm_ffi)
-
 
 def ptr(a):
     if isinstance(a, ndarray):
