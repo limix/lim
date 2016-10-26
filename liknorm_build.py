@@ -24,19 +24,19 @@ def _make():
     ffi = FFI()
 
 
-    rfolder = join(b'lim', b'inference', b'ep', b'liknorm', b'clib')
+    rfolder = join('lim', 'inference', 'ep', 'liknorm', 'clib')
 
-    sources = glob(join(rfolder, b'liknorm', b'*.c'))
-    sources += [join(rfolder, b'liknorm.c')]
+    sources = glob(join(rfolder, 'liknorm', '*.c'))
+    sources += [join(rfolder, 'liknorm.c')]
     sources = [make_sure_string(s) for s in sources]
 
-    hdrs = glob(join(rfolder, b'liknorm', b'*.h'))
-    hdrs += [join(rfolder, b'liknorm.h')]
+    hdrs = glob(join(rfolder, 'liknorm', '*.h'))
+    hdrs += [join(rfolder, 'liknorm.h')]
     hdrs = [make_sure_string(h) for h in hdrs]
 
-    incls = [join(rfolder, b'liknorm')]
+    incls = [join(rfolder, 'liknorm')]
     incls = [make_sure_string(i) for i in incls]
-    libraries = ['m']
+    libraries = [make_sure_string('m')]
 
     logger.debug("Sources: %s", str(sources))
     logger.debug('Headers: %s', str(hdrs))
@@ -52,7 +52,7 @@ def _make():
                    depends=sources + hdrs,
                    extra_compile_args=[get_c11_flag()])
 
-    with open(join(rfolder, b'liknorm.h'), 'r') as f:
+    with open(join(rfolder, 'liknorm.h'), 'r') as f:
         ffi.cdef(f.read())
 
     return ffi
