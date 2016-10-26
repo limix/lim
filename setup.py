@@ -31,12 +31,12 @@ def setup_package():
         license="MIT",
         url='http://pmbio.github.io/limix/',
         packages=find_packages(),
-        zip_safe=True,
+        zip_safe=False,
         install_requires=install_requires,
         setup_requires=setup_requires,
         tests_require=tests_require,
         include_package_data=True,
-        cffi_modules=['lim/inference/ep/liknorm/build.py:liknorm']
+        cffi_modules=['liknorm_build.py:liknorm']
     )
 
     try:
