@@ -38,9 +38,6 @@ def _make():
     incls = [make_sure_string(i) for i in incls]
     libraries = ['m']
 
-    if six.PY2:
-
-
     logger.debug("Sources: %s", str(sources))
     logger.debug('Headers: %s', str(hdrs))
     logger.debug('Incls: %s', str(incls))
