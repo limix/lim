@@ -127,11 +127,11 @@ def test_binomial_optimize():
     ep = BinomialEP(y, ntrials, M, Q[0], Q[1], S[0])
     ep.optimize()
 
-    assert_almost_equal(ep.lml(), -144.23818408071736)
-    assert_almost_equal(ep.sigma2_b, 1.13419722224)
-    assert_almost_equal(ep.sigma2_epsilon, 0.122855059169)
-    assert_almost_equal(ep.beta[0], 0.110667132173)
-    assert_almost_equal(ep.heritability, 0.902267343224)
+    assert_almost_equal(ep.lml(), -144.23818408071736, decimal=3)
+    assert_almost_equal(ep.sigma2_b, 1.13419722224, decimal=4)
+    assert_almost_equal(ep.sigma2_epsilon, 0.122855059169, decimal=4)
+    assert_almost_equal(ep.beta[0], 0.110667132173, decimal=4)
+    assert_almost_equal(ep.heritability, 0.902267343224, decimal=4)
 
 
 if __name__ == '__main__':

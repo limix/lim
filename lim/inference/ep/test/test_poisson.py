@@ -42,11 +42,11 @@ def test_poisson_optimize():
     M = ones((nsamples, 1))
     ep = PoissonEP(y, M, Q[0], Q[1], S[0])
     ep.optimize()
-    assert_almost_equal(ep.lml(), -77.90850467833714)
-    assert_almost_equal(ep.sigma2_b, 3.38637577198)
-    assert_almost_equal(ep.sigma2_epsilon, 0.858399432528)
-    assert_almost_equal(ep.beta[0], 0.314709077094)
-    assert_almost_equal(ep.heritability, 0.797775054939)
+    assert_almost_equal(ep.lml(), -77.90850467833714, decimal=3)
+    assert_almost_equal(ep.sigma2_b, 3.38637577198, decimal=4)
+    assert_almost_equal(ep.sigma2_epsilon, 0.858399432528, decimal=4)
+    assert_almost_equal(ep.beta[0], 0.314709077094, decimal=4)
+    assert_almost_equal(ep.heritability, 0.797775054939, decimal=4)
 
 
 if __name__ == '__main__':
