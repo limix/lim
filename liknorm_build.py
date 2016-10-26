@@ -8,6 +8,7 @@ from os.path import join
 
 def _make():
     from cffi import FFI
+    from pycflags import get_c11_flag
 
     logger = logging.getLogger()
 
@@ -20,6 +21,7 @@ def _make():
     print(rfolder)
     print(glob(join(rfolder, 'liknorm', '*.c')))
     print([join(rfolder, 'liknorm.c')])
+    print(get_c11_flag())
 
     sources = glob(join(rfolder, 'liknorm', '*.c'))
     sources += [join(rfolder, 'liknorm.c')]
@@ -42,7 +44,7 @@ def _make():
                    libraries=libraries,
                    library_dirs=[],
                    depends=sources + hdrs,
-                   extra_compile_args=["-std=c11"])
+                   extra_compile_args=[get_c11_flag()])
 
     with open(join(rfolder, 'liknorm.h'), 'r') as f:
         ffi.cdef(f.read())
