@@ -16,11 +16,15 @@ def _make():
 
     ffi = FFI()
 
-    sources = glob(join('liknorm', 'liknorm', '*.c')) + \
-        [join('liknorm', 'liknorm.c')]
-    hdrs = glob(join('liknorm', 'liknorm', '*.h')) + \
-        [join('liknorm', 'liknorm.h')]
-    incls = ['liknorm']
+    rfolder = join('lim', 'inference', 'ep', 'liknorm', 'clib')
+
+    sources = glob(join(rfolder, 'liknorm', '*.c'))
+    sources += [join(rfolder, 'liknorm.c')]
+
+    hdrs = glob(join(rfolder, 'liknorm', '*.h'))
+    hdrs += [join(rfolder, 'liknorm.h')]
+
+    incls = [join(rfolder, 'liknorm')]
     libraries = ['m']
 
     logger.debug("Sources: %s", str(sources))
@@ -37,7 +41,7 @@ def _make():
                    depends=sources + hdrs,
                    extra_compile_args=["-std=c11"])
 
-    with open(join('liknorm', 'liknorm.h'), 'r') as f:
+    with open(join(rfolder, 'liknorm.h'), 'r') as f:
         ffi.cdef(f.read())
 
     return ffi

@@ -3,7 +3,7 @@ from __future__ import division
 from numpy import array, empty, set_printoptions
 from numpy.testing import assert_allclose
 
-from limix_qep.liknorm import LikNormMoments
+from lim.inference.ep.liknorm import LikNormMoments
 
 
 def test_liknorm_binomial():
