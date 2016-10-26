@@ -14,9 +14,9 @@ def setup_package():
     pytest_runner = ['pytest-runner'] if needs_pytest else []
 
     setup_requires = ['build_capi>=1.0.1', 'ncephes>=1.0',
-                      'cffi>=1.6'] + pytest_runner
+                      'cffi>=1.7'] + pytest_runner
     install_requires = ['pytest', 'ncephes>=1.0', 'scipy>=0.17',
-                        'numpy>=1.9', 'numba>=0.27', 'cffi>=1.6',
+                        'numpy>=1.9', 'numba>=0.27', 'cffi>=1.7',
                         'limix_math>=1.0.3', 'bidict', 'progressbar2>=3.10',
                         'h5py>=2.6', 'pandas>=0.18', 'nose>=1.3',
                         'tabulate>=0.7', 'six', 'optimix>=1.0.12',

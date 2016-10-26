@@ -17,6 +17,7 @@ def _make():
     ffi = FFI()
 
     rfolder = join('lim', 'inference', 'ep', 'liknorm', 'clib')
+    print("AQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUI")
     print(rfolder)
     print(glob(join(rfolder, 'liknorm', '*.c')))
     print([join(rfolder, 'liknorm.c')])
