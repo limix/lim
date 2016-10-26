@@ -13,7 +13,7 @@ def setup_package():
     needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
     pytest_runner = ['pytest-runner'] if needs_pytest else []
 
-    setup_requires = ['build_capi>=1.0.1', 'ncephes>=1.0', 'pycflags>=1.0.2',
+    setup_requires = ['build_capi>=1.0.1', 'ncephes>=1.0', 'pycflags>=1.0.6',
                       'cffi>=1.7'] + pytest_runner
     install_requires = ['pytest', 'ncephes>=1.0', 'scipy>=0.17',
                         'numpy>=1.9', 'numba>=0.27', 'cffi>=1.7',
