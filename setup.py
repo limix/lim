@@ -25,7 +25,7 @@ def setup_package():
 
     metadata = dict(
         name='lim',
-        version='1.0.7',
+        version='1.1.0.dev1',
         maintainer="Limix Developers",
         maintainer_email="horta@ebi.ac.uk",
         license="MIT",
@@ -36,6 +36,7 @@ def setup_package():
         setup_requires=setup_requires,
         tests_require=tests_require,
         include_package_data=True,
+        cffi_modules=['lim/inference/ep/liknorm/build.py:liknorm']
     )
 
     try:
