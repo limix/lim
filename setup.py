@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import os
 import sys
 
@@ -11,11 +13,10 @@ def setup_package():
     sys.path.insert(0, src_path)
 
     needs_pytest = {'pytest', 'test', 'ptr'}.intersection(sys.argv)
-    pytest_runner = ['pytest-runner'] if needs_pytest else []
+    pytest_runner = ['pytest-runner>=2.9'] if needs_pytest else []
 
-    setup_requires = ['build_capi>=1.0.1', 'ncephes>=1.0', 'pycflags>=1.0.6',
-                      'cffi>=1.7'] + pytest_runner
-    install_requires = ['pytest', 'ncephes>=1.0', 'scipy>=0.17',
+    setup_requires = ['pycflags>=1.0.7', 'cffi>=1.7'] + pytest_runner
+    install_requires = ['pytest>=2.9', 'scipy>=0.17',
                         'numpy>=1.9', 'numba>=0.27', 'cffi>=1.7',
                         'limix_math>=1.0.3', 'bidict', 'progressbar2>=3.10',
                         'h5py>=2.6', 'pandas>=0.18', 'nose>=1.3',

@@ -1,10 +1,17 @@
-from __future__ import (division, absolute_import, print_function)
+from __future__ import (division, absolute_import, print_function,
+                        unicode_literals)
 
 import logging
 
 from glob import glob
 from os.path import join
+import six
 
+def make_sure_string(msg):
+    if six.PY2:
+        return bytes(msg)
+    else:
+        return u"%s" % __builtins__['str'](msg)
 
 def _make():
     from cffi import FFI
@@ -16,21 +23,23 @@ def _make():
 
     ffi = FFI()
 
-    rfolder = join('lim', 'inference', 'ep', 'liknorm', 'clib')
-    print("AQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUIAQUI")
-    print(rfolder)
-    print(glob(join(rfolder, 'liknorm', '*.c')))
-    print([join(rfolder, 'liknorm.c')])
-    print(get_c11_flag())
 
-    sources = glob(join(rfolder, 'liknorm', '*.c'))
-    sources += [join(rfolder, 'liknorm.c')]
+    rfolder = join(b'lim', b'inference', b'ep', b'liknorm', b'clib')
 
-    hdrs = glob(join(rfolder, 'liknorm', '*.h'))
-    hdrs += [join(rfolder, 'liknorm.h')]
+    sources = glob(join(rfolder, b'liknorm', b'*.c'))
+    sources += [join(rfolder, b'liknorm.c')]
+    sources = [make_sure_string(s) for s in sources]
 
-    incls = [join(rfolder, 'liknorm')]
+    hdrs = glob(join(rfolder, b'liknorm', b'*.h'))
+    hdrs += [join(rfolder, b'liknorm.h')]
+    hdrs = [make_sure_string(h) for h in hdrs]
+
+    incls = [join(rfolder, b'liknorm')]
+    incls = [make_sure_string(i) for i in incls]
     libraries = ['m']
+
+    if six.PY2:
+
 
     logger.debug("Sources: %s", str(sources))
     logger.debug('Headers: %s', str(hdrs))
@@ -46,7 +55,7 @@ def _make():
                    depends=sources + hdrs,
                    extra_compile_args=[get_c11_flag()])
 
-    with open(join(rfolder, 'liknorm.h'), 'r') as f:
+    with open(join(rfolder, b'liknorm.h'), 'r') as f:
         ffi.cdef(f.read())
 
     return ffi
