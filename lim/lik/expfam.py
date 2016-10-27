@@ -47,6 +47,42 @@ class ExpFam(object):
     def sample(self, x):
         raise NotImplementedError
 
+class Bernoulli(ExpFam):
+
+    def __init__(self, outcome, link):
+        super(Bernoulli, self).__init__()
+        self._outcome = outcome
+        self._link = link
+
+    @property
+    def y(self):
+        return self._outcome
+
+    def mean(self, x):
+        return self._link.inv(x)
+
+    def theta(self, x):
+        m = self.mean(x)
+        return log(m / (1 - m))
+
+    @property
+    def phi(self):
+        return 1
+
+    def a(self):
+        return 1
+
+    def b(self, theta):
+        return theta + log1p(exp(-theta))
+
+    def c(self):
+        return 0
+
+    def sample(self, x, random_state=None):
+        import scipy.stats as st
+        p = self.mean(x)
+        return bernoulli(p).rvs(random_state=random_state)
+
 
 class Binomial(ExpFam):
 
