@@ -15,7 +15,6 @@ def make_sure_string(msg):
 
 def _make():
     from cffi import FFI
-    from pycflags import get_c11_flag
 
     logger = logging.getLogger()
 
@@ -50,7 +49,7 @@ def _make():
                    libraries=libraries,
                    library_dirs=[],
                    depends=sources + hdrs,
-                   extra_compile_args=[get_c11_flag()])
+                   extra_compile_args=['-std=c99'])
 
     with open(join(rfolder, 'liknorm.h'), 'r') as f:
         ffi.cdef(f.read())
