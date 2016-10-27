@@ -1,6 +1,7 @@
 from __future__ import division
 
 from numpy import exp
+from numpy import pi
 from numpy import log
 from numpy import log1p
 
@@ -91,6 +92,16 @@ class Binomial(ExpFam):
         self._k = k
         self._n = n
         self._link = link
+
+    @staticmethod
+    def latent_variance(self, link):
+        from ..link import ProbitLink
+        from ..link import LogitLink
+        if isinstance(link, ProbitLink):
+            return 1
+        elif isinstance(link, LogitLink):
+            return pi**2/3
+        raise ValueError()
 
     @property
     def y(self):
