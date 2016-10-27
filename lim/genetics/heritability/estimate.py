@@ -12,7 +12,7 @@ from ...tool.kinship import gower_normalization
 from limix_math.linalg import qs_decomposition_from_K
 from limix_math.linalg import qs_decomposition
 
-def bernoulli_estimate(nsuccesses, G=None, K=None, covariate=None):
+def bernoulli_estimate(outcomes, G=None, K=None, covariate=None):
     """Estimate the so-called narrow-sense heritability.
 
     It supports Bernoulli phenotypes (see `outcome_type`).
@@ -40,7 +40,7 @@ def bernoulli_estimate(nsuccesses, G=None, K=None, covariate=None):
     """
     logger = logging.getLogger(__name__)
     logger.info('Heritability estimation has started.')
-    nsuccesses = asarray(nsuccesses, dtype=float)
+    outcomes = asarray(outcomes, dtype=float)
 
     info = dict()
 
@@ -82,7 +82,7 @@ def bernoulli_estimate(nsuccesses, G=None, K=None, covariate=None):
     info['covariate'] = covariate
 
     logger.debug('Constructing EP.')
-    ep = BernoulliEP(nsuccesses, covariate, Q0, Q1, S0)
+    ep = BernoulliEP(outcomes, covariate, Q0, Q1, S0)
 
     logger.debug('EP optimization.')
     ep.optimize()
