@@ -124,8 +124,9 @@ def test_canonical_binomial_sampler():
     G = random.randn(10, 5)
     expected = [2, 3, 0, 1, 4, 5, 0, 2, 0, 0]
     assert_allclose(binomial(5, 0.1, G, random), expected)
-
-    # print(binomial([2, 3, 1, 1, 4, 5, 1, 2, 1, 1], -0.1, G, random))
+    expected = [1, 2, 0, 0, 1, 5, 1, 0, 0, 1]
+    assert_allclose(binomial([2, 3, 1, 1, 4, 5, 1, 2, 1, 1], -0.1, G, random),
+                    expected)
 
 if __name__ == '__main__':
     __import__('pytest').main([__file__, '-s'])

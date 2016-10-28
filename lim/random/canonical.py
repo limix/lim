@@ -1,5 +1,5 @@
 from ..link import LogitLink
-from ..lik import Binomial
+from ..lik import BinomialProdLik
 from ..mean import OffsetMean
 from ..cov import LinearCov
 from ..cov import SumCov
@@ -26,7 +26,7 @@ def binomial(ntrials, offset, G, random_state=None):
     a = Apples(nsamples)
     cov2.set_data((a, a), 'sample')
 
-    lik = Binomial(3, ntrials, link)
+    lik = BinomialProdLik(None, ntrials, link)
     sampler = GLMMSampler(lik, mean, cov)
 
     return sampler.sample(random_state)
