@@ -2,13 +2,16 @@ from __future__ import division
 import logging
 from numpy import ascontiguousarray
 
-import numpy as np
+from numpy import copy
+from numpy import ascontiguousarray
+from numpy import sqrt
 
 from ...inference import BernoulliEP
 from ...inference import BinomialEP
 from ...inference import PoissonEP
 from ...tool.normalize import stdnorm
 from ...tool.kinship import gower_normalization
+from ...tool.normalize import stdnorm
 
 from limix_math.linalg import qs_decomposition_from_K
 from limix_math.linalg import qs_decomposition
@@ -42,41 +45,16 @@ def bernoulli_estimate(outcomes, G=None, K=None, covariate=None):
     logger.info('Heritability estimation for Bernoulli traits has started.')
     outcomes = ascontiguousarray(outcomes, dtype=float)
 
-    if K is not None:
-        logger.debug('Covariace matrix normalization.')
-        gower_normalization(K, K)
-
-    if G is not None:
-        logger.debug('Genetic markers normalization.')
-        stdnorm(G, G)
-        G = G - np.mean(G, 0)
-        s = np.std(G, 0)
-        ok = s > 0.
-        G[:,ok] /= s[ok]
-        G /= np.sqrt(G.shape[1])
+    G, K = _background_standardize(G, K)
 
     if G is None and K is None:
-        raise Exception('G, K, and QS cannot be all None.')
+        raise Exception('G and K cannot be all None.')
 
-    if G:
-        (Q, S) = qs_decomposition(G)
-    else:
-        (Q, S) = qs_decomposition_from_K(K)
-
-    Q0 = Q[0]
-    Q1 = Q[1]
-    S0 = S[0]
-    S0 /= np.mean(S0)
-
-    info['Q0'] = Q0
-    info['Q1'] = Q1
-    info['S0'] = S0
+    Q0, Q1, S0 = _background_decomposition(G, K)
 
     if covariate is None:
         logger.debug('Inserting offset covariate.')
         covariate = np.ones((y.shape[0], 1))
-
-    info['covariate'] = covariate
 
     logger.debug('Constructing EP.')
     ep = BernoulliEP(outcomes, covariate, Q0, Q1, S0)
@@ -87,9 +65,7 @@ def bernoulli_estimate(outcomes, G=None, K=None, covariate=None):
     h2 = ep.heritability
     logger.info('Found heritability before correction: %.5f.', h2)
 
-    info['ep'] = ep
-
-    return (h2, info)
+    return h2
 
 def binomial_estimate(nsuccesses, ntrials, G=None, K=None, covariate=None):
     """Estimate the so-called narrow-sense heritability.
@@ -119,47 +95,19 @@ def binomial_estimate(nsuccesses, ntrials, G=None, K=None, covariate=None):
     """
     logger = logging.getLogger(__name__)
     logger.info('Heritability estimation has started.')
-    nsuccesses = asarray(nsuccesses, dtype=float)
-    ntrials = asarray(ntrials, dtype=float)
+    nsuccesses = ascontiguousarray(nsuccesses, dtype=float)
+    ntrials = ascontiguousarray(ntrials, dtype=float)
 
-    info = dict()
-
-    if K is not None:
-        logger.debug('Covariace matrix normalization.')
-        K = gower_normalization(K)
-        info['K'] = K
-
-    if G is not None:
-        logger.debug('Genetic markers normalization.')
-        G = G - np.mean(G, 0)
-        s = np.std(G, 0)
-        ok = s > 0.
-        G[:,ok] /= s[ok]
-        G /= np.sqrt(G.shape[1])
-        info['G'] = G
+    G, K = _background_standardize(G, K)
 
     if G is None and K is None:
-        raise Exception('G, K, and QS cannot be all None.')
+        raise Exception('G and K cannot be all None.')
 
-    if G:
-        (Q, S) = qs_decomposition(G)
-    else:
-        (Q, S) = qs_decomposition_from_K(K)
-
-    Q0 = Q[0]
-    Q1 = Q[1]
-    S0 = S[0]
-    S0 /= np.mean(S0)
-
-    info['Q0'] = Q0
-    info['Q1'] = Q1
-    info['S0'] = S0
+    Q0, Q1, S0 = _background_decomposition(G, K)
 
     if covariate is None:
         logger.debug('Inserting offset covariate.')
         covariate = np.ones((y.shape[0], 1))
-
-    info['covariate'] = covariate
 
     logger.debug('Constructing EP.')
     ep = BinomialEP(nsuccesses, ntrials, covariate, Q0, Q1, S0)
@@ -170,9 +118,7 @@ def binomial_estimate(nsuccesses, ntrials, G=None, K=None, covariate=None):
     h2 = ep.heritability
     logger.info('Found heritability before correction: %.5f.', h2)
 
-    info['ep'] = ep
-
-    return (h2, info)
+    return h2
 
 def poisson_estimate(nsuccesses, G=None, K=None, covariate=None):
     """Estimate the so-called narrow-sense heritability.
@@ -202,46 +148,18 @@ def poisson_estimate(nsuccesses, G=None, K=None, covariate=None):
     """
     logger = logging.getLogger(__name__)
     logger.info('Heritability estimation has started.')
-    nsuccesses = asarray(nsuccesses, dtype=float)
+    nsuccesses = ascontiguousarray(nsuccesses, dtype=float)
 
-    info = dict()
-
-    if K is not None:
-        logger.debug('Covariace matrix normalization.')
-        K = gower_normalization(K)
-        info['K'] = K
-
-    if G is not None:
-        logger.debug('Genetic markers normalization.')
-        G = G - np.mean(G, 0)
-        s = np.std(G, 0)
-        ok = s > 0.
-        G[:,ok] /= s[ok]
-        G /= np.sqrt(G.shape[1])
-        info['G'] = G
+    G, K = _background_standardize(G, K)
 
     if G is None and K is None:
-        raise Exception('G, K, and QS cannot be all None.')
+        raise Exception('G and K cannot be all None.')
 
-    if G:
-        (Q, S) = qs_decomposition(G)
-    else:
-        (Q, S) = qs_decomposition_from_K(K)
-
-    Q0 = Q[0]
-    Q1 = Q[1]
-    S0 = S[0]
-    S0 /= np.mean(S0)
-
-    info['Q0'] = Q0
-    info['Q1'] = Q1
-    info['S0'] = S0
+    Q0, Q1, S0 = _background_decomposition(G, K)
 
     if covariate is None:
         logger.debug('Inserting offset covariate.')
         covariate = np.ones((y.shape[0], 1))
-
-    info['covariate'] = covariate
 
     logger.debug('Constructing EP.')
     ep = PoissonEP(nsuccesses, covariate, Q0, Q1, S0)
@@ -252,6 +170,35 @@ def poisson_estimate(nsuccesses, G=None, K=None, covariate=None):
     h2 = ep.heritability
     logger.info('Found heritability before correction: %.5f.', h2)
 
-    info['ep'] = ep
+    return h2
 
-    return (h2, info)
+def _background_standardize(G, K):
+    logger = logging.getLogger(__name__)
+
+    if K is not None:
+        logger.debug('Covariace matrix normalization.')
+        K = copy(K, 'C')
+        K = ascontiguousarray(K, dtype=float)
+        gower_normalization(K, K)
+
+    if G is not None:
+        logger.debug('Genetic markers normalization.')
+        G = copy(G, 'C')
+        G = ascontiguousarray(G, dtype=float)
+        stdnorm(G, 0, out=G)
+        G /= sqrt(G.shape[1])
+
+    return (G, K)
+
+def _background_decomposition(G, K):
+    if G:
+        (Q, S) = qs_decomposition(G)
+    else:
+        (Q, S) = qs_decomposition_from_K(K)
+
+    Q0 = Q[0]
+    Q1 = Q[1]
+    S0 = S[0]
+    S0 /= S0.mean()
+
+    return Q0, Q1, S0
