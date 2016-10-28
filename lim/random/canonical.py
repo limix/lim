@@ -1,3 +1,4 @@
+from numpy import sqrt
 from ..link import LogitLink
 from ..lik import BinomialProdLik
 from ..mean import OffsetMean
@@ -6,13 +7,15 @@ from ..cov import SumCov
 from ..cov import EyeCov
 from .glmm import GLMMSampler
 from ..util.fruits import Apples
+from ..tool.normalize import stdnorm
 
-def binomial(ntrials, offset, G, random_state=None):
+def binomial(ntrials, offset, G, heritability=0.5, random_state=None):
 
     nsamples = G.shape[0]
+    G = stdnorm(G, axis=0)
+    G /= sqrt(G.shape[1])
 
     link = LogitLink()
-
 
     mean = OffsetMean()
     mean.offset = offset
@@ -25,6 +28,9 @@ def binomial(ntrials, offset, G, random_state=None):
     cov1.set_data((G, G), 'sample')
     a = Apples(nsamples)
     cov2.set_data((a, a), 'sample')
+
+    cov1.scale = heritability
+    cov2.scale = 1 - heritability
 
     lik = BinomialProdLik(None, ntrials, link)
     sampler = GLMMSampler(lik, mean, cov)
