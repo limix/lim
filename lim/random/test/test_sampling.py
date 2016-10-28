@@ -1,7 +1,10 @@
+from __future__ import division
+
 from numpy.random import RandomState
-from numpy.testing import assert_equal
+from numpy.testing import (assert_equal, assert_allclose)
 
 from lim.random import GLMMSampler
+from lim.random.canonical import binomial
 from lim.mean import OffsetMean
 from lim.cov import LinearCov
 from lim.cov import EyeCov
@@ -115,6 +118,14 @@ def test_GLMMSampler_binomial():
     sampler = GLMMSampler(lik, mean, cov)
     assert_equal(sampler.sample(random), [99, 93, 99, 75, 77, 0, 0, 100, 99,
                                           12])
+
+def test_canonical_binomial_sampler():
+    random = RandomState(9)
+    G = random.randn(10, 5)
+    expected = [2, 3, 0, 1, 4, 5, 0, 2, 0, 0]
+    assert_allclose(binomial(5, 0.1, G, random), expected)
+
+    # print(binomial([2, 3, 1, 1, 4, 5, 1, 2, 1, 1], -0.1, G, random))
 
 if __name__ == '__main__':
     __import__('pytest').main([__file__, '-s'])
