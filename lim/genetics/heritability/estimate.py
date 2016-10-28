@@ -1,29 +1,29 @@
 from __future__ import division
 import logging
-from numpy import asarray
+from numpy import ascontiguousarray
 
 import numpy as np
 
 from ...inference import BernoulliEP
 from ...inference import BinomialEP
 from ...inference import PoissonEP
+from ...tool.normalize import stdnorm
 from ...tool.kinship import gower_normalization
 
 from limix_math.linalg import qs_decomposition_from_K
 from limix_math.linalg import qs_decomposition
 
 def bernoulli_estimate(outcomes, G=None, K=None, covariate=None):
-    """Estimate the so-called narrow-sense heritability.
+    """Estimate the narrow-sense heritability for Bernoulli traits.
 
-    It supports Bernoulli phenotypes (see `outcome_type`).
-    The user must specifiy only one of the parameters G, K, and QS for
-    defining the genetic background.
+    The user must specifiy only one of the parameters G and K for defining the
+    genetic background.
 
     Let :math:`N` be the sample size, :math:`S` the number of covariates, and
     :math:`P_b` the number of genetic markers used for Kinship estimation.
 
-    :param numpy.ndarray y: Phenotype. The domain has be the non-negative
-                          integers. Dimension (:math:`N\\times 0`).
+    :param numpy.ndarray outcomes: Phenotype. The domain has be the
+                non-negative integers. Dimension (:math:`N\\times 0`).
     :param numpy.ndarray G: Genetic markers matrix used internally for kinship
                     estimation. Dimension (:math:`N\\times P_b`).
     :param numpy.ndarray K: Kinship matrix. Dimension (:math:`N\\times N`).
@@ -39,24 +39,21 @@ def bernoulli_estimate(outcomes, G=None, K=None, covariate=None):
              information, respectively.
     """
     logger = logging.getLogger(__name__)
-    logger.info('Heritability estimation has started.')
-    outcomes = asarray(outcomes, dtype=float)
-
-    info = dict()
+    logger.info('Heritability estimation for Bernoulli traits has started.')
+    outcomes = ascontiguousarray(outcomes, dtype=float)
 
     if K is not None:
         logger.debug('Covariace matrix normalization.')
-        K = gower_normalization(K)
-        info['K'] = K
+        gower_normalization(K, K)
 
     if G is not None:
         logger.debug('Genetic markers normalization.')
+        stdnorm(G, G)
         G = G - np.mean(G, 0)
         s = np.std(G, 0)
         ok = s > 0.
         G[:,ok] /= s[ok]
         G /= np.sqrt(G.shape[1])
-        info['G'] = G
 
     if G is None and K is None:
         raise Exception('G, K, and QS cannot be all None.')

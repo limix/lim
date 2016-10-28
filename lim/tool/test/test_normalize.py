@@ -10,7 +10,7 @@ def test_stdnorm():
     x = random.randn(10)
     X = random.randn(10, 5)
     x = stdnorm(x)
-    X = stdnorm(X)
+    X = stdnorm(X, 0)
 
     assert_allclose(x.mean(0), [0], atol=1e-7)
     assert_allclose(x.std(0), 1, atol=1e-7)
