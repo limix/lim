@@ -13,6 +13,7 @@ from numpy import (abs, all, any, asarray, atleast_1d, atleast_2d, clip,
 from numpy.linalg import LinAlgError, multi_dot
 from scipy.linalg import cho_factor
 
+from limix_math import is_all_finite
 from limix_math.linalg import (cho_solve, ddot, dotd, economic_svd, solve,
                                sum2diag)
 
@@ -136,7 +137,7 @@ class EP(Cached):
         Cached.__init__(self)
         self._logger = logging.getLogger(__name__)
 
-        if not all(isfinite(Q)) or not all(isfinite(S)):
+        if not is_all_finite(Q) or not is_all_finite(isfinite(S)):
             raise ValueError("There are non-finite numbers in the provided" +
                              " eigen decomposition.")
 
