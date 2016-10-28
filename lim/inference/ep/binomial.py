@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, unicode_literals
 import logging
 
 from numpy import (all, asarray, clip, exp, full, isfinite, isscalar, log,
-                   ones, pi, set_printoptions, sqrt)
+                   ones, pi, set_printoptions, sqrt, ascontiguousarray)
 from numpy.linalg import lstsq
 
 from limix_math import issingleton
@@ -59,12 +59,12 @@ class BinomialEP(EP):
         super(BinomialEP, self).__init__(M, Q0, S0, True, QSQt=Q0S0Q0t)
         self._logger = logging.getLogger(__name__)
 
-        nsuccesses = asarray(nsuccesses, float)
+        nsuccesses = ascontiguousarray(nsuccesses, float)
 
         if isscalar(ntrials):
             ntrials = full(len(nsuccesses), ntrials, dtype=float)
         else:
-            ntrials = asarray(ntrials, float)
+            ntrials = ascontiguousarray(ntrials, float)
 
         self._nsuccesses = nsuccesses
         self._ntrials = ntrials
