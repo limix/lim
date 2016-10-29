@@ -295,7 +295,6 @@ class EP(Cached):
         self.clear_cache('_L')
         self.clear_cache('_A')
         self.clear_cache('_C')
-        self.clear_cache('_QBiQt')
         self.clear_cache('_BiQt')
         self.clear_cache('_QBiQtAm')
         self.clear_cache('_QBiQtCteta')
@@ -317,7 +316,6 @@ class EP(Cached):
         self.clear_cache('_L')
         self.clear_cache('_A')
         self.clear_cache('_C')
-        self.clear_cache('_QBiQt')
         self.clear_cache('_BiQt')
         self.clear_cache('_QBiQtAm')
         self.clear_cache('_QBiQtCteta')
@@ -448,7 +446,6 @@ class EP(Cached):
 
         v = self.v
         delta = self.delta
-        K = self.K()
         Q = self._Q
         S = self._S
 
@@ -568,7 +565,6 @@ class EP(Cached):
             self.clear_cache('_L')
             self.clear_cache('_A')
             self.clear_cache('_C')
-            self.clear_cache('_QBiQt')
             self.clear_cache('_BiQt')
             self.clear_cache('_QBiQtAm')
             self.clear_cache('_QBiQtCteta')
@@ -782,11 +778,6 @@ class EP(Cached):
         return self.__QSQt
 
     @cached
-    def _QBiQt(self):
-        Q = self._Q
-        return Q.dot(cho_solve(self._L(), Q.T))
-
-    @cached
     def _BiQt(self):
         Q = self._Q
         return cho_solve(self._L(), Q.T)
@@ -822,29 +813,6 @@ class EP(Cached):
         m = self.m()
 
         return dot(Q, cho_solve(L, dot(Q.T, A * m)))
-
-    def _diagQBiQtAK(self):
-        BiQt = self._BiQt()
-        v = self.v
-        delta = self.delta
-        A = self._A()
-        S = self._S
-        Q = self._Q
-
-        uBiQtAK0, uBiQtAK1 = self._uBiQtAK()
-
-        return -v*(1-delta)*dotd(Q, uBiQtAK0) - v*delta*dotd(Q, uBiQtAK1)
-
-        # BiQtA = ddot(BiQt, A, left=False)
-        # BiQtAQS = dot(BiQtA, Q)
-        # ddot(BiQtAQS, S, left=False, out=BiQtAQS)
-        #
-        # out = -dotd(Q, dot(BiQtAQS, Q.T))
-        # out *= (1-delta)
-        # out -= delta*dotd(Q, BiQtA)
-        # out *= v
-        #
-        # return out
 
     def _uBiQtAK(self):
         BiQt = self._BiQt()
