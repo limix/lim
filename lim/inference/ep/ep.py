@@ -15,7 +15,7 @@ from scipy.linalg import cho_factor
 
 from limix_math import is_all_finite
 from limix_math.linalg import (cho_solve, ddot, dotd, economic_svd, solve,
-                               sum2diag)
+                               sum2diag, sum2diag_inplace, trace2)
 
 from ._optimize import find_minimum
 from .util import make_sure_reasonable_conditioning
@@ -225,6 +225,17 @@ class EP(Cached):
         r"""Returns :math:`\mathrm K`."""
         return sum2diag(self.sigma2_b * self._QSQt(), self.sigma2_epsilon)
 
+    def Kdot(self, x):
+        Q = self._Q
+        S = self._S
+        out = dot(Q.T, x)
+        out *= S
+        out = dot(Q, out)
+        out *= (1 - self.delta)
+        out += self.delta * x
+        out *= self.v
+        return out
+
     @cached
     def diagK(self):
         r"""Returns the diagonal of :math:`\mathrm K`."""
@@ -285,6 +296,7 @@ class EP(Cached):
         self.clear_cache('_A')
         self.clear_cache('_C')
         self.clear_cache('_QBiQt')
+        self.clear_cache('_BiQt')
         self.clear_cache('_QBiQtAm')
         self.clear_cache('_QBiQtCteta')
         assert 0 <= v <= 1
@@ -306,6 +318,7 @@ class EP(Cached):
         self.clear_cache('_A')
         self.clear_cache('_C')
         self.clear_cache('_QBiQt')
+        self.clear_cache('_BiQt')
         self.clear_cache('_QBiQtAm')
         self.clear_cache('_QBiQtCteta')
         assert 0 <= v
@@ -399,7 +412,46 @@ class EP(Cached):
     def _gradient_over_v(self):
         self._update()
 
-        dK = self.K() / self.v
+        A = self._A()
+        Q = self._Q
+        S = self._S
+        C = self._C()
+        m = self.m()
+        delta = self.delta
+        v = self.v
+        teta = self._sitelik_eta
+
+        AQ = ddot(A, Q, left=True)
+        SQt = ddot(S, Q.T, left=True)
+
+        Am = A * m
+        Em = Am - A * self._QBiQtAm()
+
+        Cteta = C * teta
+        Eu = Cteta - A * self._QBiQtCteta()
+
+        u = Em - Eu
+
+        uBiQtAK0, uBiQtAK1 = self._uBiQtAK()
+
+        out = dot(u, self.Kdot(u))
+        out /= v
+        out -= (1-delta)*trace2(AQ, SQt)
+        out -= delta*A.sum()
+        out += (1-delta)*trace2(AQ, uBiQtAK0)
+        out += delta*trace2(AQ, uBiQtAK1)
+        out /= 2
+        return out
+
+    def _gradient_over_delta(self):
+        self._update()
+
+        v = self.v
+        delta = self.delta
+        K = self.K()
+        Q = self._Q
+        S = self._S
+
         A = self._A()
         C = self._C()
         m = self.m()
@@ -414,12 +466,27 @@ class EP(Cached):
 
         u = Em - Eu
 
-        AdK = ddot(A, dK, left=True)
-        AQBiQtAdK = ddot(A, dot(QBiQt, AdK), left=True)
+        AQ = ddot(A, Q, left=True)
+        SQt = ddot(S, Q.T, left=True)
 
-        return dot(u, dot(dK, u)) / 2 - trace(AdK - AQBiQtAdK) / 2
+        BiQt = self._BiQt()
 
-    def _gradient_over_delta(self):
+        uBiQtAK0, uBiQtAK1 = self._uBiQtAK()
+
+        out = -trace2(AQ, uBiQtAK0)
+        out -= (delta/(1-delta)) * trace2(AQ, uBiQtAK1)
+        out += trace2(AQ, ddot(BiQt, A, left=False)) * ((delta/(1-delta)) + 1)
+        out += (1 + delta/(1-delta)) * dot(u, u)
+        out += trace2(AQ, SQt) + (delta/(1-delta))*A.sum()
+        out -= (1 + delta/(1-delta))*A.sum()
+
+        out *= v
+
+        out -= dot(u, self.Kdot(u)) / (1-delta)
+
+        return out / 2
+
+    def OOOO_gradient_over_delta(self):
         self._update()
 
         v = self.v
@@ -430,6 +497,8 @@ class EP(Cached):
         A = self._A()
         C = self._C()
         m = self.m()
+        delta = self.delta
+        v = self.v
         teta = self._sitelik_eta
         QBiQt = self._QBiQt()
 
@@ -441,10 +510,24 @@ class EP(Cached):
 
         u = Em - Eu
 
-        AdK = ddot(A, dK, left=True)
-        AQBiQtAdK = ddot(A, dot(QBiQt, AdK), left=True)
+        uBiQtAK0, uBiQtAK1 = self._uBiQtAK()
 
-        return dot(u, dot(dK, u)) / 2 - trace(AdK - AQBiQtAdK) / 2
+        # AdK = ddot(A, dK, left=True)
+        AQ = ddot(A, Q, left=True)
+        AdK = - (trace2(AQ, SQt) + (delta/(1-delta))*A.sum())
+        AdK += (delta/(1-delta))*A.sum() + A.sum()
+        Adk *= v
+
+        AQBiQtAdK = ddot(A, dot(QBiQt, ddot(A, dK, left=True)), left=True)
+        # assert False
+        # trace2(AQ, ddot(BiQt, A, left=False))
+
+        # kiss0 = -(v*trace2(AQ, uBiQtAK0) + v*(delta/(1-delta))*trace2(AQ, uBiQtAK1))
+        #  + v*(delta/(1-delta)) + v
+
+        out = -dot(u, self.Kdot(u))/(1-delta) + v * (delta/(1-delta)) + v
+
+        return (out - AdK + trace(AQBiQtAdK)) / 2
 
     def _gradient_over_both(self):
         self._update()
@@ -516,6 +599,7 @@ class EP(Cached):
             self.clear_cache('_A')
             self.clear_cache('_C')
             self.clear_cache('_QBiQt')
+            self.clear_cache('_BiQt')
             self.clear_cache('_QBiQtAm')
             self.clear_cache('_QBiQtCteta')
 
@@ -546,22 +630,31 @@ class EP(Cached):
         L = self._L()
         A = self._A()
         C = self._C()
-        K = self.K()
         m = self.m()
         Q = self._Q
+        S = self._S
+        v = self.v
+        delta = self.delta
         teta = self._sitelik_eta
-        Kteta = dot(K, teta)
-        AK = ddot(A, K, left=True)
-        QBiQtAK = dotd(Q, cho_solve(L, dot(Q.T, AK)))
-
         jtau = self._joint_tau
         jeta = self._joint_eta
+        Kteta = self.Kdot(teta)
 
-        diagK = K.diagonal()
-        jtau[:] = 1 / (diagK - QBiQtAK)
+        BiQt = self._BiQt()
+        uBiQtAK0, uBiQtAK1 = self._uBiQtAK()
 
-        jeta[:] = m - self._QBiQtAm() + Kteta - \
-            dot(Q, cho_solve(L, dot(Q.T, A * Kteta)))
+        jtau[:] = -dotd(Q, uBiQtAK0)
+        jtau *= 1 - delta
+        jtau -= delta * dotd(Q, uBiQtAK1)
+        jtau *= v
+        jtau += self.diagK()
+
+        jtau[:] = 1/jtau
+
+        dot(Q, dot(BiQt, -A*Kteta), out=jeta)
+        jeta += Kteta
+        jeta += m
+        jeta -= self._QBiQtAm()
         jeta *= jtau
         jtau /= C
 
@@ -724,6 +817,11 @@ class EP(Cached):
         return Q.dot(cho_solve(self._L(), Q.T))
 
     @cached
+    def _BiQt(self):
+        Q = self._Q
+        return cho_solve(self._L(), Q.T)
+
+    @cached
     def _L(self):
         r"""Returns the Cholesky factorization of :math:`\mathcal B`.
 
@@ -734,8 +832,10 @@ class EP(Cached):
         """
         Q = self._Q
         A = self._A()
-        QtAQ = dot(Q.T, ddot(A, Q, left=True))
-        B = sum2diag(QtAQ, 1. / (self.sigma2_b * self._S))
+        # QtAQ = dot(Q.T, ddot(A, Q, left=True))
+        # B = sum2diag(QtAQ, 1. / (self.sigma2_b * self._S))
+        B = dot(Q.T, ddot(A, Q, left=True))
+        sum2diag_inplace(B, 1. / (self.sigma2_b * self._S))
         return cho_factor(B, lower=True)[0]
 
     @cached
@@ -752,4 +852,38 @@ class EP(Cached):
         L = self._L()
         A = self._A()
         m = self.m()
+
         return dot(Q, cho_solve(L, dot(Q.T, A * m)))
+
+    def _diagQBiQtAK(self):
+        BiQt = self._BiQt()
+        v = self.v
+        delta = self.delta
+        A = self._A()
+        S = self._S
+        Q = self._Q
+
+        uBiQtAK0, uBiQtAK1 = self._uBiQtAK()
+
+        return -v*(1-delta)*dotd(Q, uBiQtAK0) - v*delta*dotd(Q, uBiQtAK1)
+
+        # BiQtA = ddot(BiQt, A, left=False)
+        # BiQtAQS = dot(BiQtA, Q)
+        # ddot(BiQtAQS, S, left=False, out=BiQtAQS)
+        #
+        # out = -dotd(Q, dot(BiQtAQS, Q.T))
+        # out *= (1-delta)
+        # out -= delta*dotd(Q, BiQtA)
+        # out *= v
+        #
+        # return out
+
+    def _uBiQtAK(self):
+        BiQt = self._BiQt()
+        S = self._S
+        Q = self._Q
+        BiQtA = ddot(BiQt, self._A(), left=False)
+        BiQtAQS = dot(BiQtA, Q)
+        ddot(BiQtAQS, S, left=False, out=BiQtAQS)
+
+        return dot(BiQtAQS, Q.T), BiQtA

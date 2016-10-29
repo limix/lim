@@ -63,6 +63,31 @@ def test_binomial_gradient_over_v():
 
     assert_almost_equal(empirical_gradient, analytical_gradient, decimal=4)
 
+def test_binomial_gradient_over_delta():
+    n = 3
+    M = ones((n, 1)) * 1.
+    G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
+    (Q, S) = qs_decomposition(G)
+    nsuccesses = array([1., 0., 1.])
+    ntrials = array([1., 1., 1.])
+    ep = BinomialEP(nsuccesses, ntrials, M, hstack(Q),
+                    empty((n, 0)), hstack(S) + 1.0)
+    ep.beta = array([1.])
+    assert_almost_equal(ep.beta, array([1.]))
+    ep.v = 1.
+    ep.delta = 0.5
+
+    analytical_gradient = ep._gradient_over_delta()
+
+    lml0 = ep.lml()
+    step = 1e-5
+    ep.delta = ep.delta + step
+    lml1 = ep.lml()
+
+    empirical_gradient = (lml1 - lml0) / step
+
+    assert_almost_equal(empirical_gradient, analytical_gradient, decimal=4)
+
 
 def test_binomial_gradient_over_both():
     n = 3
