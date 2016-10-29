@@ -456,13 +456,12 @@ class EP(Cached):
         C = self._C()
         m = self.m()
         teta = self._sitelik_eta
-        QBiQt = self._QBiQt()
 
         Am = A * m
-        Em = Am - A * dot(QBiQt, Am)
+        Em = Am - A * self._QBiQtAm()
 
         Cteta = C * teta
-        Eu = Cteta - A * dot(QBiQt, Cteta)
+        Eu = Cteta - A * self._QBiQtCteta()
 
         u = Em - Eu
 
@@ -486,60 +485,19 @@ class EP(Cached):
 
         return out / 2
 
-    def OOOO_gradient_over_delta(self):
-        self._update()
-
-        v = self.v
-        delta = self.delta
-        K = self.K()
-        dK = sum2diag(- K / (1 - delta), v * (delta / (1 - delta)) + v)
-
-        A = self._A()
-        C = self._C()
-        m = self.m()
-        delta = self.delta
-        v = self.v
-        teta = self._sitelik_eta
-        QBiQt = self._QBiQt()
-
-        Am = A * m
-        Em = Am - A * dot(QBiQt, Am)
-
-        Cteta = C * teta
-        Eu = Cteta - A * dot(QBiQt, Cteta)
-
-        u = Em - Eu
-
-        uBiQtAK0, uBiQtAK1 = self._uBiQtAK()
-
-        # AdK = ddot(A, dK, left=True)
-        AQ = ddot(A, Q, left=True)
-        AdK = - (trace2(AQ, SQt) + (delta/(1-delta))*A.sum())
-        AdK += (delta/(1-delta))*A.sum() + A.sum()
-        Adk *= v
-
-        AQBiQtAdK = ddot(A, dot(QBiQt, ddot(A, dK, left=True)), left=True)
-        # assert False
-        # trace2(AQ, ddot(BiQt, A, left=False))
-
-        # kiss0 = -(v*trace2(AQ, uBiQtAK0) + v*(delta/(1-delta))*trace2(AQ, uBiQtAK1))
-        #  + v*(delta/(1-delta)) + v
-
-        out = -dot(u, self.Kdot(u))/(1-delta) + v * (delta/(1-delta)) + v
-
-        return (out - AdK + trace(AQBiQtAdK)) / 2
-
     def _gradient_over_both(self):
         self._update()
 
         v = self.v
         delta = self.delta
-        K = self.K()
-
-        dKv = self.K() / self.v
-        dKdelta = sum2diag(- K / (1 - delta), v * (delta / (1 - delta)) + v)
-
+        Q = self._Q
+        S = self._S
         A = self._A()
+        AQ = ddot(A, Q, left=True)
+        SQt = ddot(S, Q.T, left=True)
+        BiQt = self._BiQt()
+        uBiQtAK0, uBiQtAK1 = self._uBiQtAK()
+
         C = self._C()
         m = self.m()
         teta = self._sitelik_eta
@@ -554,13 +512,25 @@ class EP(Cached):
 
         u = Em - Eu
 
-        def grad(dK):
-            AdK = ddot(A, dK, left=True)
-            dKu = dot(dK, u)
-            AQBiQtAdK = ddot(A, dot(Q, cho_solve(L, dot(Q.T, AdK))), left=True)
-            return dot(u, dKu) / 2 - trace(AdK - AQBiQtAdK) / 2
+        dv = dot(u, self.Kdot(u))
+        dv /= v
+        dv -= (1-delta)*trace2(AQ, SQt)
+        dv -= delta*A.sum()
+        dv += (1-delta)*trace2(AQ, uBiQtAK0)
+        dv += delta*trace2(AQ, uBiQtAK1)
+        dv /= 2
 
-        return asarray([grad(dKv), grad(dKdelta)])
+        ddelta = -trace2(AQ, uBiQtAK0)
+        ddelta -= (delta/(1-delta)) * trace2(AQ, uBiQtAK1)
+        ddelta += trace2(AQ, ddot(BiQt, A, left=False)) * ((delta/(1-delta)) + 1)
+        ddelta += (1 + delta/(1-delta)) * dot(u, u)
+        ddelta += trace2(AQ, SQt) + (delta/(1-delta))*A.sum()
+        ddelta -= (1 + delta/(1-delta))*A.sum()
+        ddelta *= v
+        ddelta -= dot(u, self.Kdot(u)) / (1-delta)
+        ddelta /= 2
+
+        return asarray([dv, ddelta])
 
     @cached
     def _update(self):
@@ -832,8 +802,6 @@ class EP(Cached):
         """
         Q = self._Q
         A = self._A()
-        # QtAQ = dot(Q.T, ddot(A, Q, left=True))
-        # B = sum2diag(QtAQ, 1. / (self.sigma2_b * self._S))
         B = dot(Q.T, ddot(A, Q, left=True))
         sum2diag_inplace(B, 1. / (self.sigma2_b * self._S))
         return cho_factor(B, lower=True)[0]
