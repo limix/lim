@@ -6,12 +6,11 @@ from time import time
 
 from hcache import Cached, cached
 from numpy import var as variance
-from numpy import (abs, all, any, asarray, atleast_1d, atleast_2d, clip,
+from numpy import (abs, all, any, asarray,
                    diagonal, dot, empty, empty_like, errstate, inf, isfinite,
-                   log, maximum, set_printoptions, sqrt, sum, zeros,
-                   zeros_like, trace)
-from numpy.linalg import LinAlgError, multi_dot
+                   log, maximum, sqrt, sum, zeros, zeros_like)
 from scipy.linalg import cho_factor
+from numpy.linalg import LinAlgError
 
 from limix_math import is_all_finite
 from limix_math.linalg import (cho_solve, ddot, dotd, economic_svd, solve,
@@ -370,9 +369,6 @@ class EP(Cached):
         ctau = self._cav_tau
         ceta = self._cav_eta
         tctau = ttau + ctau
-        # cmu = self._cavs.mu
-        # TODO: MUDAR ISSO AQUI
-        cmu = ceta / ctau
         A = self._A()
         C = self._C()
         L = self._L()
@@ -391,7 +387,7 @@ class EP(Cached):
         w2 -= teta / tctau
         w2 = dot(teta, w2) / 2
 
-        w3 = dot(ceta, (ttau * cmu - 2 * teta) / tctau) / 2
+        w3 = dot(ceta, (ttau * ceta - 2 * teta * ctau) / (ctau*tctau)) / 2
 
         w4 = dot(m * C, teta) - dot(Am, QBiQtCteta)
 
@@ -499,8 +495,8 @@ class EP(Cached):
         C = self._C()
         m = self.m()
         teta = self._sitelik_eta
-        L = self._L()
         Q = self._Q
+        As = A.sum()
 
         Am = A * m
         Em = Am - A * self._QBiQtAm()
@@ -509,24 +505,26 @@ class EP(Cached):
         Eu = Cteta - A * self._QBiQtCteta()
 
         u = Em - Eu
+        uKu = dot(u, self.Kdot(u))
+        tr1 = trace2(AQ, uBiQtAK0)
+        tr2 = trace2(AQ, uBiQtAK1)
 
-        dv = dot(u, self.Kdot(u))
-        dv /= v
+        dv = uKu / v
         dv -= (1 - delta) * trace2(AQ, SQt)
-        dv -= delta * A.sum()
-        dv += (1 - delta) * trace2(AQ, uBiQtAK0)
-        dv += delta * trace2(AQ, uBiQtAK1)
+        dv -= delta * As
+        dv += (1 - delta) * tr1
+        dv += delta * tr2
         dv /= 2
 
-        ddelta = -trace2(AQ, uBiQtAK0)
-        ddelta -= (delta / (1 - delta)) * trace2(AQ, uBiQtAK1)
-        ddelta += trace2(AQ, ddot(BiQt, A, left=False)) * \
-            ((delta / (1 - delta)) + 1)
-        ddelta += (1 + delta / (1 - delta)) * dot(u, u)
-        ddelta += trace2(AQ, SQt) + (delta / (1 - delta)) * A.sum()
-        ddelta -= (1 + delta / (1 - delta)) * A.sum()
+        dd = delta / (1 - delta)
+        ddelta = -tr1
+        ddelta -= dd * tr2
+        ddelta += trace2(AQ, ddot(BiQt, A, left=False)) * (dd+1)
+        ddelta += (dd+1) * dot(u, u)
+        ddelta += trace2(AQ, SQt)
+        ddelta -= As
         ddelta *= v
-        ddelta -= dot(u, self.Kdot(u)) / (1 - delta)
+        ddelta -= uKu / (1 - delta)
         ddelta /= 2
 
         return asarray([dv, ddelta])
@@ -589,18 +587,16 @@ class EP(Cached):
                 break
 
         if i + 1 == MAX_EP_ITER:
-            self._logger.warn('Maximum number of EP iterations has' +
-                              ' been attained.')
+            self._logger.warning('Maximum number of EP iterations has' +
+                                 ' been attained.')
 
         self._logger.info('EP loop has performed %d iterations.', i)
 
     def _joint_update(self):
-        L = self._L()
         A = self._A()
         C = self._C()
         m = self.m()
         Q = self._Q
-        S = self._S
         v = self.v
         delta = self.delta
         teta = self._sitelik_eta
@@ -662,7 +658,7 @@ class EP(Cached):
                 self._tbeta = solve(Z, u)
 
         except (LinAlgError, FloatingPointError):
-            self._logger.warn('Failed to compute the optimal beta.' +
+            self._logger.warning('Failed to compute the optimal beta.' +
                               ' Zeroing it.')
             self.__tbeta[:] = 0.
 
@@ -690,7 +686,7 @@ class EP(Cached):
                     self.delta = delta
                     self._optimize_beta()
                     return -self.lml()
-                d, nfev = find_minimum(function_cost_delta, self.delta,
+                d, _ = find_minimum(function_cost_delta, self.delta,
                                        a=1e-4, b=1 - 1e-4, rtol=0, atol=1e-6)
                 self.delta = d
             self._optimize_beta()
