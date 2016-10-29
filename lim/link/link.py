@@ -40,6 +40,7 @@ class ProbitLink(Link):
     def inv(self, x):
         return normal_cdf(x)
 
+
 class LogLink(Link):
 
     def __init__(self):

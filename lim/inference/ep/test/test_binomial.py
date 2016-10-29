@@ -63,6 +63,7 @@ def test_binomial_gradient_over_v():
 
     assert_almost_equal(empirical_gradient, analytical_gradient, decimal=4)
 
+
 def test_binomial_gradient_over_delta():
     n = 3
     M = ones((n, 1)) * 1.

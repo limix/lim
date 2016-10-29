@@ -9,6 +9,7 @@ from .glmm import GLMMSampler
 from ..util.fruits import Apples
 from ..tool.normalize import stdnorm
 
+
 def binomial(ntrials, offset, G, heritability=0.5, random_state=None):
 
     nsamples = G.shape[0]

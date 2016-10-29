@@ -48,6 +48,7 @@ class ExpFam(object):
     def sample(self, x):
         raise NotImplementedError
 
+
 class Bernoulli(ExpFam):
 
     def __init__(self, outcome, link):
@@ -100,7 +101,7 @@ class Binomial(ExpFam):
         if isinstance(link, ProbitLink):
             return 1
         elif isinstance(link, LogitLink):
-            return pi**2/3
+            return pi**2 / 3
         raise ValueError()
 
     @property

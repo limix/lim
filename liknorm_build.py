@@ -7,11 +7,13 @@ from glob import glob
 from os.path import join
 import six
 
+
 def make_sure_string(msg):
     if six.PY2:
         return bytes(msg)
     else:
         return u"%s" % __builtins__['str'](msg)
+
 
 def _make():
     from cffi import FFI
@@ -21,7 +23,6 @@ def _make():
     logger.debug('CFFI make')
 
     ffi = FFI()
-
 
     rfolder = join('lim', 'inference', 'ep', 'liknorm', 'clib')
 

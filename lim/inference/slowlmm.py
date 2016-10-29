@@ -12,6 +12,7 @@ from limix_math.linalg import sum2diag
 
 from optimix import Composite
 
+
 class SlowLMM(Composite):
 
     def __init__(self, y, mean, cov):
@@ -56,19 +57,6 @@ class SlowLMM(Composite):
         grad_cov = self._lml_gradient_cov(mean, cov, gcov)
         grad_mean = self._lml_gradient_mean(mean, cov, gmean)
         return grad_cov + grad_mean
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # def variables(self):

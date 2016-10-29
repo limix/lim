@@ -4,6 +4,7 @@ from numpy import ascontiguousarray as aca
 from numpy import exp
 from numpy import log
 
+
 class ProdLik(object):
 
     def __init__(self, likelihoods):
@@ -59,6 +60,7 @@ class ProdLik(object):
 
     def sample(self, x):
         raise NotImplementedError
+
 
 class BinomialProdLik(ProdLik):
 

@@ -5,12 +5,14 @@ from limix_math.linalg import sum2diag_inplace
 
 from ..util.transformation import DesignMatrixTrans
 
+
 class FastLMMSampler(object):
+
     def __init__(self, offset, scale, delta, X):
         t = DesignMatrixTrans(X)
         X = t.transform(X)
         self._offset = offset
-        self._cov = X.dot(X.T) * (1-delta)
+        self._cov = X.dot(X.T) * (1 - delta)
         sum2diag_inplace(self._cov, delta)
         self._cov *= scale
 

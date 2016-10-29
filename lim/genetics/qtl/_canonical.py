@@ -12,6 +12,7 @@ from ._lrt import LikelihoodRatioTestScan
 from ...inference import FastLMM
 from ...util import offset_covariate
 
+
 class CanonicalLRTScan(LikelihoodRatioTestScan):
 
     def __init__(self, y, Q0, Q1, S0, covariates=None, progress=True):

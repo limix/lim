@@ -15,7 +15,6 @@ class BinomialPhenotypeInfo(object):
         return t
 
 
-
 class BinomialPhenotypeInfo(object):
 
     def __init__(self, nsuccesses, ntrials):

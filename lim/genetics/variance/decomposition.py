@@ -127,7 +127,6 @@ def normal_decomposition(y, GK, covariates=None, progress=True):
     GK = normalize_covariance_list(GK)
     preprocess(GK, covariates, ii)
 
-
     vd = NormalVarDec(y, ii.effective_GK, covariates=covariates,
                       progress=progress)
 
@@ -141,8 +140,10 @@ def normal_decomposition(y, GK, covariates=None, progress=True):
     # return lrt
     return vd
 
+
 def _offset_covariate(covariates, n):
     return ones((n, 1)) if covariates is None else covariates
+
 
 class VarDec(object):
 
@@ -166,6 +167,7 @@ class VarDec(object):
             progress = NullBar()
 
         self._learn(progress)
+
 
 class NormalVarDec(VarDec):
 

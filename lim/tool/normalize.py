@@ -6,6 +6,7 @@ from numpy import errstate
 from numpy import isnan
 from numpy import copyto
 
+
 def stdnorm(X, axis=None, out=None):
     X = ascontiguousarray(X)
     if out is None:

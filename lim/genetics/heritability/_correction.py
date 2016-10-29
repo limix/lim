@@ -1,7 +1,8 @@
 from scipy.stats import norm
 
+
 def bern2lat_correction(h2, prevalence, ascertainment):
-    t = norm.ppf(1-prevalence)
+    t = norm.ppf(1 - prevalence)
     z = norm.pdf(t)
     k = prevalence * (1 - prevalence)
     p = ascertainment * (1 - ascertainment)

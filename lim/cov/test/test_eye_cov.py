@@ -18,6 +18,7 @@ def test_eye_value():
     o = Oranges(None)
     npt.assert_almost_equal(2.1, cov.value(o, o))
 
+
 def test_eye_gradient_1():
     cov = EyeCov()
     cov.scale = 2.1
@@ -33,6 +34,7 @@ def test_eye_gradient_1():
         return cov.feed().gradient()
 
     npt.assert_almost_equal(check_grad(func, grad, [0.1]), 0)
+
 
 def test_eye_gradient_2():
     cov = EyeCov()

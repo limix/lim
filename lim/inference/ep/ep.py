@@ -434,10 +434,10 @@ class EP(Cached):
 
         out = dot(u, self.Kdot(u))
         out /= v
-        out -= (1-delta)*trace2(AQ, SQt)
-        out -= delta*A.sum()
-        out += (1-delta)*trace2(AQ, uBiQtAK0)
-        out += delta*trace2(AQ, uBiQtAK1)
+        out -= (1 - delta) * trace2(AQ, SQt)
+        out -= delta * A.sum()
+        out += (1 - delta) * trace2(AQ, uBiQtAK0)
+        out += delta * trace2(AQ, uBiQtAK1)
         out /= 2
         return out
 
@@ -470,15 +470,16 @@ class EP(Cached):
         uBiQtAK0, uBiQtAK1 = self._uBiQtAK()
 
         out = -trace2(AQ, uBiQtAK0)
-        out -= (delta/(1-delta)) * trace2(AQ, uBiQtAK1)
-        out += trace2(AQ, ddot(BiQt, A, left=False)) * ((delta/(1-delta)) + 1)
-        out += (1 + delta/(1-delta)) * dot(u, u)
-        out += trace2(AQ, SQt) + (delta/(1-delta))*A.sum()
-        out -= (1 + delta/(1-delta))*A.sum()
+        out -= (delta / (1 - delta)) * trace2(AQ, uBiQtAK1)
+        out += trace2(AQ, ddot(BiQt, A, left=False)) * \
+            ((delta / (1 - delta)) + 1)
+        out += (1 + delta / (1 - delta)) * dot(u, u)
+        out += trace2(AQ, SQt) + (delta / (1 - delta)) * A.sum()
+        out -= (1 + delta / (1 - delta)) * A.sum()
 
         out *= v
 
-        out -= dot(u, self.Kdot(u)) / (1-delta)
+        out -= dot(u, self.Kdot(u)) / (1 - delta)
 
         return out / 2
 
@@ -511,20 +512,21 @@ class EP(Cached):
 
         dv = dot(u, self.Kdot(u))
         dv /= v
-        dv -= (1-delta)*trace2(AQ, SQt)
-        dv -= delta*A.sum()
-        dv += (1-delta)*trace2(AQ, uBiQtAK0)
-        dv += delta*trace2(AQ, uBiQtAK1)
+        dv -= (1 - delta) * trace2(AQ, SQt)
+        dv -= delta * A.sum()
+        dv += (1 - delta) * trace2(AQ, uBiQtAK0)
+        dv += delta * trace2(AQ, uBiQtAK1)
         dv /= 2
 
         ddelta = -trace2(AQ, uBiQtAK0)
-        ddelta -= (delta/(1-delta)) * trace2(AQ, uBiQtAK1)
-        ddelta += trace2(AQ, ddot(BiQt, A, left=False)) * ((delta/(1-delta)) + 1)
-        ddelta += (1 + delta/(1-delta)) * dot(u, u)
-        ddelta += trace2(AQ, SQt) + (delta/(1-delta))*A.sum()
-        ddelta -= (1 + delta/(1-delta))*A.sum()
+        ddelta -= (delta / (1 - delta)) * trace2(AQ, uBiQtAK1)
+        ddelta += trace2(AQ, ddot(BiQt, A, left=False)) * \
+            ((delta / (1 - delta)) + 1)
+        ddelta += (1 + delta / (1 - delta)) * dot(u, u)
+        ddelta += trace2(AQ, SQt) + (delta / (1 - delta)) * A.sum()
+        ddelta -= (1 + delta / (1 - delta)) * A.sum()
         ddelta *= v
-        ddelta -= dot(u, self.Kdot(u)) / (1-delta)
+        ddelta -= dot(u, self.Kdot(u)) / (1 - delta)
         ddelta /= 2
 
         return asarray([dv, ddelta])
@@ -615,9 +617,9 @@ class EP(Cached):
         jtau *= v
         jtau += self.diagK()
 
-        jtau[:] = 1/jtau
+        jtau[:] = 1 / jtau
 
-        dot(Q, dot(BiQt, -A*Kteta), out=jeta)
+        dot(Q, dot(BiQt, -A * Kteta), out=jeta)
         jeta += Kteta
         jeta += m
         jeta -= self._QBiQtAm()

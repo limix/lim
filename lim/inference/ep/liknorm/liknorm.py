@@ -4,6 +4,7 @@ from numpy import ndarray
 
 from . import _liknorm_ffi
 
+
 def ptr(a):
     if isinstance(a, ndarray):
         return _liknorm_ffi.ffi.cast("double *", a.ctypes.data)

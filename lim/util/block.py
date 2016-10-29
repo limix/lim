@@ -22,5 +22,6 @@ class Block(object):
     def printer(self, msg):
         msg = str(msg)
         lines = msg.split('\n')
-        lines = ['|' + l + ' ' * (77 - len(l.decode("utf-8"))) + '|' for l in lines]
+        lines = ['|' + l + ' ' *
+                 (77 - len(l.decode("utf-8"))) + '|' for l in lines]
         print('\n'.join(lines))

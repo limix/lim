@@ -15,12 +15,12 @@ def test_stdnorm():
     assert_allclose(x.mean(0), [0], atol=1e-7)
     assert_allclose(x.std(0), 1, atol=1e-7)
 
-    assert_allclose(X.mean(0), [0]*5, atol=1e-7)
-    assert_allclose(X.std(0), [1]*5, atol=1e-7)
+    assert_allclose(X.mean(0), [0] * 5, atol=1e-7)
+    assert_allclose(X.std(0), [1] * 5, atol=1e-7)
 
     x = ones(10)
     X = random.randn(10, 5)
-    X[:,0] = 1
+    X[:, 0] = 1
 
     assert_allclose(stdnorm(x).mean(0), [0])
     assert_allclose(stdnorm(x).std(0), [0])

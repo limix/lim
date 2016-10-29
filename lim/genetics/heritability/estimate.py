@@ -16,6 +16,7 @@ from ...tool.normalize import stdnorm
 from limix_math.linalg import qs_decomposition_from_K
 from limix_math.linalg import qs_decomposition
 
+
 def bernoulli_estimate(outcomes, G=None, K=None, covariate=None):
     """Estimate the narrow-sense heritability for Bernoulli traits.
 
@@ -66,6 +67,7 @@ def bernoulli_estimate(outcomes, G=None, K=None, covariate=None):
     logger.info('Found heritability before correction: %.5f.', h2)
 
     return h2
+
 
 def binomial_estimate(nsuccesses, ntrials, G=None, K=None, covariate=None):
     """Estimate the so-called narrow-sense heritability.
@@ -120,6 +122,7 @@ def binomial_estimate(nsuccesses, ntrials, G=None, K=None, covariate=None):
 
     return h2
 
+
 def poisson_estimate(nsuccesses, G=None, K=None, covariate=None):
     """Estimate the so-called narrow-sense heritability.
 
@@ -172,6 +175,7 @@ def poisson_estimate(nsuccesses, G=None, K=None, covariate=None):
 
     return h2
 
+
 def _background_standardize(G, K):
     logger = logging.getLogger(__name__)
 
@@ -189,6 +193,7 @@ def _background_standardize(G, K):
         G /= sqrt(G.shape[1])
 
     return (G, K)
+
 
 def _background_decomposition(G, K):
     if G:
