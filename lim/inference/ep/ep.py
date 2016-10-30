@@ -14,10 +14,11 @@ from numpy.linalg import LinAlgError
 
 from limix_math import is_all_finite
 from limix_math import (cho_solve, ddot, dotd, economic_svd, solve, sum2diag,
-                        sum2diag_inplace, trace2)
+                        trace2)
 
 from ._optimize import find_minimum
 from .util import make_sure_reasonable_conditioning
+from limix_math import epsilon
 
 MAX_EP_ITER = 10
 EP_EPS = 1e-5
@@ -319,7 +320,7 @@ class EP(Cached):
         self.clear_cache('_QBiQtAm')
         self.clear_cache('_QBiQtCteta')
         assert 0 <= v
-        self._v = v
+        self._v = max(v, epsilon.small)
 
     @property
     def _tbeta(self):
@@ -737,7 +738,7 @@ class EP(Cached):
                 asarray([self.v, self.delta]),
                 xtol=xtol,
                 disp=5,
-                bounds=[(0, inf), (0, 1 - 1e-5)],
+                bounds=[(epsilon.small, inf), (0, 1 - 1e-5)],
                 ftol=ftol,
                 pgtol=pgtol,
                 rescale=rescale)
@@ -757,7 +758,7 @@ class EP(Cached):
                 asarray([self.v]),
                 xtol=xtol,
                 disp=5,
-                bounds=[(0, inf)],
+                bounds=[(epsilon.small, inf)],
                 ftol=ftol,
                 pgtol=pgtol,
                 rescale=rescale)
@@ -814,7 +815,7 @@ class EP(Cached):
         Q = self._Q
         A = self._A()
         B = dot(Q.T, ddot(A, Q, left=True))
-        sum2diag_inplace(B, 1. / (self.sigma2_b * self._S))
+        sum2diag(B, 1. / (self.sigma2_b * self._S), out=B)
         return cho_factor(B, lower=True)[0]
 
     @cached

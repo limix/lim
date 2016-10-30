@@ -1,7 +1,7 @@
 from numpy import full
 from numpy.random import RandomState
 
-from limix_math import sum2diag_inplace
+from limix_math import sum2diag
 
 from ..util.transformation import DesignMatrixTrans
 
@@ -12,7 +12,7 @@ class FastLMMSampler(object):
         X = t.transform(X)
         self._offset = offset
         self._cov = X.dot(X.T) * (1 - delta)
-        sum2diag_inplace(self._cov, delta)
+        sum2diag(self._cov, delta, out=self._cov)
         self._cov *= scale
 
     def sample(self, random_state=None):

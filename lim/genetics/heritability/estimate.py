@@ -194,10 +194,10 @@ def _background_standardize(G, K):
 
 
 def _background_decomposition(G, K):
-    if G:
-        (Q, S0) = economic_qs_linear(G)
-    else:
+    if G is None:
         (Q, S0) = economic_qs(K)
+    else:
+        (Q, S0) = economic_qs_linear(G)
 
     Q0 = Q[0]
     Q1 = Q[1]

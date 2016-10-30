@@ -54,6 +54,16 @@ class Bernoulli(ExpFam):
         self._outcome = outcome
         self._link = link
 
+    @staticmethod
+    def latent_variance(link):
+        from ..link import ProbitLink
+        from ..link import LogitLink
+        if isinstance(link, ProbitLink):
+            return 1
+        elif isinstance(link, LogitLink):
+            return pi**2 / 3
+        raise ValueError()
+
     @property
     def y(self):
         return self._outcome
@@ -81,7 +91,7 @@ class Bernoulli(ExpFam):
     def sample(self, x, random_state=None):
         import scipy.stats as st
         p = self.mean(x)
-        return bernoulli(p).rvs(random_state=random_state)
+        return st.bernoulli(p).rvs(random_state=random_state)
 
 
 class Binomial(ExpFam):
@@ -92,7 +102,7 @@ class Binomial(ExpFam):
         self._link = link
 
     @staticmethod
-    def latent_variance(self, link):
+    def latent_variance(link):
         from ..link import ProbitLink
         from ..link import LogitLink
         if isinstance(link, ProbitLink):

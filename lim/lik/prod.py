@@ -1,6 +1,9 @@
 from __future__ import division
 
+from limix_math.special import logbinom
+
 from numpy import ascontiguousarray as aca
+from numpy import log1p
 from numpy import exp
 from numpy import log
 
@@ -59,6 +62,50 @@ class ProdLik(object):
 
     def sample(self, x):
         raise NotImplementedError
+
+
+class BernoulliProdLik(ProdLik):
+    def __init__(self, outcome, link):
+        super(BernoulliProdLik, self).__init__(None)
+        self._outcome = outcome
+        self._link = link
+
+    def pdf(self, x):
+        return exp(self.logpdf(x))
+
+    def logpdf(self, x):
+        theta = self.theta(x)
+        return (self.y * theta - self.b(theta)) / self.a() + self.c()
+
+    @property
+    def y(self):
+        return self._outcome
+
+    def mean(self, x):
+        return self._link.inv(x)
+
+    def theta(self, x):
+        m = self.mean(x)
+        return log(m / (1 - m))
+
+    @property
+    def phi(self):
+        return 1
+
+    def a(self):
+        return 1 / self.phi
+
+    def b(self, theta):
+        return theta + log1p(exp(-theta))
+
+    def c(self):
+        return logbinom(self.phi, self.y * self.phi)
+
+    def sample(self, x, random_state=None):
+        import scipy.stats as st
+        p = self.mean(x)
+        return st.bernoulli(p).rvs(random_state=random_state)
+
 
 
 class BinomialProdLik(ProdLik):

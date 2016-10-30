@@ -1,5 +1,7 @@
 from numpy import sqrt
 from ..link import LogitLink
+from ..lik import Bernoulli
+from ..lik import BernoulliProdLik
 from ..lik import BinomialProdLik
 from ..mean import OffsetMean
 from ..cov import LinearCov
@@ -8,6 +10,30 @@ from ..cov import EyeCov
 from .glmm import GLMMSampler
 from ..util.fruits import Apples
 from ..tool.normalize import stdnorm
+
+def bernoulli(offset, G, heritability=0.5, random_state=None):
+
+    nsamples = G.shape[0]
+    G = stdnorm(G, axis=0)
+    G /= sqrt(G.shape[1])
+
+    link = LogitLink()
+
+    mean = OffsetMean()
+    mean.offset = offset
+
+    cov = LinearCov()
+
+    mean.set_data(nsamples, 'sample')
+    cov.set_data((G, G), 'sample')
+
+    r = heritability / (1-heritability)
+    cov.scale = Bernoulli.latent_variance(link) * r
+
+    lik = BernoulliProdLik(None, link)
+    sampler = GLMMSampler(lik, mean, cov)
+
+    return sampler.sample(random_state)
 
 
 def binomial(ntrials, offset, G, heritability=0.5, random_state=None):
