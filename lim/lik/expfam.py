@@ -10,9 +10,9 @@ from scipy.special import gammaln
 from limix_math.special import logbinom
 
 
-class ExpFam(object):
+class ExpFamLik(object):
     def __init__(self):
-        super(ExpFam, self).__init__()
+        super(ExpFamLik, self).__init__()
 
     def pdf(self, x):
         return exp(self.logpdf(x))
@@ -48,9 +48,9 @@ class ExpFam(object):
         raise NotImplementedError
 
 
-class Bernoulli(ExpFam):
+class BernoulliLik(ExpFamLik):
     def __init__(self, outcome, link):
-        super(Bernoulli, self).__init__()
+        super(BernoulliLik, self).__init__()
         self._outcome = outcome
         self._link = link
 
@@ -94,9 +94,9 @@ class Bernoulli(ExpFam):
         return st.bernoulli(p).rvs(random_state=random_state)
 
 
-class Binomial(ExpFam):
+class BinomialLik(ExpFamLik):
     def __init__(self, k, n, link):
-        super(Binomial, self).__init__()
+        super(BinomialLik, self).__init__()
         self._k = k
         self._n = n
         self._link = link
@@ -141,9 +141,9 @@ class Binomial(ExpFam):
         return st.binom(self._n, p).rvs(random_state=random_state)
 
 
-class Poisson(ExpFam):
+class PoissonLik(ExpFamLik):
     def __init__(self, k, link):
-        super(Poisson, self).__init__()
+        super(PoissonLik, self).__init__()
         self._k = k
         self._link = link
 

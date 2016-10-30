@@ -1,6 +1,6 @@
 from numpy import sqrt
 from ..link import LogitLink
-from ..lik import Bernoulli
+from ..lik import BernoulliLik
 from ..lik import BernoulliProdLik
 from ..lik import BinomialProdLik
 from ..mean import OffsetMean
@@ -29,7 +29,7 @@ def bernoulli(offset, G, heritability=0.5, random_state=None):
     cov.set_data((G, G), 'sample')
 
     r = heritability / (1 - heritability)
-    cov.scale = Bernoulli.latent_variance(link) * r
+    cov.scale = BernoulliLik.latent_variance(link) * r
 
     lik = BernoulliProdLik(None, link)
     sampler = GLMMSampler(lik, mean, cov)
