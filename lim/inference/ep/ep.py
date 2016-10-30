@@ -383,7 +383,6 @@ class EP(Cached):
         w1 = -sum(log(diagonal(L))) + (-sum(log(gS)) / 2 + log(A).sum() / 2)
 
         w2 = eC * teta
-        # w2 += ddot(C, QBiQtCteta, left=True)
         w2 += C * QBiQtCteta
         w2 -= teta / tctau
         w2 = dot(teta, w2) / 2
