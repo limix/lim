@@ -81,8 +81,8 @@ def test_predict_2():
     p = flmm.predict(ones((N, 1))[5, :], X[5, :])
     y5 = y[5]
     y6 = y[6]
-    assert_almost_equal(p.logpdf(y5), -1.28820823178)
-    assert_almost_equal(p.logpdf(y6), -4.28963888498)
+    assert_almost_equal(p.logpdf(y5), -1.28820823178, decimal=5)
+    assert_almost_equal(p.logpdf(y6), -4.28963888498, decimal=5)
 
 
 if __name__ == '__main__':
