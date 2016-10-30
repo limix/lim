@@ -16,7 +16,6 @@ from limix_math import is_all_finite
 from limix_math import (cho_solve, ddot, dotd, economic_svd, solve, sum2diag,
                         trace2)
 
-from ._optimize import find_minimum
 from .util import make_sure_reasonable_conditioning
 from limix_math import epsilon
 
@@ -676,42 +675,6 @@ class EP(Cached):
             self._optimal_tbeta()
             step = sum((self._tbeta - ptbeta)**2)
             i += 1
-
-    def optimize_brent(self):
-
-        self._logger.info("Start of optimization.")
-
-        def function_cost(v):
-            self.v = v
-            if self._overdispersion:
-
-                def function_cost_delta(delta):
-                    self.delta = delta
-                    self._optimize_beta()
-                    return -self.lml()
-
-                d, _ = find_minimum(
-                    function_cost_delta,
-                    self.delta,
-                    a=1e-4,
-                    b=1 - 1e-4,
-                    rtol=0,
-                    atol=1e-6)
-                self.delta = d
-            self._optimize_beta()
-            return -self.lml()
-
-        start = time()
-        v, nfev = find_minimum(
-            function_cost, self.v, a=1e-4, b=1e4, rtol=0, atol=1e-6)
-
-        self.v = v
-
-        self._optimize_beta()
-        elapsed = time() - start
-
-        msg = "End of optimization (%.3f seconds, %d function calls)."
-        self._logger.info(msg, elapsed, nfev)
 
     def optimize(self):
 
