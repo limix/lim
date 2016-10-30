@@ -2,7 +2,6 @@ from numpy.random import RandomState
 
 
 class RegGPSampler(object):
-
     def __init__(self, mean, cov):
         self._mean = mean
         self._cov = cov

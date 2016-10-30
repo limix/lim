@@ -1,5 +1,4 @@
 class BinomialPhenotypeInfo(object):
-
     def __init__(self, nsuccesses, ntrials):
         self.nsuccesses = nsuccesses
         self.ntrials = ntrials
@@ -16,7 +15,6 @@ class BinomialPhenotypeInfo(object):
 
 
 class BinomialPhenotypeInfo(object):
-
     def __init__(self, nsuccesses, ntrials):
         self.nsuccesses = nsuccesses
         self.ntrials = ntrials

@@ -14,5 +14,8 @@ def quantile_summary(v, floatfmt="g"):
     vmax = v.max()
 
     headers = ('Min', '1Q', 'Median', '3Q', 'Max')
-    return tabulate([[vmin, v1q, medi, v3q, vmax]], headers=headers,
-                    tablefmt="plain", floatfmt=floatfmt)
+    return tabulate(
+        [[vmin, v1q, medi, v3q, vmax]],
+        headers=headers,
+        tablefmt="plain",
+        floatfmt=floatfmt)

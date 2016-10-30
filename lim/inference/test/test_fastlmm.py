@@ -60,8 +60,10 @@ def test_predict_1():
 
     flmm = FastLMM(y, ones((N, 1)), X)
     flmm.learn()
-    assert_almost_equal(flmm.predict(ones((N, 1)), X).logpdf(y),
-                        -1092.1273501778442, decimal=4)
+    assert_almost_equal(
+        flmm.predict(ones((N, 1)), X).logpdf(y),
+        -1092.1273501778442,
+        decimal=4)
 
 
 def test_predict_2():

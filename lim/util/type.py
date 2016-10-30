@@ -3,27 +3,13 @@ import numpy as np
 
 def npy2py_type(npy_type):
     int_types = [
-        np.int_,
-        np.intc,
-        np.intp,
-        np.int8,
-        np.int16,
-        np.int32,
-        np.int64,
-        np.uint8,
-        np.uint16,
-        np.uint32,
-        np.uint64]
+        np.int_, np.intc, np.intp, np.int8, np.int16, np.int32, np.int64,
+        np.uint8, np.uint16, np.uint32, np.uint64
+    ]
 
-    float_types = [
-        np.float_,
-        np.float16,
-        np.float32,
-        np.float64]
+    float_types = [np.float_, np.float16, np.float32, np.float64]
 
-    bytes_types = [
-        np.str_,
-        np.string_]
+    bytes_types = [np.str_, np.string_]
 
     if npy_type in int_types:
         return int

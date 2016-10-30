@@ -7,8 +7,16 @@ from numpy import finfo, inf, isfinite, sign
 _sqrt_epsilon = sqrt(finfo(float).eps)
 
 
-def find_bracket(f, x0=None, x1=None, a=-inf, b=+inf, gfactor=2, glimit=2**8,
-                 rtol=_sqrt_epsilon, atol=_sqrt_epsilon, maxiter=500):
+def find_bracket(f,
+                 x0=None,
+                 x1=None,
+                 a=-inf,
+                 b=+inf,
+                 gfactor=2,
+                 glimit=2**8,
+                 rtol=_sqrt_epsilon,
+                 atol=_sqrt_epsilon,
+                 maxiter=500):
 
     x = sorted([xi for xi in [x0, x1] if xi is not None])
 
@@ -57,7 +65,7 @@ def _downhill3(f, x0, x1, x2, f0, f1, l, gfactor, glimit, rtol, atol, maxiter):
 
     nfails = 0
     nit = 0
-    while not(f0 > f1 < f2) and x2 != l and nit < maxiter:
+    while not (f0 > f1 < f2) and x2 != l and nit < maxiter:
         nit += 1
         tol = rtol * abs(x2) + atol
 
@@ -114,17 +122,37 @@ def _downhill(f, x0, x1, f0, f1, a, b, gfactor, glimit, rtol, atol, maxiter):
             x0 = a
 
         x2 = x1 + (x1 - x0) * gfactor
-        return _downhill3(f, x0, x1, x2, f0, f1, b,
-                          gfactor=gfactor, glimit=glimit, rtol=rtol,
-                          atol=atol, maxiter=maxiter)
+        return _downhill3(
+            f,
+            x0,
+            x1,
+            x2,
+            f0,
+            f1,
+            b,
+            gfactor=gfactor,
+            glimit=glimit,
+            rtol=rtol,
+            atol=atol,
+            maxiter=maxiter)
 
     if isfinite(b) and x0 >= b + rtol * abs(b) + atol:
         x0 = b
 
     x2 = x1 + (x1 - x0) * gfactor
-    return _downhill3(f, x0, x1, x2, f0, f1, a,
-                      gfactor=gfactor, glimit=glimit, rtol=rtol,
-                      atol=atol, maxiter=maxiter)
+    return _downhill3(
+        f,
+        x0,
+        x1,
+        x2,
+        f0,
+        f1,
+        a,
+        gfactor=gfactor,
+        glimit=glimit,
+        rtol=rtol,
+        atol=atol,
+        maxiter=maxiter)
 
 
 def _parabolic_step(x0, x1, x2, f0, f1, f2):
@@ -137,7 +165,7 @@ def _parabolic_step(x0, x1, x2, f0, f1, f2):
     p = (x0 - x2) * q - (x0 - x1) * r
     q = 2.0 * (q - r)
     if 0.0 < q:
-        p = - p
+        p = -p
     q = abs(q)
 
     if abs(p) < abs(0.5 * q * r):
@@ -153,8 +181,16 @@ _sqrt_epsilon = sqrt(finfo(float).eps)
 _golden = 0.5 * (3.0 - sqrt(5.0))
 
 
-def brent(f, a, b, fa=None, fb=None, x0=None, f0=None,
-          rtol=_sqrt_epsilon, atol=_sqrt_epsilon, maxiter=500):
+def brent(f,
+          a,
+          b,
+          fa=None,
+          fb=None,
+          x0=None,
+          f0=None,
+          rtol=_sqrt_epsilon,
+          atol=_sqrt_epsilon,
+          maxiter=500):
     """Seeks a local minimum of a function f in a closed interval [a, b] via
     Brent's method.
 
@@ -248,7 +284,7 @@ def brent(f, a, b, fa=None, fb=None, x0=None, f0=None,
             p = (x0 - x2) * q - (x0 - x1) * r
             q = 2.0 * (q - r)
             if 0.0 < q:
-                p = - p
+                p = -p
             q = abs(q)
             r = e
             e = d
@@ -263,7 +299,7 @@ def brent(f, a, b, fa=None, fb=None, x0=None, f0=None,
                 if x0 < m:
                     d = tol
                 else:
-                    d = - tol
+                    d = -tol
         else:
             # Take the golden-section step.
             if x0 < m:
@@ -341,16 +377,33 @@ def brent(f, a, b, fa=None, fb=None, x0=None, f0=None,
 _sqrt_epsilon = sqrt(finfo(float).eps)
 
 
-def find_minimum(f, x0=None, x1=None, a=-inf, b=+inf, gfactor=2, glimit=2**8,
-                 rtol=_sqrt_epsilon, atol=_sqrt_epsilon, maxiter=500):
-
+def find_minimum(f,
+                 x0=None,
+                 x1=None,
+                 a=-inf,
+                 b=+inf,
+                 gfactor=2,
+                 glimit=2**8,
+                 rtol=_sqrt_epsilon,
+                 atol=_sqrt_epsilon,
+                 maxiter=500):
     def func(x):
         func.nfev += 1
         return f(x)
+
     func.nfev = 0
 
-    r = find_bracket(func, x0=x0, x1=x1, a=a, b=b, gfactor=gfactor,
-                     glimit=glimit, rtol=rtol, atol=atol, maxiter=maxiter)
+    r = find_bracket(
+        func,
+        x0=x0,
+        x1=x1,
+        a=a,
+        b=b,
+        gfactor=gfactor,
+        glimit=glimit,
+        rtol=rtol,
+        atol=atol,
+        maxiter=maxiter)
 
     (x0, x1, x2) = r[0]
     (f0, f1, f2) = r[1]

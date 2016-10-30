@@ -7,7 +7,6 @@ from ..util.transformation import DesignMatrixTrans
 
 
 class FastLMMSampler(object):
-
     def __init__(self, offset, scale, delta, X):
         t = DesignMatrixTrans(X)
         X = t.transform(X)

@@ -11,7 +11,6 @@ from limix_math import (sum2diag, solve)
 
 
 class FastLMMCore(object):
-
     def __init__(self, y, covariates, Q0, Q1, S0):
         if var(y) < 1e-8:
             raise ValueError("The phenotype variance is too low: %e." % var(y))
@@ -40,10 +39,10 @@ class FastLMMCore(object):
         self._c0 = zeros((d, d))
 
         self._yTQ0 = dot(y.T, Q0)
-        self._yTQ0_2x = self._yTQ0 ** 2
+        self._yTQ0_2x = self._yTQ0**2
 
         self._yTQ1 = dot(y.T, Q1)
-        self._yTQ1_2x = self._yTQ1 ** 2
+        self._yTQ1_2x = self._yTQ1**2
 
         self._oneTQ0 = covariates.T.dot(Q0)
         self._oneTQ1 = covariates.T.dot(Q1)
@@ -203,8 +202,8 @@ class FastLMMCore(object):
         p = self._p
         LOG2PI = 1.837877066409345339081937709124758839607238769531250
 
-        self._lml = - n * LOG2PI - n - n * log(self._scale)
-        self._lml += - sum(log(self._diag0)) - p * log(self._diag1)
+        self._lml = -n * LOG2PI - n - n * log(self._scale)
+        self._lml += -sum(log(self._diag0)) - p * log(self._diag1)
         self._lml /= 2
         return self._lml
 
@@ -230,7 +229,6 @@ class FastLMMCore(object):
 
 
 class FastLMMPredictor(object):
-
     def __init__(self, mean, cov):
         self._mean = mean
         self._cov = cov

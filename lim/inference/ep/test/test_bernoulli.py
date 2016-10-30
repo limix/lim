@@ -14,7 +14,7 @@ def test_bernoulli_lml():
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
     (Q, S0) = economic_qs_linear(G)
     y = array([1., 0., 1.])
-    ep = BernoulliEP(y, M, hstack(Q), empty((n, 0)), S0+1)
+    ep = BernoulliEP(y, M, hstack(Q), empty((n, 0)), S0 + 1)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.

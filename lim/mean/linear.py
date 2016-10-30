@@ -7,7 +7,6 @@ from optimix import Vector
 
 
 class LinearMean(Function):
-
     def __init__(self, size):
         Function.__init__(self, effsizes=Vector(zeros(size)))
 

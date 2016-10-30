@@ -2,7 +2,6 @@
 
 from __future__ import absolute_import
 
-
 import logging
 
 from tabulate import tabulate
@@ -18,7 +17,6 @@ from ...tool.normalize import stdnorm
 
 
 class InputInfo(object):
-
     def __init__(self):
         self.background_markers_user_provided = None
         self.nconst_background_markers = None
@@ -42,8 +40,9 @@ class InputInfo(object):
         if self.background_markers_user_provided:
             t.append(['Background data', 'provided via markers'])
             t.append(['# background markers', self.background_nmarkers])
-            t.append(['# const background markers',
-                      self.nconst_background_markers])
+            t.append([
+                '# const background markers', self.nconst_background_markers
+            ])
         else:
             t.append(['Background data', 'provided via Kinship matrix'])
 
@@ -152,14 +151,19 @@ def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
     genetic_preprocess(X, G, K, covariates, ii)
 
     from ._canonical import CanonicalLRTScan
-    lrt = CanonicalLRTScan(y, ii.Q0, ii.Q1, ii.S0, covariates=covariates,
-                           progress=progress)
+    lrt = CanonicalLRTScan(
+        y, ii.Q0, ii.Q1, ii.S0, covariates=covariates, progress=progress)
     lrt.candidate_markers = ii.effective_X
     lrt.pvalues()
     return lrt
 
 
-def binomial_scan(nsuccesses, ntrials, X, G=None, K=None, covariates=None,
+def binomial_scan(nsuccesses,
+                  ntrials,
+                  X,
+                  G=None,
+                  K=None,
+                  covariates=None,
                   progress=True):
     """Association between genetic markers and phenotype for continuous traits.
 
@@ -209,8 +213,14 @@ def binomial_scan(nsuccesses, ntrials, X, G=None, K=None, covariates=None,
     genetic_preprocess(X, G, K, covariates, ii)
 
     # from .lrt import BinomialLRT
-    lrt = BinomialLRT(nsuccesses, ntrials, ii.Q0, ii.Q1, ii.S0,
-                      covariates=covariates, progress=progress)
+    lrt = BinomialLRT(
+        nsuccesses,
+        ntrials,
+        ii.Q0,
+        ii.Q1,
+        ii.S0,
+        covariates=covariates,
+        progress=progress)
     lrt.candidate_markers = ii.effective_X
     lrt.pvalues()
     return lrt

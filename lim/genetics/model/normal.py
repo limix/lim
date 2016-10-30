@@ -18,7 +18,6 @@ def _stringit(v):
 
 @unicode_compatible
 class NormalModel(object):
-
     def __init__(self, covariate_effect_sizes, fixed_effects_variance,
                  heritability, genetic_variance, environmental_variance,
                  total_variance):

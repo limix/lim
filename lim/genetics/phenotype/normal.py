@@ -2,7 +2,6 @@ from ._phenotype import Phenotype
 
 
 class NormalPhenotype(Phenotype):
-
     def __init__(self, y):
         super(NormalPhenotype, self).__init__('Normal')
         self._y = y

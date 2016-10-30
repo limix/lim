@@ -6,7 +6,6 @@ from numpy import log
 
 
 class ProdLik(object):
-
     def __init__(self, likelihoods):
         super(ProdLik, self).__init__()
         self._likelihoods = likelihoods
@@ -63,7 +62,6 @@ class ProdLik(object):
 
 
 class BinomialProdLik(ProdLik):
-
     def __init__(self, k, n, link):
         super(BinomialProdLik, self).__init__(None)
         self._k = k

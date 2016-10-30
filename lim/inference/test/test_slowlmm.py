@@ -76,15 +76,13 @@ def test_regression_gradient():
 
     def func(x):
         cov.scale = exp(x[0])
-        return lmm.value(mean.feed().value(),
-                         cov.feed().value())
+        return lmm.value(mean.feed().value(), cov.feed().value())
 
     def grad(x):
         cov.scale = exp(x[0])
         return lmm.gradient(mean.feed().value(),
                             cov.feed().value(),
-                            mean.feed().gradient(),
-                            cov.feed().gradient())
+                            mean.feed().gradient(), cov.feed().gradient())
 
     assert_almost_equal(check_grad(func, grad, [0]), 0)
 
@@ -134,6 +132,7 @@ def test_maximize_2():
     lmm = SlowLMM(y, mean, cov)
     lmm.feed().maximize()
     assert_almost_equal(lmm.feed().value(), -79.365136339619610)
+
 
 # def test_maximize_3():
 #     random = RandomState(94584)

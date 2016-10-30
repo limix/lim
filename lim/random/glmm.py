@@ -4,7 +4,6 @@ from numpy.random import RandomState
 
 
 class GLMMSampler(object):
-
     def __init__(self, lik, mean, cov):
         self._lik = lik
         self._mean = mean

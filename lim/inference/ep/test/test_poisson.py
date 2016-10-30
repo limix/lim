@@ -14,8 +14,7 @@ def test_poisson_lml():
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
     (Q, S0) = economic_qs_linear(G)
     noccurrences = array([1., 0., 5.])
-    ep = PoissonEP(noccurrences, M, hstack(Q),
-                   empty((n, 0)), S0+1)
+    ep = PoissonEP(noccurrences, M, hstack(Q), empty((n, 0)), S0 + 1)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.

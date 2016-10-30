@@ -14,7 +14,6 @@ from lim.random import RegGPSampler
 from lim.genetics.qtl import normal_scan
 from lim.genetics.qtl import normal_scan
 
-
 # def test_qtl_normal_scan():
 #     random = RandomState(9458)
 #     N = 800

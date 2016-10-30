@@ -14,7 +14,6 @@ from ...util import offset_covariate
 
 
 class CanonicalLRTScan(LikelihoodRatioTestScan):
-
     def __init__(self, y, Q0, Q1, S0, covariates=None, progress=True):
         super(CanonicalLRTScan, self).__init__(progress=progress)
         self._y = y
@@ -29,7 +28,7 @@ class CanonicalLRTScan(LikelihoodRatioTestScan):
         S0 = self._S0
         covariates = self._covariates
 
-        flmm = FastLMM(y, covariates, QS=((Q0, Q1), (S0,)))
+        flmm = FastLMM(y, covariates, QS=((Q0, Q1), (S0, )))
         flmm.learn(progress=progress)
         self._flmm = flmm
         self._null_lml = flmm.lml()

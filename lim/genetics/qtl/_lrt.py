@@ -29,7 +29,6 @@ def _indent(msg):
 
 @unicode_compatible
 class LikelihoodRatioTestScan(object):
-
     def __init__(self, progress=True):
 
         self._logger = logging.getLogger(__name__)
@@ -71,9 +70,9 @@ class LikelihoodRatioTestScan(object):
 
         if self._progress:
             msg = "Null model fitting: "
-            progress = ProgressBar(widgets=[msg, Counter(),
-                                            " function evaluations"],
-                                   max_value=UnknownLength)
+            progress = ProgressBar(
+                widgets=[msg, Counter(), " function evaluations"],
+                max_value=UnknownLength)
         else:
             progress = NullBar()
 
@@ -90,8 +89,8 @@ class LikelihoodRatioTestScan(object):
 
         if self._progress:
             msg = "Scanning markers: "
-            progress = ProgressBar(widgets=[msg, AdaptiveETA()],
-                                   max_value=nmarkers)
+            progress = ProgressBar(
+                widgets=[msg, AdaptiveETA()], max_value=nmarkers)
         else:
             progress = NullBar()
 

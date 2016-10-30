@@ -18,7 +18,6 @@ G2 = random.randn(N, 200)
 G2 = lim.tool.normalize.stdnorm(G2)
 G2 /= sqrt(G2.shape[1])
 
-
 u = 0.8 * random.randn(150)
 y = G1.dot(u) + 0.2 * random.randn(N)
 

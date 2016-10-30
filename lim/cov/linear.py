@@ -6,7 +6,6 @@ from optimix import Function
 
 
 class LinearCov(Function):
-
     def __init__(self):
         Function.__init__(self, logscale=Scalar(0.0))
 

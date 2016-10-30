@@ -19,7 +19,6 @@ from ..genetics.model import CanonicalModel
 
 
 class FastLMM(Function):
-
     def __init__(self, y, covariates, X=None, QS=None):
         super(FastLMM, self).__init__(logistic=Scalar(0.0))
 
@@ -141,7 +140,13 @@ where {vs}_x is the variance of signal x"""\
         .format(v="%7.4f" % v, e="%7.4f" % e, b=beta,
                 tvar="%7.4f" % tvar, cvar="%7.4f" % cvar, h2="%7.4f" % h2,
                 vs=var_sym, lml="%9.6f" % self.lml())
-        set_printoptions(edgeitems=3, infstr='inf', linewidth=75, nanstr='nan',
-                         precision=8, suppress=False, threshold=1000,
-                         formatter=None)
+        set_printoptions(
+            edgeitems=3,
+            infstr='inf',
+            linewidth=75,
+            nanstr='nan',
+            precision=8,
+            suppress=False,
+            threshold=1000,
+            formatter=None)
         return s

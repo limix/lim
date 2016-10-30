@@ -43,18 +43,20 @@ def _make():
     logger.debug('Incls: %s', str(incls))
     logger.debug('Libraries: %s', str(libraries))
 
-    ffi.set_source('lim.inference.ep.liknorm._liknorm_ffi',
-                   '''#include "liknorm.h"''',
-                   include_dirs=incls,
-                   sources=sources,
-                   libraries=libraries,
-                   library_dirs=[],
-                   depends=sources + hdrs,
-                   extra_compile_args=['-std=c99'])
+    ffi.set_source(
+        'lim.inference.ep.liknorm._liknorm_ffi',
+        '''#include "liknorm.h"''',
+        include_dirs=incls,
+        sources=sources,
+        libraries=libraries,
+        library_dirs=[],
+        depends=sources + hdrs,
+        extra_compile_args=['-std=c99'])
 
     with open(join(rfolder, 'liknorm.h'), 'r') as f:
         ffi.cdef(f.read())
 
     return ffi
+
 
 liknorm = _make()

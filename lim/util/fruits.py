@@ -9,7 +9,7 @@ class Fruits(object):
         if shape is None or isinstance(shape, Sequence):
             self.shape = shape
         else:
-            self.shape = (shape,)
+            self.shape = (shape, )
 
     def __eq__(self, that):
         assert self.ndim == that.ndim
@@ -28,12 +28,10 @@ class Fruits(object):
 
 
 class Apples(Fruits):
-
     def __init__(self, shape=None):
         super(Apples, self).__init__(shape)
 
 
 class Oranges(Fruits):
-
     def __init__(self, shape=None):
         super(Oranges, self).__init__(shape)

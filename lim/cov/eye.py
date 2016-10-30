@@ -6,7 +6,6 @@ from optimix import Scalar
 
 
 class EyeCov(Function):
-
     def __init__(self):
         Function.__init__(self, logscale=Scalar(0.0))
 

@@ -15,8 +15,7 @@ def test_binomial_lml():
     (Q, S0) = economic_qs_linear(G)
     nsuccesses = array([1., 0., 1.])
     ntrials = array([1., 1., 1.])
-    ep = BinomialEP(nsuccesses, ntrials, M, hstack(Q),
-                    empty((n, 0)), S0+1)
+    ep = BinomialEP(nsuccesses, ntrials, M, hstack(Q), empty((n, 0)), S0 + 1)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.
@@ -31,8 +30,8 @@ def test_binomial_gradient_over_v():
     (Q, S) = economic_qs_linear(G)
     nsuccesses = array([1., 0., 1.])
     ntrials = array([1., 1., 1.])
-    ep = BinomialEP(nsuccesses, ntrials, M, hstack(Q),
-                    empty((n, 0)), hstack(S) + 1.0)
+    ep = BinomialEP(nsuccesses, ntrials, M,
+                    hstack(Q), empty((n, 0)), hstack(S) + 1.0)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.
@@ -71,8 +70,8 @@ def test_binomial_gradient_over_delta():
     (Q, S) = economic_qs_linear(G)
     nsuccesses = array([1., 0., 1.])
     ntrials = array([1., 1., 1.])
-    ep = BinomialEP(nsuccesses, ntrials, M, hstack(Q),
-                    empty((n, 0)), hstack(S) + 1.0)
+    ep = BinomialEP(nsuccesses, ntrials, M,
+                    hstack(Q), empty((n, 0)), hstack(S) + 1.0)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.
@@ -97,8 +96,8 @@ def test_binomial_gradient_over_both():
     (Q, S) = economic_qs_linear(G)
     nsuccesses = array([1., 0., 1.])
     ntrials = array([1., 1., 1.])
-    ep = BinomialEP(nsuccesses, ntrials, M, hstack(Q),
-                    empty((n, 0)), hstack(S) + 1.0)
+    ep = BinomialEP(nsuccesses, ntrials, M,
+                    hstack(Q), empty((n, 0)), hstack(S) + 1.0)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.5
@@ -145,8 +144,8 @@ def test_binomial_optimize():
 
     y = zeros(nsamples)
     for i in range(len(ntrials)):
-        y[i] = sum(z[i] + random.logistic(scale=pi / sqrt(3),
-                                          size=ntrials[i]) > 0)
+        y[i] = sum(z[i] + random.logistic(
+            scale=pi / sqrt(3), size=ntrials[i]) > 0)
     (Q, S0) = economic_qs_linear(G)
 
     M = ones((nsamples, 1))

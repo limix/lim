@@ -6,15 +6,15 @@ from time import time
 
 from hcache import Cached, cached
 from numpy import var as variance
-from numpy import (abs, all, any, asarray,
-                   diagonal, dot, empty, empty_like, errstate, inf, isfinite,
-                   log, maximum, sqrt, sum, zeros, zeros_like)
+from numpy import (abs, all, any, asarray, diagonal, dot, empty, empty_like,
+                   errstate, inf, isfinite, log, maximum, sqrt, sum, zeros,
+                   zeros_like)
 from scipy.linalg import cho_factor
 from numpy.linalg import LinAlgError
 
 from limix_math import is_all_finite
-from limix_math import (cho_solve, ddot, dotd, economic_svd, solve,
-                        sum2diag, sum2diag_inplace, trace2)
+from limix_math import (cho_solve, ddot, dotd, economic_svd, solve, sum2diag,
+                        sum2diag_inplace, trace2)
 
 from ._optimize import find_minimum
 from .util import make_sure_reasonable_conditioning
@@ -380,7 +380,7 @@ class EP(Cached):
         gS = self.sigma2_b * S
         eC = self.sigma2_epsilon * C
 
-        w1 = -sum(log(diagonal(L))) + (- sum(log(gS)) / 2 + log(A).sum() / 2)
+        w1 = -sum(log(diagonal(L))) + (-sum(log(gS)) / 2 + log(A).sum() / 2)
 
         w2 = eC * teta
         # w2 += ddot(C, QBiQtCteta, left=True)
@@ -388,7 +388,7 @@ class EP(Cached):
         w2 -= teta / tctau
         w2 = dot(teta, w2) / 2
 
-        w3 = dot(ceta, (ttau * ceta - 2 * teta * ctau) / (ctau*tctau)) / 2
+        w3 = dot(ceta, (ttau * ceta - 2 * teta * ctau) / (ctau * tctau)) / 2
 
         w4 = dot(m * C, teta) - dot(Am, QBiQtCteta)
 
@@ -520,8 +520,8 @@ class EP(Cached):
         dd = delta / (1 - delta)
         ddelta = -tr1
         ddelta -= dd * tr2
-        ddelta += trace2(AQ, ddot(BiQt, A, left=False)) * (dd+1)
-        ddelta += (dd+1) * dot(u, u)
+        ddelta += trace2(AQ, ddot(BiQt, A, left=False)) * (dd + 1)
+        ddelta += (dd + 1) * dot(u, u)
         ddelta += trace2(AQ, SQt)
         ddelta -= As
         ddelta *= v
@@ -660,7 +660,7 @@ class EP(Cached):
 
         except (LinAlgError, FloatingPointError):
             self._logger.warning('Failed to compute the optimal beta.' +
-                              ' Zeroing it.')
+                                 ' Zeroing it.')
             self.__tbeta[:] = 0.
 
         return self.__tbeta
@@ -683,19 +683,26 @@ class EP(Cached):
         def function_cost(v):
             self.v = v
             if self._overdispersion:
+
                 def function_cost_delta(delta):
                     self.delta = delta
                     self._optimize_beta()
                     return -self.lml()
-                d, _ = find_minimum(function_cost_delta, self.delta,
-                                       a=1e-4, b=1 - 1e-4, rtol=0, atol=1e-6)
+
+                d, _ = find_minimum(
+                    function_cost_delta,
+                    self.delta,
+                    a=1e-4,
+                    b=1 - 1e-4,
+                    rtol=0,
+                    atol=1e-6)
                 self.delta = d
             self._optimize_beta()
             return -self.lml()
 
         start = time()
-        v, nfev = find_minimum(function_cost, self.v, a=1e-4,
-                               b=1e4, rtol=0, atol=1e-6)
+        v, nfev = find_minimum(
+            function_cost, self.v, a=1e-4, b=1e4, rtol=0, atol=1e-6)
 
         self.v = v
 
@@ -717,6 +724,7 @@ class EP(Cached):
         start = time()
 
         if self._overdispersion:
+
             def function(x):
                 self.v = x[0]
                 self.delta = x[1]
@@ -724,22 +732,35 @@ class EP(Cached):
                 self._optimize_beta()
                 return (-self.lml(), -self._gradient_over_both())
 
-            r = fmin_tnc(function, asarray([self.v, self.delta]), xtol=xtol,
-                         disp=5, bounds=[(0, inf), (0, 1 - 1e-5)], ftol=ftol,
-                         pgtol=pgtol, rescale=rescale)
+            r = fmin_tnc(
+                function,
+                asarray([self.v, self.delta]),
+                xtol=xtol,
+                disp=5,
+                bounds=[(0, inf), (0, 1 - 1e-5)],
+                ftol=ftol,
+                pgtol=pgtol,
+                rescale=rescale)
             x, nfev = r[0], r[1]
             self.v = x[0]
             self.delta = x[1]
         else:
+
             def function(x):
                 self.v = x[0]
                 print("v: %g" % self.v)
                 self._optimize_beta()
                 return (-self.lml(), -self._gradient_over_v())
 
-            r = fmin_tnc(function, asarray([self.v]), xtol=xtol, disp=5,
-                         bounds=[(0, inf)], ftol=ftol, pgtol=pgtol,
-                         rescale=rescale)
+            r = fmin_tnc(
+                function,
+                asarray([self.v]),
+                xtol=xtol,
+                disp=5,
+                bounds=[(0, inf)],
+                ftol=ftol,
+                pgtol=pgtol,
+                rescale=rescale)
             x, nfev = r[0], r[1]
             self.v = x[0]
 

@@ -4,7 +4,6 @@ from numpy import sqrt
 
 
 class DesignMatrixTrans(object):
-
     def __init__(self, G):
         self._sub = G.mean(0)
         self._div = G.std(0)

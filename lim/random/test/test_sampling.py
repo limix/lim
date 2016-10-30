@@ -47,8 +47,8 @@ def test_GLMMSampler_poisson():
     cov = LinearCov()
     cov.set_data((X, X), 'sample')
     sampler = GLMMSampler(lik, mean, cov)
-    assert_equal(sampler.sample(random),
-                 [0, 289, 0, 11, 0, 0, 176, 0, 228, 82])
+    assert_equal(
+        sampler.sample(random), [0, 289, 0, 11, 0, 0, 176, 0, 228, 82])
 
     mean = OffsetMean()
     mean.offset = 0.0
@@ -87,8 +87,7 @@ def test_GLMMSampler_binomial():
     cov = LinearCov()
     cov.set_data((X, X), 'sample')
     sampler = GLMMSampler(lik, mean, cov)
-    assert_equal(sampler.sample(random),
-                 [0, 5, 0, 5, 1, 1, 5, 0, 5, 5])
+    assert_equal(sampler.sample(random), [0, 5, 0, 5, 1, 1, 5, 0, 5, 5])
 
     mean.offset = 0.
     assert_equal(sampler.sample(random), [5, 4, 1, 0, 0, 1, 4, 5, 5, 0])
@@ -111,13 +110,13 @@ def test_GLMMSampler_binomial():
 
     lik = Binomial(3, 100, link)
     sampler = GLMMSampler(lik, mean, cov)
-    assert_equal(sampler.sample(random), [
-                 56, 56, 55, 51, 59, 45, 47, 43, 51, 38])
+    assert_equal(
+        sampler.sample(random), [56, 56, 55, 51, 59, 45, 47, 43, 51, 38])
 
     cov2.scale = 100.
     sampler = GLMMSampler(lik, mean, cov)
-    assert_equal(sampler.sample(random), [99, 93, 99, 75, 77, 0, 0, 100, 99,
-                                          12])
+    assert_equal(
+        sampler.sample(random), [99, 93, 99, 75, 77, 0, 0, 100, 99, 12])
 
 
 def test_canonical_binomial_sampler():
@@ -130,6 +129,7 @@ def test_canonical_binomial_sampler():
     ntrials = [2, 3, 1, 1, 4, 5, 1, 2, 1, 1]
     y = binomial(ntrials, -0.1, G, random_state=random)
     assert_array_less(y, [i + 1 for i in ntrials])
+
 
 if __name__ == '__main__':
     __import__('pytest').main([__file__, '-s'])

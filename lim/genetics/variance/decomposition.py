@@ -11,11 +11,9 @@ from progressbar import NullBar
 from progressbar import UnknownLength
 from progressbar import Counter
 
-
 from numpy import asarray
 from numpy import sqrt
 from numpy import ones
-
 
 from limix_math import economic_svd
 
@@ -28,7 +26,6 @@ from ...cov import SumCov
 
 
 class InputInfo(object):
-
     def __init__(self):
         self.background_markers_user_provided = None
         self.nconst_background_markers = None
@@ -52,8 +49,9 @@ class InputInfo(object):
         if self.background_markers_user_provided:
             t.append(['Background data', 'provided via markers'])
             t.append(['# background markers', self.background_nmarkers])
-            t.append(['# const background markers',
-                      self.nconst_background_markers])
+            t.append([
+                '# const background markers', self.nconst_background_markers
+            ])
         else:
             t.append(['Background data', 'provided via Kinship matrix'])
 
@@ -81,7 +79,7 @@ def tuple_it(GK):
 
 def normalize_covariance_list(GK):
     if not isinstance(GK, (list, tuple, dict)):
-        GK = (GK,)
+        GK = (GK, )
 
     GK = tuple_it(GK)
 
@@ -124,8 +122,8 @@ def normal_decomposition(y, GK, covariates=None, progress=True):
     GK = normalize_covariance_list(GK)
     preprocess(GK, covariates, ii)
 
-    vd = NormalVarDec(y, ii.effective_GK, covariates=covariates,
-                      progress=progress)
+    vd = NormalVarDec(
+        y, ii.effective_GK, covariates=covariates, progress=progress)
 
     vd.learn()
     # genetic_preprocess(X, G, K, covariates, ii)
@@ -143,7 +141,6 @@ def _offset_covariate(covariates, n):
 
 
 class VarDec(object):
-
     def __init__(self, K, covariates=None, progress=True):
         self._logger = logging.getLogger(__name__)
 
@@ -157,9 +154,9 @@ class VarDec(object):
         self._logger.info('Variance decomposition computation: has started.')
         if self._progress:
             print("Null model fitting: ")
-            progress = ProgressBar(widgets=["  ", Counter(),
-                                            " function evaluations"],
-                                   max_value=UnknownLength)
+            progress = ProgressBar(
+                widgets=["  ", Counter(), " function evaluations"],
+                max_value=UnknownLength)
         else:
             progress = NullBar()
 
@@ -167,10 +164,9 @@ class VarDec(object):
 
 
 class NormalVarDec(VarDec):
-
     def __init__(self, y, K, covariates=None, progress=True):
-        super(NormalVarDec, self).__init__(K, covariates=covariates,
-                                           progress=progress)
+        super(NormalVarDec, self).__init__(
+            K, covariates=covariates, progress=progress)
         self._y = y
 
         mean = LinearMean(self._covariates.shape[1])

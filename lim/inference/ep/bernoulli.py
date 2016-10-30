@@ -124,8 +124,9 @@ class BernoulliEP(EP):
         ctau = self._cav_tau
         ceta = self._cav_eta
         lmom0 = self._loghz
-        self._moments.binomial(y, ones(len(y)), ceta,
-                               ctau, lmom0, self._hmu, self._hvar)
+        self._moments.binomial(y,
+                               ones(len(y)), ceta, ctau, lmom0, self._hmu,
+                               self._hvar)
 
 
 def _h2_correction(h2, prevalence, ascertainment):

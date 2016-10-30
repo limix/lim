@@ -11,7 +11,6 @@ from limix_math.special import logbinom
 
 
 class ExpFam(object):
-
     def __init__(self):
         super(ExpFam, self).__init__()
 
@@ -50,7 +49,6 @@ class ExpFam(object):
 
 
 class Bernoulli(ExpFam):
-
     def __init__(self, outcome, link):
         super(Bernoulli, self).__init__()
         self._outcome = outcome
@@ -87,7 +85,6 @@ class Bernoulli(ExpFam):
 
 
 class Binomial(ExpFam):
-
     def __init__(self, k, n, link):
         super(Binomial, self).__init__()
         self._k = k
@@ -135,7 +132,6 @@ class Binomial(ExpFam):
 
 
 class Poisson(ExpFam):
-
     def __init__(self, k, link):
         super(Poisson, self).__init__()
         self._k = k

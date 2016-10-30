@@ -10,7 +10,6 @@ from optimix import Composite
 
 
 class SlowLMM(Composite):
-
     def __init__(self, y, mean, cov):
         if var(y) < 1e-8:
             raise ValueError("The phenotype variance is too low: %e." % var(y))
@@ -35,8 +34,8 @@ class SlowLMM(Composite):
 
         g = []
         for i in range(len(gcov)):
-            g.append(- solve(cov, gcov[i]).diagonal().sum() +
-                     Kiym.dot(gcov[i].dot(Kiym)))
+            g.append(-solve(cov, gcov[i]).diagonal().sum() + Kiym.dot(gcov[
+                i].dot(Kiym)))
         return [gi / 2 for gi in g]
 
     def value(self, mean, cov):
@@ -47,7 +46,7 @@ class SlowLMM(Composite):
         assert s == 1.
 
         n = len(self._y)
-        return - (logdet + ym.dot(Kiym) + n * log(2 * pi)) / 2
+        return -(logdet + ym.dot(Kiym) + n * log(2 * pi)) / 2
 
     def gradient(self, mean, cov, gmean, gcov):
         grad_cov = self._lml_gradient_cov(mean, cov, gcov)

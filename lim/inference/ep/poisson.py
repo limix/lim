@@ -51,8 +51,7 @@ class PoissonEP(EP):
                         been computed. Defaults to `None`.
     """
 
-    def __init__(self, noccurrences, M, Q0, Q1, S0,
-                 Q0S0Q0t=None):
+    def __init__(self, noccurrences, M, Q0, Q1, S0, Q0S0Q0t=None):
         super(PoissonEP, self).__init__(M, Q0, S0, True, QSQt=Q0S0Q0t)
         self._logger = logging.getLogger(__name__)
 
@@ -127,5 +126,5 @@ class PoissonEP(EP):
         ceta = self._cav_eta
         lmom0 = self._loghz
 
-        self._moments.poisson(noccurrences, ceta,
-                              ctau, lmom0, self._hmu, self._hvar)
+        self._moments.poisson(noccurrences, ceta, ctau, lmom0, self._hmu,
+                              self._hvar)

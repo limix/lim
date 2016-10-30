@@ -32,7 +32,6 @@ def _indent(msg):
 
 @unicode_compatible
 class LikelihoodRatioTest(object):
-
     def __init__(self, Q0, Q1, S0, covariates=None, progress=True):
 
         self._logger = logging.getLogger(__name__)
@@ -80,9 +79,9 @@ class LikelihoodRatioTest(object):
 
         if self._progress:
             print("Null model fitting: ")
-            progress = ProgressBar(widgets=["  ", Counter(),
-                                            " function evaluations"],
-                                   max_value=UnknownLength)
+            progress = ProgressBar(
+                widgets=["  ", Counter(), " function evaluations"],
+                max_value=UnknownLength)
         else:
             progress = NullBar()
 
@@ -99,8 +98,8 @@ class LikelihoodRatioTest(object):
 
         if self._progress:
             print("Candidate markers analysis:")
-            progress = ProgressBar(widgets=["  ", AdaptiveETA()],
-                                   max_value=nmarkers)
+            progress = ProgressBar(
+                widgets=["  ", AdaptiveETA()], max_value=nmarkers)
         else:
             progress = NullBar()
 
@@ -170,10 +169,9 @@ class LikelihoodRatioTest(object):
 
 
 class NormalLRT(LikelihoodRatioTest):
-
     def __init__(self, y, Q0, Q1, S0, covariates=None, progress=True):
-        super(NormalLRT, self).__init__(Q0, Q1, S0, covariates=covariates,
-                                        progress=progress)
+        super(NormalLRT, self).__init__(
+            Q0, Q1, S0, covariates=covariates, progress=progress)
         self._y = y
 
     def _learn_null_model(self, progress):
@@ -182,7 +180,7 @@ class NormalLRT(LikelihoodRatioTest):
         S0 = self._S0
         covariates = self._covariates
 
-        flmm = FastLMM(y, covariates, QS=((Q0, Q1), (S0,)))
+        flmm = FastLMM(y, covariates, QS=((Q0, Q1), (S0, )))
         flmm.learn(progress=progress)
         self._flmm = flmm
         self._null_lml = flmm.lml()
@@ -212,11 +210,16 @@ class NormalLRT(LikelihoodRatioTest):
 
 
 class BinomialLRT(LikelihoodRatioTest):
-
-    def __init__(self, nsuccesses, ntrials, Q0, Q1, S0, covariates=None,
+    def __init__(self,
+                 nsuccesses,
+                 ntrials,
+                 Q0,
+                 Q1,
+                 S0,
+                 covariates=None,
                  progress=True):
-        super(BinomialLRT, self).__init__(Q0, Q1, S0, covariates=covariates,
-                                          progress=progress)
+        super(BinomialLRT, self).__init__(
+            Q0, Q1, S0, covariates=covariates, progress=progress)
         self._nsuccesses = nsuccesses
         self._ntrials = ntrials
 

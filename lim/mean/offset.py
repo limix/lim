@@ -6,7 +6,6 @@ from optimix import Scalar
 
 
 class OffsetMean(Function):
-
     def __init__(self):
         Function.__init__(self, offset=Scalar(1.0))
 

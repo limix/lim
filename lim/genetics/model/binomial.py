@@ -18,7 +18,6 @@ def _stringit(v):
 
 @unicode_compatible
 class BinomialModel(object):
-
     def __init__(self, covariate_effect_sizes, fixed_effects_variance,
                  real_variance, noise_ratio, genetic_variance,
                  environmental_variance, instrumental_variance,
