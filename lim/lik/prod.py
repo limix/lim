@@ -107,7 +107,6 @@ class BernoulliProdLik(ProdLik):
         return st.bernoulli(p).rvs(random_state=random_state)
 
 
-
 class BinomialProdLik(ProdLik):
     def __init__(self, k, n, link):
         super(BinomialProdLik, self).__init__(None)

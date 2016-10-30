@@ -11,6 +11,7 @@ from .glmm import GLMMSampler
 from ..util.fruits import Apples
 from ..tool.normalize import stdnorm
 
+
 def bernoulli(offset, G, heritability=0.5, random_state=None):
 
     nsamples = G.shape[0]
@@ -27,7 +28,7 @@ def bernoulli(offset, G, heritability=0.5, random_state=None):
     mean.set_data(nsamples, 'sample')
     cov.set_data((G, G), 'sample')
 
-    r = heritability / (1-heritability)
+    r = heritability / (1 - heritability)
     cov.scale = Bernoulli.latent_variance(link) * r
 
     lik = BernoulliProdLik(None, link)
