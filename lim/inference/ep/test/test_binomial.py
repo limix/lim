@@ -4,7 +4,7 @@ from numpy import array, dot, empty, hstack, ones, pi, sqrt, zeros
 from numpy.random import RandomState
 from numpy.testing import assert_almost_equal
 
-from limix_math.linalg import qs_decomposition
+from limix_math import economic_qs_linear
 from lim.inference.ep import BinomialEP
 
 
@@ -12,23 +12,23 @@ def test_binomial_lml():
     n = 3
     M = ones((n, 1)) * 1.
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
-    (Q, S) = qs_decomposition(G)
+    (Q, S0) = economic_qs_linear(G)
     nsuccesses = array([1., 0., 1.])
     ntrials = array([1., 1., 1.])
     ep = BinomialEP(nsuccesses, ntrials, M, hstack(Q),
-                    empty((n, 0)), hstack(S) + 1.0)
+                    empty((n, 0)), S0+1)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.
     ep.delta = 0
-    assert_almost_equal(ep.lml(), -2.344936587017978)
+    assert_almost_equal(ep.lml(), -2.3202659215368935)
 
 
 def test_binomial_gradient_over_v():
     n = 3
     M = ones((n, 1)) * 1.
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
-    (Q, S) = qs_decomposition(G)
+    (Q, S) = economic_qs_linear(G)
     nsuccesses = array([1., 0., 1.])
     ntrials = array([1., 1., 1.])
     ep = BinomialEP(nsuccesses, ntrials, M, hstack(Q),
@@ -68,7 +68,7 @@ def test_binomial_gradient_over_delta():
     n = 3
     M = ones((n, 1)) * 1.
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
-    (Q, S) = qs_decomposition(G)
+    (Q, S) = economic_qs_linear(G)
     nsuccesses = array([1., 0., 1.])
     ntrials = array([1., 1., 1.])
     ep = BinomialEP(nsuccesses, ntrials, M, hstack(Q),
@@ -94,7 +94,7 @@ def test_binomial_gradient_over_both():
     n = 3
     M = ones((n, 1)) * 1.
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
-    (Q, S) = qs_decomposition(G)
+    (Q, S) = economic_qs_linear(G)
     nsuccesses = array([1., 0., 1.])
     ntrials = array([1., 1., 1.])
     ep = BinomialEP(nsuccesses, ntrials, M, hstack(Q),
@@ -147,10 +147,10 @@ def test_binomial_optimize():
     for i in range(len(ntrials)):
         y[i] = sum(z[i] + random.logistic(scale=pi / sqrt(3),
                                           size=ntrials[i]) > 0)
-    (Q, S) = qs_decomposition(G)
+    (Q, S0) = economic_qs_linear(G)
 
     M = ones((nsamples, 1))
-    ep = BinomialEP(y, ntrials, M, Q[0], Q[1], S[0])
+    ep = BinomialEP(y, ntrials, M, Q[0], Q[1], S0)
     ep.optimize()
 
     assert_almost_equal(ep.lml(), -144.23818408071736, decimal=3)

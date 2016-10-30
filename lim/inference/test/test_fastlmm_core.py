@@ -5,7 +5,7 @@ from numpy.testing import assert_almost_equal
 from numpy import sqrt
 from numpy import ones
 
-from limix_math.linalg import qs_decomposition
+from limix_math import economic_qs_linear
 
 from lim.inference.fastlmm_core import FastLMMCore
 from lim.inference import SlowLMM
@@ -49,8 +49,8 @@ def test_optimization():
     gp = SlowLMM(y, mean, cov)
     gp.feed().maximize()
     delta = cov_right.scale / (cov_left.scale + cov_right.scale)
-    QS = qs_decomposition(DesignMatrixTrans(X).transform(X))
-    flmm = FastLMMCore(y, ones((N, 1)), QS[0][0], QS[0][1], QS[1][0])
+    QS = economic_qs_linear(DesignMatrixTrans(X).transform(X))
+    flmm = FastLMMCore(y, ones((N, 1)), QS[0][0], QS[0][1], QS[1])
     flmm.delta = delta
     assert_almost_equal(gp.feed().value(), flmm.lml())
     assert_almost_equal(mean.offset, flmm.beta[0], decimal=6)

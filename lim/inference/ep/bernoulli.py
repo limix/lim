@@ -106,7 +106,7 @@ class BernoulliEP(EP):
         Q1 = self._Q1
         S0 = self._S
         covariates = self._M
-        flmm = FastLMM(full(len(y), latent), covariates, QS=((Q0, Q1), (S0,)))
+        flmm = FastLMM(full(len(y), latent), covariates, QS=((Q0, Q1), S0))
         flmm.learn()
         gv = flmm.genetic_variance
         nv = flmm.environmental_variance

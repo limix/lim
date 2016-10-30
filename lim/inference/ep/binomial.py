@@ -120,7 +120,7 @@ class BinomialEP(EP):
         Q1 = self._Q1
         S0 = self._S
         covariates = self._M
-        flmm = FastLMM(latent, covariates, QS=((Q0, Q1), (S0,)))
+        flmm = FastLMM(latent, covariates, QS=((Q0, Q1), S0))
         flmm.learn()
         gv = flmm.genetic_variance
         nv = flmm.environmental_variance

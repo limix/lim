@@ -3,18 +3,16 @@ import logging
 from numpy import ascontiguousarray
 
 from numpy import copy
-from numpy import ascontiguousarray
 from numpy import sqrt
+from numpy import ones
 
 from ...inference import BernoulliEP
 from ...inference import BinomialEP
 from ...inference import PoissonEP
 from ...tool.normalize import stdnorm
 from ...tool.kinship import gower_normalization
-from ...tool.normalize import stdnorm
 
-from limix_math.linalg import qs_decomposition_from_K
-from limix_math.linalg import qs_decomposition
+from limix_math import (economic_qs, economic_qs_linear)
 
 
 def bernoulli_estimate(outcomes, G=None, K=None, covariate=None):
@@ -55,7 +53,7 @@ def bernoulli_estimate(outcomes, G=None, K=None, covariate=None):
 
     if covariate is None:
         logger.debug('Inserting offset covariate.')
-        covariate = np.ones((y.shape[0], 1))
+        covariate = ones((outcomes.shape[0], 1))
 
     logger.debug('Constructing EP.')
     ep = BernoulliEP(outcomes, covariate, Q0, Q1, S0)
@@ -109,7 +107,7 @@ def binomial_estimate(nsuccesses, ntrials, G=None, K=None, covariate=None):
 
     if covariate is None:
         logger.debug('Inserting offset covariate.')
-        covariate = np.ones((y.shape[0], 1))
+        covariate = ones((nsuccesses.shape[0], 1))
 
     logger.debug('Constructing EP.')
     ep = BinomialEP(nsuccesses, ntrials, covariate, Q0, Q1, S0)
@@ -162,7 +160,7 @@ def poisson_estimate(nsuccesses, G=None, K=None, covariate=None):
 
     if covariate is None:
         logger.debug('Inserting offset covariate.')
-        covariate = np.ones((y.shape[0], 1))
+        covariate = ones((nsuccesses.shape[0], 1))
 
     logger.debug('Constructing EP.')
     ep = PoissonEP(nsuccesses, covariate, Q0, Q1, S0)
@@ -197,13 +195,12 @@ def _background_standardize(G, K):
 
 def _background_decomposition(G, K):
     if G:
-        (Q, S) = qs_decomposition(G)
+        (Q, S0) = economic_qs_linear(G)
     else:
-        (Q, S) = qs_decomposition_from_K(K)
+        (Q, S0) = economic_qs(K)
 
     Q0 = Q[0]
     Q1 = Q[1]
-    S0 = S[0]
     S0 /= S0.mean()
 
     return Q0, Q1, S0

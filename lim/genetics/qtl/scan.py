@@ -2,25 +2,15 @@
 
 from __future__ import absolute_import
 
-import sys
 
 import logging
 
 from tabulate import tabulate
 
-from progressbar import ProgressBar
-from progressbar import Percentage
-
 from numpy import asarray
-from numpy import asarray
-from numpy import newaxis
-from numpy import hstack
 from numpy import sqrt
-from numpy import ones
-from numpy import nan
 
-from limix_math.linalg import qs_decomposition
-from limix_math.linalg import _QS_from_K_split
+from limix_math import (economic_qs, economic_qs_linear)
 
 from ..phenotype import NormalPhenotype
 from ...tool.kinship import gower_normalization
@@ -97,17 +87,18 @@ def genetic_preprocess(X, G, K, covariates, input_info):
 
     logger.info('Computing the economic eigen decomposition.')
     if K is None:
-        QS = qs_decomposition(G)
+        QS = economic_qs_linear(G)
     else:
-        QS = _QS_from_K_split(K)
-
-    input_info.Q = QS[0]
-    input_info.S = QS[1]
-
-    input_info.kinship_rank = len(QS[1][0])
+        QS = economic_qs(K)
 
     Q0, Q1 = QS[0]
-    S0 = QS[1][0]
+    S0 = QS[1]
+
+    input_info.Q0 = Q0
+    input_info.Q1 = Q1
+    input_info.S0 = S0
+
+    input_info.kinship_rank = len(S0)
 
     input_info.kinship_diagonal_mean = S0.sum() / Q0.shape[0]
 
@@ -161,7 +152,7 @@ def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
     genetic_preprocess(X, G, K, covariates, ii)
 
     from ._canonical import CanonicalLRTScan
-    lrt = CanonicalLRTScan(y, ii.Q[0], ii.Q[1], ii.S[0], covariates=covariates,
+    lrt = CanonicalLRTScan(y, ii.Q0, ii.Q1, ii.S0, covariates=covariates,
                            progress=progress)
     lrt.candidate_markers = ii.effective_X
     lrt.pvalues()
@@ -218,7 +209,7 @@ def binomial_scan(nsuccesses, ntrials, X, G=None, K=None, covariates=None,
     genetic_preprocess(X, G, K, covariates, ii)
 
     # from .lrt import BinomialLRT
-    lrt = BinomialLRT(nsuccesses, ntrials, ii.Q[0], ii.Q[1], ii.S[0],
+    lrt = BinomialLRT(nsuccesses, ntrials, ii.Q0, ii.Q1, ii.S0,
                       covariates=covariates, progress=progress)
     lrt.candidate_markers = ii.effective_X
     lrt.pvalues()

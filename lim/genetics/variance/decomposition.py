@@ -8,19 +8,16 @@ from tabulate import tabulate
 
 from progressbar import ProgressBar
 from progressbar import NullBar
-from progressbar import Percentage
 from progressbar import UnknownLength
 from progressbar import Counter
-from progressbar import AdaptiveETA
 
 
 from numpy import asarray
 from numpy import sqrt
 from numpy import ones
-from numpy.linalg import cholesky
 
 
-from limix_math.linalg import economic_svd
+from limix_math import economic_svd
 
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
@@ -102,12 +99,12 @@ def preprocess(GK, covariates, input_info):
 
     for (name, GKi) in iter(GK.items()):
         if GKi[1]:
-            logger.info('Covariace matrix normalization on %s.' % name)
+            logger.info('Covariace matrix normalization on %s.', name)
             K = asarray(GKi[0], dtype=float)
             K = gower_normalization(K)
             GK[name] = (K, True)
         else:
-            logger.info('Genetic markers normalization on %s.' % name)
+            logger.info('Genetic markers normalization on %s.', name)
             G = asarray(GKi[0], dtype=float)
             G = stdnorm(G)
             G /= sqrt(G.shape[1])

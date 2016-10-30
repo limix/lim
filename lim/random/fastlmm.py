@@ -1,7 +1,7 @@
 from numpy import full
 from numpy.random import RandomState
 
-from limix_math.linalg import sum2diag_inplace
+from limix_math import sum2diag_inplace
 
 from ..util.transformation import DesignMatrixTrans
 

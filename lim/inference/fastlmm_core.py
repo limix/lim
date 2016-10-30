@@ -1,15 +1,13 @@
 from __future__ import division
 
 from numpy import dot
-from numpy import empty
 from numpy import log
 from numpy import var
 from numpy import zeros
 
 from scipy.stats import multivariate_normal
 
-from limix_math.linalg import sum2diag
-from limix_math.linalg import solve
+from limix_math import (sum2diag, solve)
 
 
 class FastLMMCore(object):
@@ -156,8 +154,8 @@ class FastLMMCore(object):
         yTQ0_2x = self._yTQ0_2x
         yTQ1_2x = self._yTQ1_2x
 
-        yTQ0_oneTQ0 = self._yTQ0_oneTQ0 = self._yTQ0 * self._oneTQ0
-        yTQ1_oneTQ1 = self._yTQ1_oneTQ1 = self._yTQ1 * self._oneTQ1
+        # yTQ0_oneTQ0 = self._yTQ0_oneTQ0 = self._yTQ0 * self._oneTQ0
+        # yTQ1_oneTQ1 = self._yTQ1_oneTQ1 = self._yTQ1 * self._oneTQ1
 
         self._a1 = yTQ1_2x.sum() / self._diag1
         self._b1[:] = (self._yTQ1 / self._diag1).dot(self._oneTQ1.T)

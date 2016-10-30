@@ -6,10 +6,6 @@ from numpy import var
 from numpy.linalg import solve
 from numpy.linalg import slogdet
 
-from scipy.stats import multivariate_normal
-
-from limix_math.linalg import sum2diag
-
 from optimix import Composite
 
 

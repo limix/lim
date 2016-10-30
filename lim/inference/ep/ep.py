@@ -13,8 +13,8 @@ from scipy.linalg import cho_factor
 from numpy.linalg import LinAlgError
 
 from limix_math import is_all_finite
-from limix_math.linalg import (cho_solve, ddot, dotd, economic_svd, solve,
-                               sum2diag, sum2diag_inplace, trace2)
+from limix_math import (cho_solve, ddot, dotd, economic_svd, solve,
+                        sum2diag, sum2diag_inplace, trace2)
 
 from ._optimize import find_minimum
 from .util import make_sure_reasonable_conditioning
@@ -383,7 +383,8 @@ class EP(Cached):
         w1 = -sum(log(diagonal(L))) + (- sum(log(gS)) / 2 + log(A).sum() / 2)
 
         w2 = eC * teta
-        w2 += ddot(C, QBiQtCteta, left=True)
+        # w2 += ddot(C, QBiQtCteta, left=True)
+        w2 += C * QBiQtCteta
         w2 -= teta / tctau
         w2 = dot(teta, w2) / 2
 

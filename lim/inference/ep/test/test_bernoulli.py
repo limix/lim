@@ -4,7 +4,7 @@ from numpy import array, dot, empty, hstack, ones, sqrt
 from numpy.random import RandomState
 from numpy.testing import assert_almost_equal
 
-from limix_math.linalg import qs_decomposition
+from limix_math import economic_qs_linear
 from lim.inference.ep import BernoulliEP
 
 
@@ -12,14 +12,14 @@ def test_bernoulli_lml():
     n = 3
     M = ones((n, 1)) * 1.
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
-    (Q, S) = qs_decomposition(G)
+    (Q, S0) = economic_qs_linear(G)
     y = array([1., 0., 1.])
-    ep = BernoulliEP(y, M, hstack(Q), empty((n, 0)), hstack(S) + 1.0)
+    ep = BernoulliEP(y, M, hstack(Q), empty((n, 0)), S0+1)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.
     ep.delta = 0.
-    assert_almost_equal(ep.lml(), -2.344936587017978)
+    assert_almost_equal(ep.lml(), -2.3202659215368935)
     assert_almost_equal(ep.sigma2_epsilon, 0)
     assert_almost_equal(ep.sigma2_b, 1)
 
@@ -28,7 +28,7 @@ def test_bernoulli_gradient_over_v():
     n = 3
     M = ones((n, 1)) * 1.
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
-    (Q, S) = qs_decomposition(G)
+    (Q, S) = economic_qs_linear(G)
     y = array([1., 0., 1.])
     ep = BernoulliEP(y, M, hstack(Q), empty((n, 0)), hstack(S) + 1.0)
     ep.beta = array([1.])
@@ -65,9 +65,9 @@ def test_bernoulli_optimize():
     y[z > 0] = 1
     y[z <= 0] = 0
 
-    (Q, S) = qs_decomposition(G)
+    (Q, S0) = economic_qs_linear(G)
 
-    ep = BernoulliEP(y, M, Q[0], Q[1], S[0])
+    ep = BernoulliEP(y, M, Q[0], Q[1], S0)
     ep.optimize()
     assert_almost_equal(ep.lml(), -16.691454697813427)
     assert_almost_equal(ep.sigma2_b, 5551.30530403)

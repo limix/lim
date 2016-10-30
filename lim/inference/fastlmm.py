@@ -2,13 +2,12 @@ from __future__ import division
 
 from numpy import exp
 from numpy import clip
-from numpy import zeros
 from numpy import isfinite
 from numpy import atleast_2d
 from numpy import all as all_
 from numpy import set_printoptions
 
-from limix_math.linalg import qs_decomposition
+from limix_math import economic_qs_linear
 
 from optimix import maximize_scalar
 from optimix import Function
@@ -32,10 +31,10 @@ class FastLMM(Function):
         if QS is None:
             self._trans = DesignMatrixTrans(X)
             X = self._trans.transform(X)
-            QS = qs_decomposition(X)
+            QS = economic_qs_linear(X)
             self._X = X
 
-        self._flmmc = FastLMMCore(y, covariates, QS[0][0], QS[0][1], QS[1][0])
+        self._flmmc = FastLMMCore(y, covariates, QS[0][0], QS[0][1], QS[1])
         self.set_nodata()
 
     @property
@@ -120,7 +119,8 @@ class FastLMM(Function):
         tvar = cvar + v + e
         h2 = self.heritability
 
-        var_sym = unichr(0x3bd).encode('utf-8')
+        # var_sym = unichr(0x3bd).encode('utf-8')
+        var_sym = 'v'
         set_printoptions(precision=3, threshold=10)
         s = """Phenotype:
   y_i = o_i + u_i + e_i
