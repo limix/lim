@@ -729,7 +729,6 @@ class EP(Cached):
             def function(x):
                 self.v = x[0]
                 self.delta = x[1]
-                print("v, delta: %g, %g" % (self.v, self.delta))
                 self._optimize_beta()
                 return (-self.lml(), -self._gradient_over_both())
 
@@ -749,7 +748,6 @@ class EP(Cached):
 
             def function(x):
                 self.v = x[0]
-                print("v: %g" % self.v)
                 self._optimize_beta()
                 return (-self.lml(), -self._gradient_over_v())
 
