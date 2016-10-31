@@ -2,6 +2,8 @@ from __future__ import division
 
 from limix_math.special import logbinom
 
+from scipy.special import gammaln
+
 from numpy import ascontiguousarray as aca
 from numpy import log1p
 from numpy import exp
@@ -14,14 +16,11 @@ class ProdLik(object):
         self._likelihoods = likelihoods
 
     def pdf(self, x):
-        liks = self._likelihoods
-        n = len(liks)
-        return aca([liks[i].pdf(x[i]) for i in range(n)])
+        return exp(self.logpdf(x))
 
     def logpdf(self, x):
-        liks = self._likelihoods
-        n = len(liks)
-        return aca([liks[i].logpdf(x[i]) for i in range(n)])
+        theta = self.theta(x)
+        return (self.y * theta - self.b(theta)) / self.a() + self.c()
 
     @property
     def y(self):
@@ -70,13 +69,6 @@ class BernoulliProdLik(ProdLik):
         self._outcome = outcome
         self._link = link
 
-    def pdf(self, x):
-        return exp(self.logpdf(x))
-
-    def logpdf(self, x):
-        theta = self.theta(x)
-        return (self.y * theta - self.b(theta)) / self.a() + self.c()
-
     @property
     def y(self):
         return self._outcome
@@ -114,13 +106,6 @@ class BinomialProdLik(ProdLik):
         self._n = aca(n)
         self._link = link
 
-    def pdf(self, x):
-        return exp(self.logpdf(x))
-
-    def logpdf(self, x):
-        theta = self.theta(x)
-        return (self.y * theta - self.b(theta)) / self.a() + self.c()
-
     @property
     def y(self):
         return self._k / self._n
@@ -149,3 +134,38 @@ class BinomialProdLik(ProdLik):
         import scipy.stats as st
         p = self.mean(x)
         return st.binom(self._n, p).rvs(random_state=random_state)
+
+class PoissonProdLik(ProdLik):
+    def __init__(self, nsuccesses, link):
+        super(PoissonProdLik, self).__init__(None)
+        self._nsuccesses = nsuccesses
+        self._link = link
+
+    @property
+    def y(self):
+        return self._nsuccesses
+
+    def mean(self, x):
+        return self._link.inv(x)
+
+    def theta(self, x):
+        m = self.mean(x)
+        return log(m)
+
+    @property
+    def phi(self):
+        return 1
+
+    def a(self):
+        return self.phi
+
+    def b(self, theta):
+        return exp(theta)
+
+    def c(self):
+        return gammaln(self._nsuccesses + 1)
+
+    def sample(self, x, random_state=None):
+        import scipy.stats as st
+        lam = self.mean(x)
+        return st.poisson(mu=lam).rvs(random_state=random_state)

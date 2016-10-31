@@ -1,8 +1,10 @@
 from numpy import sqrt
 from ..link import LogitLink
+from ..link import LogLink
 from ..lik import BernoulliLik
 from ..lik import BernoulliProdLik
 from ..lik import BinomialProdLik
+from ..lik import PoissonProdLik
 from ..mean import OffsetMean
 from ..cov import LinearCov
 from ..cov import SumCov
@@ -61,6 +63,34 @@ def binomial(ntrials, offset, G, heritability=0.5, random_state=None):
     cov2.scale = 1 - heritability
 
     lik = BinomialProdLik(None, ntrials, link)
+    sampler = GLMMSampler(lik, mean, cov)
+
+    return sampler.sample(random_state)
+
+def poisson(offset, G, heritability=0.5, random_state=None):
+
+    nsamples = G.shape[0]
+    G = stdnorm(G, axis=0)
+    G /= sqrt(G.shape[1])
+
+    link = LogLink()
+
+    mean = OffsetMean()
+    mean.offset = offset
+
+    cov1 = LinearCov()
+    cov2 = EyeCov()
+    cov = SumCov([cov1, cov2])
+
+    mean.set_data(nsamples, 'sample')
+    cov1.set_data((G, G), 'sample')
+    a = Apples(nsamples)
+    cov2.set_data((a, a), 'sample')
+
+    cov1.scale = heritability
+    cov2.scale = 1 - heritability
+
+    lik = PoissonProdLik(None, link)
     sampler = GLMMSampler(lik, mean, cov)
 
     return sampler.sample(random_state)
