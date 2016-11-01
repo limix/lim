@@ -22,6 +22,8 @@ from .util import make_sure_reasonable_conditioning
 from limix_math import epsilon
 from limix_util.time import Timer
 
+from .fixed import FixedEP
+
 MAX_EP_ITER = 10
 EP_EPS = 1e-5
 
@@ -198,6 +200,16 @@ class EP(Cached):
             self._joint_initialize()
             self._sitelik_initialize()
             self._ep_params_initialized = True
+
+    def fixed_ep(self):
+        w1, w2, w3, _, _, w6, w7 = self._lml_components()
+
+        lml_const = w1 + w2 + w3 + w6 + w7
+
+        beta_nom = self._optimal_beta_nom()
+
+        return FixedEP(lml_const, self._A(), self._C(), self._L(), self._Q,
+                       self._QBiQtCteta(), self._sitelik_eta, beta_nom)
 
     def initialize(self):
         raise NotImplementedError

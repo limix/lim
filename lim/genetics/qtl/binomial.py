@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from numpy import newaxis
 from numpy import hstack
+from numpy import dot
 
 from .qtl import QTLScan
 from ...inference import BinomialEP
@@ -18,6 +18,7 @@ class BinomialQTLScan(QTLScan):
         self._Q1 = Q1
         self._S0 = S0
         self._covariates = offset_covariate(covariates, len(nsuccesses))
+        self._fixed_ep = None
 
     def _compute_null_model(self, progress):
         nsuccesses = self._nsuccesses
@@ -29,21 +30,20 @@ class BinomialQTLScan(QTLScan):
         ep = BinomialEP(nsuccesses, ntrials, covariates, Q0=Q0, Q1=Q1,
                         S0=S0)
         ep.optimize(progress=progress)
-        # self._null_lml = flmm.lml()
+        self._null_lml = ep.lml()
+        self._fixed_ep = ep.fixed_ep()
 
     def _compute_alt_models(self, progress):
-        self._alt_lmls = []
-        self._candidate_effect_sizes = []
-        for i in range(self._X.shape[1]):
-            x = self._X[:, i]
-            flmm = self._flmm.copy()
-            flmm.covariates = hstack((self._covariates, x[:, newaxis]))
-            flmm.learn()
-            self._alt_lmls.append(flmm.lml())
-            self._candidate_effect_sizes.append(flmm.beta[-1])
+        fixed_ep = self._fixed_ep
+
+        Ms = hstack((self._covariates, self._X))
+        betas = fixed_ep.optimal_betas(Ms, self._covariates.shape[1])
+        ms = dot(self._covariates, betas[:1, :]) + self._X * betas[1, :]
+        self._alt_lmls[:] = fixed_ep.lmls(ms)
+        self._effect_sizes[:] = betas[1,:]
 
     def null_model(self):
-        return self._flmm.model()
+        return None
 
     def alt_models(self):
         s = "Phenotype:\n"

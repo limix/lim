@@ -119,7 +119,6 @@ def binomial_scan(nsuccesses,
     (Q0, Q1, S0) = _genetic_preprocess(X, G, K, covariates, background)
     qtl = BinomialQTLScan(nsuccesses, ntrials, X, Q0, Q1, S0,
                           covariates=covariates)
-    import pdb; pdb.set_trace()
     qtl.compute_statistics()
     return qtl
 

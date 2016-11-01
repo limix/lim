@@ -84,22 +84,22 @@ class QTLScan(Cached):
 
     def null_lml(self):
         """Log marginal likelihood for the null hypothesis."""
-        self._compute_statistics()
+        self.compute_statistics()
         return self._null_lml
 
     def alt_lmls(self):
         """Log marginal likelihoods for the alternative hypothesis."""
-        self._compute_statistics()
+        self.compute_statistics()
         return self._alt_lmls
 
     def candidate_effect_sizes(self):
         """Effect size for candidate markers."""
-        self._compute_statistics()
-        return self._candidate_effect_sizes
+        self.compute_statistics()
+        return self._effect_sizes
 
     def pvalues(self):
         """Association p-value for candidate markers."""
-        self._compute_statistics()
+        self.compute_statistics()
 
         lml_alts = self.alt_lmls()
         lml_null = self.null_lml()
