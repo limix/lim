@@ -5,14 +5,31 @@ from numpy import ones
 from numpy.random import RandomState
 from numpy.testing import assert_almost_equal
 
+from lim.tool.normalize import stdnorm
+from lim.random.canonical import binomial
 from lim.util.fruits import Apples
 from lim.cov import LinearCov
 from lim.cov import EyeCov
 from lim.cov import SumCov
 from lim.mean import OffsetMean
 from lim.random import RegGPSampler
-from lim.genetics.qtl import normal_scan
-from lim.genetics.qtl import normal_scan
+from lim.genetics.qtl import binomial_scan
+
+def test_qtl_binomial_scan():
+    random = RandomState(9)
+
+    N = 500
+    G = random.randn(N, N+100)
+    G = stdnorm(G)
+    G /= sqrt(G.shape[1])
+
+    ntrials = random.randint(1, 50, N)
+    nsuccesses = binomial(ntrials, -0.1, G, random_state=random)
+
+    lrt = binomial_scan(nsuccesses, ntrials, X, G=G, covariates=None,
+                        progress=True)
+    
+
 
 # def test_qtl_normal_scan():
 #     random = RandomState(9458)
@@ -46,3 +63,6 @@ from lim.genetics.qtl import normal_scan
 #     assert_almost_equal(effsizes[0], 0.00881056802261)
 #     assert_almost_equal(null_model.heritability, 0.443031454528759)
 #     assert_almost_equal(null_model.total_variance, 2.929727405984385)
+
+if __name__ == '__main__':
+    __import__('pytest').main([__file__, '-s'])
