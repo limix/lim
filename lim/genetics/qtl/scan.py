@@ -6,12 +6,14 @@ import logging
 
 from tabulate import tabulate
 
-from numpy import asarray
+from numpy import ascontiguousarray
 from numpy import sqrt
 
 from limix_math import (economic_qs, economic_qs_linear)
 
 from ..phenotype import NormalPhenotype
+from ..phenotype import BinomialPhenotype
+from ..background import Background
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
 
@@ -58,31 +60,29 @@ class InputInfo(object):
         return tabulate(t, tablefmt='plain')
 
 
-def genetic_preprocess(X, G, K, covariates, input_info):
+def genetic_preprocess(X, G, K, covariates, background):
     logger = logging.getLogger(__name__)
     logger.info("Number of candidate markers to scan: %d", X.shape[1])
 
-    input_info.candidate_nmarkers = X.shape[1]
-    input_info.nconst_markers = sum(X.std(0) == 0)
-
-    input_info.covariates_user_provided = covariates is not None
-
     if K is not None:
+        background.provided_via_variants = False
         logger.info('Covariace matrix normalization.')
-        K = asarray(K, dtype=float)
-        K = gower_normalization(K)
+        K = ascontiguousarray(K, dtype=float)
+        gower_normalization(K, out=K)
 
-    input_info.background_markers_user_provided = G is not None
+
     if G is not None:
+        background.provided_via_variants = True
+        G = ascontiguousarray(G, dtype=float)
+        background.nvariants = G.shape[1]
+        background.constant_nvariants = sum(G.std(0) == 0)
+
         logger.info('Genetic markers normalization.')
-        G = asarray(G, dtype=float)
-        input_info.nconst_background_markers = sum(G.std(0) == 0)
-        G = stdnorm(G)
+        stdnorm(G, 0, out=G)
         G /= sqrt(G.shape[1])
-        input_info.background_nmarkers = G.shape[1]
 
     if G is None and K is None:
-        raise Exception('G, K, and QS cannot be all None.')
+        raise Exception('G and K cannot be both None.')
 
     logger.info('Computing the economic eigen decomposition.')
     if K is None:
@@ -93,20 +93,13 @@ def genetic_preprocess(X, G, K, covariates, input_info):
     Q0, Q1 = QS[0]
     S0 = QS[1]
 
-    input_info.Q0 = Q0
-    input_info.Q1 = Q1
-    input_info.S0 = S0
-
-    input_info.kinship_rank = len(S0)
-
-    input_info.kinship_diagonal_mean = S0.sum() / Q0.shape[0]
+    background.background_rank = len(S0)
 
     logger.info('Genetic marker candidates normalization.')
-    X = stdnorm(X)
+    stdnorm(X, 0, out=X)
+    X /= sqrt(X.shape[1])
 
-    input_info.effective_X = X
-    input_info.effective_G = G
-    input_info.effective_K = K
+    return (Q0, Q1, S0)
 
 
 def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
@@ -143,7 +136,7 @@ def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
     """
     logger = logging.getLogger(__name__)
     logger.info('Normal association scan has started.')
-    y = asarray(y, dtype=float)
+    y = ascontiguousarray(y, dtype=float)
 
     ii = InputInfo()
     ii.phenotype_info = NormalPhenotype(y)
@@ -204,15 +197,15 @@ def binomial_scan(nsuccesses,
 
     logger = logging.getLogger(__name__)
     logger.info('Binomial association scan has started.')
-    nsuccesses = asarray(nsuccesses, dtype=float)
-    ntrials = asarray(ntrials, dtype=float)
+    nsuccesses = ascontiguousarray(nsuccesses, dtype=float)
+    ntrials = ascontiguousarray(ntrials, dtype=float)
 
-    ii = InputInfo()
-    ii.phenotype_info = BinomialPhenotypeInfo(nsuccesses, ntrials)
+    phenotype = BinomialPhenotype(nsuccesses, ntrials)
+    background = Background()
 
-    genetic_preprocess(X, G, K, covariates, ii)
-
+    genetic_preprocess(X, G, K, covariates, background)
     # from .lrt import BinomialLRT
+    import pdb; pdb.set_trace()
     lrt = BinomialLRT(
         nsuccesses,
         ntrials,

@@ -1,0 +1,60 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
+from numpy import concatenate
+from numpy import ascontiguousarray
+from numpy import newaxis
+from numpy import hstack
+from numpy import array
+from numpy import ones
+
+from .lrt import QTLScan
+from ...inference import BinomialEP
+from ...util import offset_covariate
+
+
+class BinomialQTLScan(QTLScan):
+    def __init__(self, nsuccesses, ntrials, X, Q0, Q1, S0, covariates=None):
+        super(BinomialQTLScan, self).__init__(X)
+        self._nsuccesses = nsuccesses
+        self._ntrials = ntrials
+        self._Q0 = Q0
+        self._Q1 = Q1
+        self._S0 = S0
+        self._covariates = offset_covariate(covariates, len(nsuccesses))
+
+    def _compute_null_model(self, progress):
+        nsuccesses = self._nsuccesses
+        self._ntrials = ntrials
+        Q0, Q1 = self._Q0, self._Q1
+        S0 = self._S0
+        covariates = self._covariates
+
+        # nsuccesses, ntrials, M, Q0, Q1, S0, Q0S0Q0t=None):
+        ep = BinomialEP(nsuccesses, ntrials, covariates, Q0=Q0, Q1=Q1,
+                        S0=S0)
+        ep.learn(progress=progress)
+        self._ep = ep
+        # self._null_lml = flmm.lml()
+
+    def _compute_alt_models(self, progress):
+        self._alt_lmls = []
+        self._candidate_effect_sizes = []
+        for i in range(self._X.shape[1]):
+            x = self._X[:, i]
+            flmm = self._flmm.copy()
+            flmm.covariates = hstack((self._covariates, x[:, newaxis]))
+            flmm.learn()
+            self._alt_lmls.append(flmm.lml())
+            self._candidate_effect_sizes.append(flmm.beta[-1])
+
+    def null_model(self):
+        return self._flmm.model()
+
+    def alt_models(self):
+        s = "Phenotype:\n"
+        s += "    y_i = o_i + b_j x_{i,j} + u_i + e_i\n\n"
+        s += "Definitions:\n"
+        s += "    b_j    : effect-size of the j-th candidate marker\n"
+        s += "    x_{i,j}: j-th candidate marker of the i-th sample\n"
+        return s

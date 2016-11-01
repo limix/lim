@@ -20,15 +20,21 @@ def test_qtl_binomial_scan():
 
     N = 500
     G = random.randn(N, N+100)
-    G = stdnorm(G)
+    G = stdnorm(G, 0)
     G /= sqrt(G.shape[1])
 
+    p = 5
+    X = random.randn(N, p)
+    X = stdnorm(X, 0)
+    X /= sqrt(X.shape[1])
+
     ntrials = random.randint(1, 50, N)
-    nsuccesses = binomial(ntrials, -0.1, G, random_state=random)
+    nsuccesses = binomial(ntrials, -0.1, G, causal_variants=X,
+                          causal_variance=0.1, random_state=random)
 
     lrt = binomial_scan(nsuccesses, ntrials, X, G=G, covariates=None,
                         progress=True)
-    
+
 
 
 # def test_qtl_normal_scan():

@@ -66,12 +66,12 @@ def binomial(ntrials, offset, G, heritability=0.5, causal_variants=None,
     cov1.scale = heritability - causal_variance
     cov2.scale = 1 - heritability - causal_variance
 
-    import pdb; pdb.set_trace()
     means = [mean1]
     if causal_variants is not None:
-        means += [_causal_mean(causal_variants, causal_variance)]
+        means += [_causal_mean(causal_variants, causal_variance,
+                               random_state)]
 
-    mean = SumMean([means])
+    mean = SumMean(means)
 
     lik = BinomialProdLik(None, ntrials, link)
     sampler = GLMMSampler(lik, mean, cov)
@@ -106,7 +106,7 @@ def poisson(offset, G, heritability=0.5, random_state=None):
 
     return sampler.sample(random_state)
 
-def _causal_mean(causal_variants, causal_variance):
+def _causal_mean(causal_variants, causal_variance, random):
     causal_variants = stdnorm(causal_variants, axis=0)
     causal_variants /= sqrt(causal_variants.shape[1])
     p = causal_variants.shape[1]

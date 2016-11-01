@@ -8,21 +8,29 @@ from numpy import hstack
 from numpy import array
 from numpy import ones
 
-from ._lrt import LikelihoodRatioTestScan
+from .lrt import QTLScan
 from ...inference import FastLMM
 from ...util import offset_covariate
 
+# @cached
+# def _compute_null_model(self, progress):
+#     raise NotImplementedError
+#
+# @cached
+# def _compute_alt_models(self, progress):
+#     raise NotImplementedError
 
-class CanonicalLRTScan(LikelihoodRatioTestScan):
-    def __init__(self, y, Q0, Q1, S0, covariates=None, progress=True):
-        super(CanonicalLRTScan, self).__init__(progress=progress)
+
+class NormalQTLScan(QTLScan):
+    def __init__(self, y, X, Q0, Q1, S0, covariates=None):
+        super(NormalQTLScan, self).__init__(X)
         self._y = y
         self._Q0 = Q0
         self._Q1 = Q1
         self._S0 = S0
         self._covariates = offset_covariate(covariates, len(y))
 
-    def _learn_null_model(self, progress):
+    def _compute_null_model(self, progress):
         y = self._y
         Q0, Q1 = self._Q0, self._Q1
         S0 = self._S0
@@ -33,7 +41,7 @@ class CanonicalLRTScan(LikelihoodRatioTestScan):
         self._flmm = flmm
         self._null_lml = flmm.lml()
 
-    def _learn_alt_models(self, progress):
+    def _compute_alt_models(self, progress):
         self._alt_lmls = []
         self._candidate_effect_sizes = []
         for i in range(self._X.shape[1]):

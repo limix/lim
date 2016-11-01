@@ -5,12 +5,16 @@ import sys
 
 import logging
 
+from hcache import Cached, cached
+
 from numpy import concatenate
 from numpy import asarray
+from numpy import empty
 from numpy import newaxis
 from numpy import hstack
 from numpy import array
 from numpy import ones
+from numpy import nan
 
 from progressbar import ProgressBar
 from progressbar import NullBar
@@ -28,19 +32,16 @@ def _indent(msg):
 
 
 @unicode_compatible
-class LikelihoodRatioTestScan(object):
-    def __init__(self, progress=True):
-
+class QTLScan(Cached):
+    def __init__(self, X, progress=True):
+        Cached.__init__(self)
         self._logger = logging.getLogger(__name__)
 
-        self._progress = progress
-
-        self._X = None
-        self._null_lml = None
-        self._alt_lmls = None
-        self._candidate_effect_sizes = None
-        self._null_model_ready = False
-        self._alt_model_ready = False
+        self._X = X
+        self._null_lml = nan
+        self._alt_lmls = empty(X.shape[1])
+        self._effect_sizes = empty(X.shape[1])
+        self.progress = progress
 
     @property
     def candidate_markers(self):
@@ -56,47 +57,38 @@ class LikelihoodRatioTestScan(object):
     @candidate_markers.setter
     def candidate_markers(self, X):
         self._X = X
-        self._alt_model_ready = False
+        self.clear_cache('_compute_alt_models')
 
     def _compute_statistics(self):
         self._logger.info('Computing Likelihood-ratio test statistics.')
-        self._compute_null_model()
-        self._compute_alt_models()
 
-    def _compute_null_model(self):
-        if self._null_model_ready:
-            return
         self._logger.info('Null model computation has started.')
-
-        if self._progress:
+        if self.progress:
             msg = "Null model fitting: "
-            progress = ProgressBar(
-                widgets=[msg, Counter(), " function evaluations"],
-                max_value=UnknownLength)
+            widgets = [msg, Counter(), " function evaluations"]
+            progress = ProgressBar(widgets=widgets, max_value=UnknownLength)
         else:
             progress = NullBar()
+        self._compute_null_model(progress)
+        self._logger.info('Null model computation has finished.')
 
-        self._learn_null_model(progress)
-
-        self._null_model_ready = True
-
-    def _compute_alt_models(self):
-        if self._alt_model_ready:
-            return
-        self._logger.info('Alternative model computation has started.')
-
-        nmarkers = self._X.shape[1]
-
-        if self._progress:
+        self._logger.info('Alternative models computation have started.')
+        if self.progress:
             msg = "Scanning markers: "
-            progress = ProgressBar(
-                widgets=[msg, AdaptiveETA()], max_value=nmarkers)
+            widgets = [msg, AdaptiveETA()]
+            progress = ProgressBar(widgets=widgets, max_value=self._X.shape[1])
         else:
             progress = NullBar()
+        self._compute_alt_models(progress)
+        self._logger.info('Alternative models computation have finished.')
 
-        self._learn_alt_models(progress)
+    @cached
+    def _compute_null_model(self, progress):
+        raise NotImplementedError
 
-        self._alt_model_ready = True
+    @cached
+    def _compute_alt_models(self, progress):
+        raise NotImplementedError
 
     def null_lml(self):
         """Log marginal likelihood for the null hypothesis."""
@@ -129,20 +121,12 @@ class LikelihoodRatioTestScan(object):
 
     def null_model(self):
         """Model of the null hypothesis."""
-        raise NotImplementError
+        raise NotImplementedError
 
     def alt_models(self):
         """Model of the alternative hypotheses."""
-        raise NotImplementError
+        raise NotImplementedError
 
-    def _learn_null_model(self, progress):
-        raise NotImplementError
-
-    def _learn_alt_models(self, progress):
-        raise NotImplementError
-
-    def __str__(self):
-        return ""
         # snull = str(self.null_model())
         # snull = 'Null model:\n\n' + _indent(snull)
         #

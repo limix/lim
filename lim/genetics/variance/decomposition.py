@@ -104,7 +104,7 @@ def preprocess(GK, covariates, input_info):
         else:
             logger.info('Genetic markers normalization on %s.', name)
             G = asarray(GKi[0], dtype=float)
-            G = stdnorm(G)
+            G = stdnorm(G, 0)
             G /= sqrt(G.shape[1])
             GK[name] = (G, False)
 
