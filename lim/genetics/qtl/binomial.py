@@ -1,14 +1,10 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from numpy import concatenate
-from numpy import ascontiguousarray
 from numpy import newaxis
 from numpy import hstack
-from numpy import array
-from numpy import ones
 
-from .lrt import QTLScan
+from .qtl import QTLScan
 from ...inference import BinomialEP
 from ...util import offset_covariate
 
@@ -25,16 +21,14 @@ class BinomialQTLScan(QTLScan):
 
     def _compute_null_model(self, progress):
         nsuccesses = self._nsuccesses
-        self._ntrials = ntrials
+        ntrials = self._ntrials
         Q0, Q1 = self._Q0, self._Q1
         S0 = self._S0
         covariates = self._covariates
 
-        # nsuccesses, ntrials, M, Q0, Q1, S0, Q0S0Q0t=None):
         ep = BinomialEP(nsuccesses, ntrials, covariates, Q0=Q0, Q1=Q1,
                         S0=S0)
-        ep.learn(progress=progress)
-        self._ep = ep
+        ep.optimize(progress=progress)
         # self._null_lml = flmm.lml()
 
     def _compute_alt_models(self, progress):

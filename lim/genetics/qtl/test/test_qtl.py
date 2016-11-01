@@ -32,8 +32,8 @@ def test_qtl_binomial_scan():
     nsuccesses = binomial(ntrials, -0.1, G, causal_variants=X,
                           causal_variance=0.1, random_state=random)
 
-    lrt = binomial_scan(nsuccesses, ntrials, X, G=G, covariates=None,
-                        progress=True)
+    # lrt = binomial_scan(nsuccesses, ntrials, X, G=G, covariates=None,
+    #                     progress=True)
 
 
 

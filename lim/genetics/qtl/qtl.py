@@ -1,29 +1,21 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-import sys
 
 import logging
 
 from hcache import Cached, cached
 
-from numpy import concatenate
 from numpy import asarray
 from numpy import empty
-from numpy import newaxis
-from numpy import hstack
-from numpy import array
-from numpy import ones
 from numpy import nan
 
 from progressbar import ProgressBar
 from progressbar import NullBar
-from progressbar import Percentage
-from progressbar import UnknownLength
 from progressbar import Counter
 from progressbar import AdaptiveETA
+from progressbar import UnknownLength
 
-from ...util import quantile_summary
 from ...util import unicode_compatible
 
 
@@ -59,7 +51,7 @@ class QTLScan(Cached):
         self._X = X
         self.clear_cache('_compute_alt_models')
 
-    def _compute_statistics(self):
+    def compute_statistics(self):
         self._logger.info('Computing Likelihood-ratio test statistics.')
 
         self._logger.info('Null model computation has started.')

@@ -1,5 +1,7 @@
 from __future__ import absolute_import, division, unicode_literals
 
+from progressbar import NullBar
+
 import logging
 from math import fsum
 from time import time
@@ -10,6 +12,7 @@ from numpy import (abs, all, any, asarray, diagonal, dot, empty, empty_like,
                    errstate, inf, isfinite, log, maximum, sqrt, sum, zeros,
                    zeros_like)
 from scipy.linalg import cho_factor
+from scipy.optimize import fmin_tnc
 from numpy.linalg import LinAlgError
 
 from limix_math import is_all_finite
@@ -675,9 +678,10 @@ class EP(Cached):
             step = sum((self._tbeta - ptbeta)**2)
             i += 1
 
-    def optimize(self):
+    def optimize(self, progress=None):
+        progress = NullBar() if progress is None else progress
+        progress.start()
 
-        from scipy.optimize import fmin_tnc
         xtol = 1e-5
         rescale = 10
         pgtol = 1e-5
@@ -686,12 +690,15 @@ class EP(Cached):
         self._logger.info("Start of optimization.")
         start = time()
 
+        inter = [0]
         if self._overdispersion:
 
             def function(x):
                 self.v = x[0]
                 self.delta = x[1]
                 self._optimize_beta()
+                progress.update(inter[0])
+                inter[0] += 1
                 return (-self.lml(), -self._gradient_over_both())
 
             r = fmin_tnc(
@@ -711,6 +718,8 @@ class EP(Cached):
             def function(x):
                 self.v = x[0]
                 self._optimize_beta()
+                progress.update(inter[0])
+                inter[0] += 1
                 return (-self.lml(), -self._gradient_over_v())
 
             r = fmin_tnc(
@@ -730,6 +739,7 @@ class EP(Cached):
 
         msg = "End of optimization (%.3f seconds, %d function calls)."
         self._logger.info(msg, elapsed, nfev)
+        progress.finish()
 
     @cached
     def _A(self):

@@ -278,3 +278,45 @@ class BinomialLRT(LikelihoodRatioTest):
         s += "    b_j    : effect-size of the j-th candidate marker\n"
         s += "    x_{i,j}: j-th candidate marker of the i-th sample\n"
         return s
+
+
+# class InputInfo(object):
+#     def __init__(self):
+#         self.background_markers_user_provided = None
+#         self.nconst_background_markers = None
+#         self.covariates_user_provided = None
+#         self.nconst_markers = None
+#         self.kinship_rank = None
+#         self.candidate_nmarkers = None
+#         self.phenotype_info = None
+#         self.background_nmarkers = None
+#
+#         self.effective_X = None
+#         self.effective_G = None
+#         self.effective_K = None
+#
+#         self.S = None
+#         self.Q = None
+#
+#     def __str__(self):
+#         t = []
+#         t += self.phenotype_info.get_info()
+#         if self.background_markers_user_provided:
+#             t.append(['Background data', 'provided via markers'])
+#             t.append(['# background markers', self.background_nmarkers])
+#             t.append([
+#                 '# const background markers', self.nconst_background_markers
+#             ])
+#         else:
+#             t.append(['Background data', 'provided via Kinship matrix'])
+#
+#         t.append(['Kinship diagonal mean', self.kinship_diagonal_mean])
+#
+#         if self.covariates_user_provided:
+#             t.append(['Covariates', 'provided by user'])
+#         else:
+#             t.append(['Covariates', 'a single column of ones'])
+#
+#         t.append(['Kinship rank', self.kinship_rank])
+#         t.append(['# candidate markers', self.candidate_nmarkers])
+#         return tabulate(t, tablefmt='plain')

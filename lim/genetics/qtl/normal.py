@@ -8,18 +8,9 @@ from numpy import hstack
 from numpy import array
 from numpy import ones
 
-from .lrt import QTLScan
+from .qtl import QTLScan
 from ...inference import FastLMM
 from ...util import offset_covariate
-
-# @cached
-# def _compute_null_model(self, progress):
-#     raise NotImplementedError
-#
-# @cached
-# def _compute_alt_models(self, progress):
-#     raise NotImplementedError
-
 
 class NormalQTLScan(QTLScan):
     def __init__(self, y, X, Q0, Q1, S0, covariates=None):
