@@ -4,7 +4,6 @@ from progressbar import NullBar
 
 import logging
 from math import fsum
-from time import time
 
 from hcache import Cached, cached
 from numpy import var as variance
@@ -21,9 +20,12 @@ from limix_math import (cho_solve, ddot, dotd, economic_svd, solve, sum2diag,
 
 from .util import make_sure_reasonable_conditioning
 from limix_math import epsilon
+from limix_util.time import Timer
 
 MAX_EP_ITER = 10
 EP_EPS = 1e-5
+
+_magic_numbers = dict(xtol=1e-5, rescale=10, pgtol=1e-5, ftol=1e-5, disp=0)
 
 
 class EP(Cached):
@@ -678,68 +680,41 @@ class EP(Cached):
             step = sum((self._tbeta - ptbeta)**2)
             i += 1
 
-    def optimize(self, progress=None):
-        progress = NullBar() if progress is None else progress
-        progress.start()
+    def _start_optimizer(self):
+        x0 = [self.v]
+        bounds = [(epsilon.small, inf)]
 
-        xtol = 1e-5
-        rescale = 10
-        pgtol = 1e-5
-        ftol = 1e-5
-
-        self._logger.info("Start of optimization.")
-        start = time()
-
-        inter = [0]
         if self._overdispersion:
-
-            def function(x):
-                self.v = x[0]
-                self.delta = x[1]
-                self._optimize_beta()
-                progress.update(inter[0])
-                inter[0] += 1
-                return (-self.lml(), -self._gradient_over_both())
-
-            r = fmin_tnc(
-                function,
-                asarray([self.v, self.delta]),
-                xtol=xtol,
-                disp=5,
-                bounds=[(epsilon.small, inf), (0, 1 - 1e-5)],
-                ftol=ftol,
-                pgtol=pgtol,
-                rescale=rescale)
-            x, nfev = r[0], r[1]
-            self.v = x[0]
-            self.delta = x[1]
+            klass = FunCostOverdispersion
+            x0 += [self.delta]
+            bounds += [(0, 1 - 1e-5)]
         else:
+            klass = FunCost
 
-            def function(x):
-                self.v = x[0]
-                self._optimize_beta()
-                progress.update(inter[0])
-                inter[0] += 1
-                return (-self.lml(), -self._gradient_over_v())
+        return (klass, x0, bounds)
 
-            r = fmin_tnc(
-                function,
-                asarray([self.v]),
-                xtol=xtol,
-                disp=5,
-                bounds=[(epsilon.small, inf)],
-                ftol=ftol,
-                pgtol=pgtol,
-                rescale=rescale)
-            x, nfev = r[0], r[1]
-            self.v = x[0]
+    def _finish_optimizer(self, x):
+        self.v = x[0]
+        if self._overdispersion:
+            self.delta = x[1]
 
         self._optimize_beta()
-        elapsed = time() - start
+
+    def optimize(self, progress=None):
+        self._logger.info("Start of optimization.")
+        progress = NullBar() if progress is None else progress
+
+        (klass, x0, bounds) = self._start_optimizer()
+
+        with Timer(False) as timer:
+            with progress as pbar:
+                func = klass(self, pbar)
+                x = fmin_tnc(func, x0, bounds=bounds, **_magic_numbers)[0]
+
+        self._finish_optimizer(x)
 
         msg = "End of optimization (%.3f seconds, %d function calls)."
-        self._logger.info(msg, elapsed, nfev)
-        progress.finish()
+        self._logger.info(msg, timer.elapsed, func.nfev)
 
     @cached
     def _A(self):
@@ -814,3 +789,32 @@ class EP(Cached):
         ddot(BiQtAQS, S, left=False, out=BiQtAQS)
 
         return dot(BiQtAQS, Q.T), BiQtA
+
+class FunCostOverdispersion(object):
+    def __init__(self, ep, pbar):
+        super(FunCostOverdispersion, self).__init__()
+        self._ep = ep
+        self._pbar = pbar
+        self.nfev = 0
+
+    def __call__(self, x):
+        self._ep.v = x[0]
+        self._ep.delta = x[1]
+        self._ep._optimize_beta()
+        self._pbar.update(self.nfev)
+        self.nfev += 1
+        return (-self._ep.lml(), -self._ep._gradient_over_both())
+
+class FunCost(object):
+    def __init__(self, ep, pbar):
+        super(FunCost, self).__init__()
+        self._ep = ep
+        self._pbar = pbar
+        self.nfev = 0
+
+    def __call__(self, x):
+        self._ep.v = x[0]
+        self._ep._optimize_beta()
+        self._pbar.update(self.nfev)
+        self.nfev += 1
+        return (-self._ep.lml(), -self._ep._gradient_over_v())

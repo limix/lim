@@ -4,8 +4,6 @@ from __future__ import absolute_import
 
 import logging
 
-from tabulate import tabulate
-
 from numpy import ascontiguousarray
 from numpy import sqrt
 
@@ -59,7 +57,6 @@ def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
 
     _genetic_preprocess(X, G, K, covariates, ii)
 
-    from ._canonical import CanonicalLRTScan
     lrt = CanonicalLRTScan(
         y, ii.Q0, ii.Q1, ii.S0, covariates=covariates, progress=progress)
     lrt.candidate_markers = ii.effective_X
@@ -120,9 +117,9 @@ def binomial_scan(nsuccesses,
     background = Background()
 
     (Q0, Q1, S0) = _genetic_preprocess(X, G, K, covariates, background)
-    import pdb; pdb.set_trace()
     qtl = BinomialQTLScan(nsuccesses, ntrials, X, Q0, Q1, S0,
                           covariates=covariates)
+    import pdb; pdb.set_trace()
     qtl.compute_statistics()
     return qtl
 
