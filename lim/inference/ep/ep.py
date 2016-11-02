@@ -208,7 +208,10 @@ class EP(Cached):
 
         beta_nom = self._optimal_beta_nom()
 
-        return FixedEP(lml_const, self._A(), self._C(), self._L(), self._Q,
+        return FixedEP(lml_const,
+                       self._A(),
+                       self._C(),
+                       self._L(), self._Q,
                        self._QBiQtCteta(), self._sitelik_eta, beta_nom)
 
     def initialize(self):
@@ -802,6 +805,7 @@ class EP(Cached):
 
         return dot(BiQtAQS, Q.T), BiQtA
 
+
 class FunCostOverdispersion(object):
     def __init__(self, ep, pbar):
         super(FunCostOverdispersion, self).__init__()
@@ -816,6 +820,7 @@ class FunCostOverdispersion(object):
         self._pbar.update(self.nfev)
         self.nfev += 1
         return (-self._ep.lml(), -self._ep._gradient_over_both())
+
 
 class FunCost(object):
     def __init__(self, ep, pbar):

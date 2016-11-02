@@ -27,8 +27,7 @@ class BinomialQTLScan(QTLScan):
         S0 = self._S0
         covariates = self._covariates
 
-        ep = BinomialEP(nsuccesses, ntrials, covariates, Q0=Q0, Q1=Q1,
-                        S0=S0)
+        ep = BinomialEP(nsuccesses, ntrials, covariates, Q0=Q0, Q1=Q1, S0=S0)
         ep.optimize(progress=progress)
         self._null_lml = ep.lml()
         self._fixed_ep = ep.fixed_ep()
@@ -40,7 +39,7 @@ class BinomialQTLScan(QTLScan):
         betas = fixed_ep.optimal_betas(Ms, self._covariates.shape[1])
         ms = dot(self._covariates, betas[:1, :]) + self._X * betas[1, :]
         self._alt_lmls[:] = fixed_ep.lmls(ms)
-        self._effect_sizes[:] = betas[1,:]
+        self._effect_sizes[:] = betas[1, :]
 
     def null_model(self):
         return None

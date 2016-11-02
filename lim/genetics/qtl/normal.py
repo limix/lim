@@ -12,6 +12,7 @@ from .qtl import QTLScan
 from ...inference import FastLMM
 from ...util import offset_covariate
 
+
 class NormalQTLScan(QTLScan):
     def __init__(self, y, X, Q0, Q1, S0, covariates=None):
         super(NormalQTLScan, self).__init__(X)

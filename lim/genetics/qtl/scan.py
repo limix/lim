@@ -16,6 +16,7 @@ from ..background import Background
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
 
+
 def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
     """Association between genetic markers and phenotype for continuous traits.
 
@@ -117,8 +118,8 @@ def binomial_scan(nsuccesses,
     background = Background()
 
     (Q0, Q1, S0) = _genetic_preprocess(X, G, K, covariates, background)
-    qtl = BinomialQTLScan(nsuccesses, ntrials, X, Q0, Q1, S0,
-                          covariates=covariates)
+    qtl = BinomialQTLScan(
+        nsuccesses, ntrials, X, Q0, Q1, S0, covariates=covariates)
     qtl.compute_statistics()
     return qtl
 
@@ -132,7 +133,6 @@ def _genetic_preprocess(X, G, K, covariates, background):
         logger.info('Covariace matrix normalization.')
         K = ascontiguousarray(K, dtype=float)
         gower_normalization(K, out=K)
-
 
     if G is not None:
         background.provided_via_variants = True

@@ -1,7 +1,6 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-
 import logging
 
 from hcache import Cached, cached
@@ -15,8 +14,6 @@ from progressbar import NullBar
 from progressbar import Counter
 from progressbar import AdaptiveETA
 from progressbar import UnknownLength
-
-from ...util import unicode_compatible
 
 
 def _indent(msg):

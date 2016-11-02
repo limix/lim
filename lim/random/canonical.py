@@ -42,8 +42,13 @@ def bernoulli(offset, G, heritability=0.5, random_state=None):
     return sampler.sample(random_state)
 
 
-def binomial(ntrials, offset, G, heritability=0.5, causal_variants=None,
-             causal_variance=0, random_state=None):
+def binomial(ntrials,
+             offset,
+             G,
+             heritability=0.5,
+             causal_variants=None,
+             causal_variance=0,
+             random_state=None):
 
     nsamples = G.shape[0]
     G = stdnorm(G, axis=0)
@@ -68,8 +73,7 @@ def binomial(ntrials, offset, G, heritability=0.5, causal_variants=None,
 
     means = [mean1]
     if causal_variants is not None:
-        means += [_causal_mean(causal_variants, causal_variance,
-                               random_state)]
+        means += [_causal_mean(causal_variants, causal_variance, random_state)]
 
     mean = SumMean(means)
 
@@ -77,6 +81,7 @@ def binomial(ntrials, offset, G, heritability=0.5, causal_variants=None,
     sampler = GLMMSampler(lik, mean, cov)
 
     return sampler.sample(random_state)
+
 
 def poisson(offset, G, heritability=0.5, random_state=None):
 
@@ -106,13 +111,14 @@ def poisson(offset, G, heritability=0.5, random_state=None):
 
     return sampler.sample(random_state)
 
+
 def _causal_mean(causal_variants, causal_variance, random):
     causal_variants = stdnorm(causal_variants, axis=0)
     causal_variants /= sqrt(causal_variants.shape[1])
     p = causal_variants.shape[1]
     directions = random.randn(p)
-    directions[directions<0.5] = -1
-    directions[directions>=0.5] = +1
+    directions[directions < 0.5] = -1
+    directions[directions >= 0.5] = +1
     s = std(directions)
     if s > 0:
         directions /= s

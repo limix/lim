@@ -11,7 +11,6 @@ from limix_math import epsilon
 
 
 class FixedEP(object):
-
     def __init__(self, lml_const, A, C, L, Q, QBiQtCteta, teta, beta_nom):
         self._lml_const = lml_const
 
@@ -38,10 +37,10 @@ class FixedEP(object):
 
         lmls = empty(ms.shape[1])
         for i in range(ms.shape[1]):
-            Am = A * ms[:,i]
-            w4 = dot(ms[:,i] * C, teta) - dot(Am, QBiQtCteta)
+            Am = A * ms[:, i]
+            w4 = dot(ms[:, i] * C, teta) - dot(Am, QBiQtCteta)
             QBiQtAm = dot(Q, cho_solve(L, dot(Q.T, Am)))
-            w5 = -dot(Am, ms[:,i]) / 2 + dot(Am, QBiQtAm) / 2
+            w5 = -dot(Am, ms[:, i]) / 2 + dot(Am, QBiQtAm) / 2
             lmls[i] = self._lml_const + w4 + w5
 
         return lmls
@@ -68,8 +67,8 @@ class FixedEP(object):
 
         dens = empty((Ms.shape[0], Ms.shape[1]))
         for i in range(Ms.shape[1]):
-            dens[:,i] = A * Ms[:,i]
-            dens[:,i] -= A * dot(Q, cho_solve(L, dot(Q.T, A * Ms[:,i])))
+            dens[:, i] = A * Ms[:, i]
+            dens[:, i] -= A * dot(Q, cho_solve(L, dot(Q.T, A * Ms[:, i])))
 
         noms = dot(self._beta_nom, Ms)
         # dens = dot(self._beta_den, Ms)

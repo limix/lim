@@ -135,6 +135,7 @@ class BinomialProdLik(ProdLik):
         p = self.mean(x)
         return st.binom(self._n, p).rvs(random_state=random_state)
 
+
 class PoissonProdLik(ProdLik):
     def __init__(self, nsuccesses, link):
         super(PoissonProdLik, self).__init__(None)
