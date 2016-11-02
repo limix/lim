@@ -23,7 +23,6 @@ def _indent(msg):
     return '\n'.join(['    ' + s for s in msg.split('\n')])
 
 
-@unicode_compatible
 class QTLScan(Cached):
     def __init__(self, X, progress=True):
         Cached.__init__(self)
