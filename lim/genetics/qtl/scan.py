@@ -6,6 +6,7 @@ import logging
 
 from numpy import ascontiguousarray
 from numpy import sqrt
+from numpy import ones
 from numpy import empty_like
 from numpy import copyto
 
@@ -58,7 +59,7 @@ def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
     ii = InputInfo()
     ii.phenotype_info = NormalPhenotype(y)
 
-    _genetic_preprocess(X, G, K, covariates, ii)
+    _genetic_preprocess(X, G, K, ii)
 
     lrt = CanonicalLRTScan(
         y, ii.Q0, ii.Q1, ii.S0, covariates=covariates, progress=progress)
@@ -115,6 +116,8 @@ def binomial_scan(nsuccesses,
     logger.info('Binomial association scan has started.')
     nsuccesses = ascontiguousarray(nsuccesses, dtype=float)
     ntrials = ascontiguousarray(ntrials, dtype=float)
+    n = len(ntrials)
+    covariates = ones((n, 1)) if covariates is None else covariates
     X = _clone(X)
     G = _clone(G)
     K = _clone(K)
@@ -122,14 +125,15 @@ def binomial_scan(nsuccesses,
     phenotype = BinomialPhenotype(nsuccesses, ntrials)
     background = Background()
 
-    (Q0, Q1, S0) = _genetic_preprocess(X, G, K, covariates, background)
-    qtl = BinomialQTLScan(
-        nsuccesses, ntrials, X, Q0, Q1, S0, covariates=covariates)
+    (Q0, Q1, S0) = _genetic_preprocess(X, G, K, background)
+    qtl = BinomialQTLScan(nsuccesses, ntrials, covariates, X, Q0, Q1, S0)
+    qtl.progress = progress
     qtl.compute_statistics()
+
     return qtl
 
 
-def _genetic_preprocess(X, G, K, covariates, background):
+def _genetic_preprocess(X, G, K, background):
     logger = logging.getLogger(__name__)
     logger.info("Number of candidate markers to scan: %d", X.shape[1])
 

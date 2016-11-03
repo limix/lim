@@ -31,8 +31,7 @@ def test_qtl_binomial_scan():
         causal_variance=0.1,
         random_state=random)
 
-    qtl = binomial_scan(
-        nsuccesses, ntrials, X, G=G, covariates=None, progress=True)
+    qtl = binomial_scan(nsuccesses, ntrials, X, G=G, progress=False)
     assert_allclose(qtl.pvalues(), [
         0.0275759504728,
         0.570733489676,

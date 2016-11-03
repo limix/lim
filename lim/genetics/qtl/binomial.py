@@ -11,20 +11,20 @@ from numpy import dot
 
 from .qtl import QTLScan
 from ...inference import BinomialEP
-from ...util import offset_covariate
 
 
 class BinomialQTLScan(QTLScan):
-    def __init__(self, nsuccesses, ntrials, X, Q0, Q1, S0, covariates=None):
+    def __init__(self, nsuccesses, ntrials, covariates, X, Q0, Q1, S0):
         super(BinomialQTLScan, self).__init__(X)
         self._cache_compute_null_model = LRUCache(maxsize=1)
         self._cache_compute_alt_models = LRUCache(maxsize=1)
         self._nsuccesses = nsuccesses
         self._ntrials = ntrials
+        self._covariates = covariates
         self._Q0 = Q0
         self._Q1 = Q1
         self._S0 = S0
-        self._covariates = offset_covariate(covariates, len(nsuccesses))
+
         self._fixed_ep = None
 
     @cachedmethod(
