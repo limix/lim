@@ -175,3 +175,6 @@ class PoissonLik(ExpFamLik):
         import scipy.stats as st
         lam = self.mean(x)
         return st.poisson(mu=lam).rvs(random_state=random_state)
+
+if __name__ == '__main__':
+    print(gammaln(3))

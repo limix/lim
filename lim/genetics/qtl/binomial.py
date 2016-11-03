@@ -4,6 +4,9 @@ from __future__ import unicode_literals
 from numpy import hstack
 from numpy import dot
 
+# from hcache import cached
+# from cachetools import cached, hashkey
+
 from .qtl import QTLScan
 from ...inference import BinomialEP
 from ...util import offset_covariate

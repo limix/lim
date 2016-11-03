@@ -140,11 +140,11 @@ class LikelihoodRatioTest(object):
 
     def null_model(self):
         """Model of the null hypothesis."""
-        raise NotImplementError
+        raise NotImplementedError
 
     def alt_model(self):
         """Model of the alternative hypotheses."""
-        raise NotImplementError
+        raise NotImplementedError
 
     def __str__(self):
         snull = str(self.null_model())

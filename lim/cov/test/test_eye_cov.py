@@ -1,8 +1,7 @@
 from __future__ import division
 
-import numpy.testing as npt
+from numpy.testing import assert_allclose
 
-from numpy.random import RandomState
 from numpy import exp
 
 from optimix import check_grad
@@ -16,7 +15,7 @@ def test_eye_value():
     cov = EyeCov()
     cov.scale = 2.1
     o = Oranges(None)
-    npt.assert_almost_equal(2.1, cov.value(o, o))
+    assert_allclose(2.1, cov.value(o, o))
 
 
 def test_eye_gradient_1():
@@ -33,7 +32,7 @@ def test_eye_gradient_1():
         cov.scale = exp(x[0])
         return cov.feed().gradient()
 
-    npt.assert_almost_equal(check_grad(func, grad, [0.1]), 0)
+    assert_allclose(check_grad(func, grad, [0.1]), 0, atol=1e-7)
 
 
 def test_eye_gradient_2():
@@ -50,7 +49,7 @@ def test_eye_gradient_2():
         cov.scale = exp(x[0])
         return cov.feed().gradient()
 
-    npt.assert_almost_equal(check_grad(func, grad, [0.1]), 0)
+    assert_allclose(check_grad(func, grad, [0.1]), 0, atol=1e-7)
 
 
 def test_eye_gradient_3():
@@ -68,7 +67,7 @@ def test_eye_gradient_3():
         cov.scale = exp(x[0])
         return cov.feed().gradient()
 
-    npt.assert_almost_equal(check_grad(func, grad, [0.1]), 0)
+    assert_allclose(check_grad(func, grad, [0.1]), 0, atol=1e-7)
 
 
 if __name__ == '__main__':

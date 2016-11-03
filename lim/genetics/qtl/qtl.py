@@ -3,8 +3,6 @@ from __future__ import unicode_literals
 
 import logging
 
-from hcache import Cached, cached
-
 from numpy import asarray
 from numpy import empty
 from numpy import nan
@@ -20,9 +18,8 @@ def _indent(msg):
     return '\n'.join(['    ' + s for s in msg.split('\n')])
 
 
-class QTLScan(Cached):
+class QTLScan(object):
     def __init__(self, X, progress=True):
-        Cached.__init__(self)
         self._logger = logging.getLogger(__name__)
 
         self._X = X
@@ -45,7 +42,7 @@ class QTLScan(Cached):
     @candidate_markers.setter
     def candidate_markers(self, X):
         self._X = X
-        self.clear_cache('_compute_alt_models')
+        # self.clear_cache('_compute_alt_models')
 
     def compute_statistics(self):
         self._logger.info('Computing Likelihood-ratio test statistics.')
@@ -70,11 +67,9 @@ class QTLScan(Cached):
         self._compute_alt_models(progress)
         self._logger.info('Alternative models computation have finished.')
 
-    @cached
     def _compute_null_model(self, progress):
         raise NotImplementedError
 
-    @cached
     def _compute_alt_models(self, progress):
         raise NotImplementedError
 
