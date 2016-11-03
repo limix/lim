@@ -1,11 +1,13 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from cachetools import LRUCache
+from operator import attrgetter
+from cachetools import cachedmethod
+from cachetools.keys import hashkey
+
 from numpy import hstack
 from numpy import dot
-
-# from hcache import cached
-# from cachetools import cached, hashkey
 
 from .qtl import QTLScan
 from ...inference import BinomialEP
@@ -15,6 +17,8 @@ from ...util import offset_covariate
 class BinomialQTLScan(QTLScan):
     def __init__(self, nsuccesses, ntrials, X, Q0, Q1, S0, covariates=None):
         super(BinomialQTLScan, self).__init__(X)
+        self._cache_compute_null_model = LRUCache(maxsize=1)
+        self._cache_compute_alt_models = LRUCache(maxsize=1)
         self._nsuccesses = nsuccesses
         self._ntrials = ntrials
         self._Q0 = Q0
@@ -23,6 +27,8 @@ class BinomialQTLScan(QTLScan):
         self._covariates = offset_covariate(covariates, len(nsuccesses))
         self._fixed_ep = None
 
+    @cachedmethod(attrgetter('_cache_compute_null_model'),
+                  key=lambda self, progress: hashkey(self))
     def _compute_null_model(self, progress):
         nsuccesses = self._nsuccesses
         ntrials = self._ntrials
@@ -35,6 +41,8 @@ class BinomialQTLScan(QTLScan):
         self._null_lml = ep.lml()
         self._fixed_ep = ep.fixed_ep()
 
+    @cachedmethod(attrgetter('_cache_compute_alt_models'),
+                  key=lambda self, progress: hashkey(self))
     def _compute_alt_models(self, progress):
         fixed_ep = self._fixed_ep
 

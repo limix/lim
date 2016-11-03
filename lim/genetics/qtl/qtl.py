@@ -42,7 +42,7 @@ class QTLScan(object):
     @candidate_markers.setter
     def candidate_markers(self, X):
         self._X = X
-        # self.clear_cache('_compute_alt_models')
+        self._cache_compute_alt_models.clear()
 
     def compute_statistics(self):
         self._logger.info('Computing Likelihood-ratio test statistics.')
