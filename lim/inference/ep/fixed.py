@@ -1,8 +1,7 @@
-from numpy import sum as sum_
+from numpy import sum
 from numpy import dot
-from numpy import vstack
+from numpy import newaxis
 from numpy import nan_to_num
-from numpy import hstack
 from limix_math import cho_solve
 from numpy import errstate
 from limix_math import ddot
@@ -20,41 +19,50 @@ class FixedEP(object):
         self._beta_nom = beta_nom
 
     def compute(self, covariates, X):
-        assert covariates.shape[1] == 1
-
-        Ms = hstack((covariates, X))
-
         A = self._A
         L = self._L
         Q = self._Q
         C = self._C
 
-        AMs = ddot(A, Ms, left=True)
-        dens = AMs - ddot(A, dot(Q, cho_solve(L, dot(Q.T, AMs))), left=True)
-        noms = dot(self._beta_nom, Ms)
+        AMs0 = ddot(A, covariates, left=True)
+        dens0 = AMs0 - ddot(A, dot(Q, cho_solve(L, dot(Q.T, AMs0))), left=True)
+        noms0 = dot(self._beta_nom, covariates)
 
-        row0 = dot(Ms[:, 0], dens)
-        row11 = sum_(Ms[:, 1:] * dens[:, 1:], axis=0)
+        AMs1 = ddot(A, X, left=True)
+        dens1 = AMs1 - ddot(A, dot(Q, cho_solve(L, dot(Q.T, AMs1))), left=True)
+        noms1 = dot(self._beta_nom, X)
 
-        betas0 = noms[0] * row11[:] - noms[1:] * row0[1:]
-        betas1 = -noms[0] * row0[1:] + noms[1:] * row0[0]
+        row00 = sum(covariates * dens0, 0)
+        row01 = sum(covariates * dens1, 0)
+        row11 = sum(X * dens1, 0)
 
-        betas = vstack((betas0, betas1))
-        denom = row0[0] * row11[:] - row0[1:]**2
+        betas0 = noms0 * row11
+        betas0 -= noms1 * row01
+        betas1 = -noms0 * row01
+        betas1 += noms1 * row00
+
+        denom = row00 * row11
+        denom -= row01**2
 
         with errstate(divide='ignore'):
-            betas /= denom
+            betas0 /= denom
+            betas1 /= denom
 
-        betas = nan_to_num(betas)
+        betas0 = nan_to_num(betas0)
+        betas1 = nan_to_num(betas1)
 
-        ms = dot(covariates, betas[:1, :]) + X * betas[1, :]
+        ms = dot(covariates, betas0[newaxis,:])
+        ms += X * betas1
         QBiQtCteta = self._QBiQtCteta
         teta = self._teta
 
         Am = ddot(A, ms, left=True)
-        w4 = dot(C * teta, ms) - dot(QBiQtCteta, Am)
+        w4 = dot(C * teta, ms)
+        w4 -= dot(QBiQtCteta, Am)
         QBiQtAm = dot(Q, cho_solve(L, dot(Q.T, Am)))
-        w5 = -(Am * ms).sum(0) / 2 + (Am * QBiQtAm).sum(0) / 2
+        w5 = -sum(Am * ms, 0)
+        w5 += sum(Am * QBiQtAm, 0)
+        w5 /= 2
         lmls = self._lml_const + w4 + w5
 
-        return (lmls, betas[1, :])
+        return (lmls, betas1)
