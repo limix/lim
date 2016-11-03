@@ -6,6 +6,8 @@ import logging
 
 from numpy import ascontiguousarray
 from numpy import sqrt
+from numpy import empty_like
+from numpy import copyto
 
 from limix_math import (economic_qs, economic_qs_linear)
 
@@ -113,7 +115,9 @@ def binomial_scan(nsuccesses,
     logger.info('Binomial association scan has started.')
     nsuccesses = ascontiguousarray(nsuccesses, dtype=float)
     ntrials = ascontiguousarray(ntrials, dtype=float)
-    X = ascontiguousarray(X, dtype=float)
+    X = _clone(X)
+    G = _clone(G)
+    K = _clone(K)
 
     phenotype = BinomialPhenotype(nsuccesses, ntrials)
     background = Background()
@@ -132,12 +136,10 @@ def _genetic_preprocess(X, G, K, covariates, background):
     if K is not None:
         background.provided_via_variants = False
         logger.info('Covariace matrix normalization.')
-        K = ascontiguousarray(K, dtype=float)
         gower_normalization(K, out=K)
 
     if G is not None:
         background.provided_via_variants = True
-        G = ascontiguousarray(G, dtype=float)
         background.nvariants = G.shape[1]
         background.constant_nvariants = sum(G.std(0) == 0)
 
@@ -164,3 +166,10 @@ def _genetic_preprocess(X, G, K, covariates, background):
     X /= sqrt(X.shape[1])
 
     return (Q0, Q1, S0)
+
+def _clone(X):
+    if X is None:
+        return None
+    Y = empty_like(X, dtype=float, order='C')
+    copyto(Y, X)
+    return Y
