@@ -41,14 +41,3 @@ class NormalQTLScan(QTLScan):
             flmm.learn()
             self._alt_lmls.append(flmm.lml())
             self._candidate_effect_sizes.append(flmm.beta[-1])
-
-    def null_model(self):
-        return self._flmm.model()
-
-    def alt_models(self):
-        s = "Phenotype:\n"
-        s += "    y_i = o_i + b_j x_{i,j} + u_i + e_i\n\n"
-        s += "Definitions:\n"
-        s += "    b_j    : effect-size of the j-th candidate marker\n"
-        s += "    x_{i,j}: j-th candidate marker of the i-th sample\n"
-        return s

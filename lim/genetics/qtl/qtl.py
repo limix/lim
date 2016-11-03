@@ -100,31 +100,3 @@ class QTLScan(object):
         chi2 = chi2(df=1)
 
         return chi2.sf(lrs)
-
-    def null_model(self):
-        """Model of the null hypothesis."""
-        raise NotImplementedError
-
-    def alt_models(self):
-        """Model of the alternative hypotheses."""
-        raise NotImplementedError
-
-        # snull = str(self.null_model())
-        # snull = 'Null model:\n\n' + _indent(snull)
-        #
-        # salt = self.alt_models()
-        # salt = 'Alternative model:\n\n' + _indent(salt)
-        #
-        # sces = 'Candidate effect sizes:\n'
-        # sces += _indent(quantile_summary(self._candidate_effect_sizes))
-        # sces = _indent(sces)
-        #
-        # salmls = 'Candidate log marginal likelihoods:\n'
-        # salmls += _indent(quantile_summary(self._alt_lmls))
-        # salmls = _indent(salmls)
-        #
-        # spval = 'Candidate p-values:\n'
-        # spval += _indent(quantile_summary(self.pvalues(), "e"))
-        # spval = _indent(spval)
-        #
-        # return '\n\n'.join([snull, salt, sces, salmls, spval])

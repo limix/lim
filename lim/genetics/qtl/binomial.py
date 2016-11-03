@@ -47,14 +47,3 @@ class BinomialQTLScan(QTLScan):
         covariates = self._covariates
         X = self._X
         self._alt_lmls, self._effect_sizes = fep.compute(covariates, X)
-
-    def null_model(self):
-        return None
-
-    def alt_models(self):
-        s = "Phenotype:\n"
-        s += "    y_i = o_i + b_j x_{i,j} + u_i + e_i\n\n"
-        s += "Definitions:\n"
-        s += "    b_j    : effect-size of the j-th candidate marker\n"
-        s += "    x_{i,j}: j-th candidate marker of the i-th sample\n"
-        return s
