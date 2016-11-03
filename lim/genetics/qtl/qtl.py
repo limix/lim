@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 import logging
 
 from numpy import asarray
-from numpy import empty
 from numpy import nan
 
 from progressbar import ProgressBar
@@ -24,8 +23,8 @@ class QTLScan(object):
 
         self._X = X
         self._null_lml = nan
-        self._alt_lmls = empty(X.shape[1])
-        self._effect_sizes = empty(X.shape[1])
+        self._alt_lmls = None
+        self._effect_sizes = None
         self.progress = progress
 
     @property

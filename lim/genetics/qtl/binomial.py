@@ -6,9 +6,6 @@ from operator import attrgetter
 from cachetools import cachedmethod
 from cachetools.keys import hashkey
 
-from numpy import hstack
-from numpy import dot
-
 from .qtl import QTLScan
 from ...inference import BinomialEP
 
@@ -46,13 +43,10 @@ class BinomialQTLScan(QTLScan):
         attrgetter('_cache_compute_alt_models'),
         key=lambda self, progress: hashkey(self))
     def _compute_alt_models(self, progress):
-        fixed_ep = self._fixed_ep
-
-        Ms = hstack((self._covariates, self._X))
-        betas = fixed_ep.optimal_betas(Ms, self._covariates.shape[1])
-        ms = dot(self._covariates, betas[:1, :]) + self._X * betas[1, :]
-        self._alt_lmls[:] = fixed_ep.lmls(ms)
-        self._effect_sizes[:] = betas[1, :]
+        fep = self._fixed_ep
+        covariates = self._covariates
+        X = self._X
+        self._alt_lmls, self._effect_sizes = fep.compute(covariates, X)
 
     def null_model(self):
         return None
