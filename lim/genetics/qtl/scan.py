@@ -113,6 +113,7 @@ def binomial_scan(nsuccesses,
     logger.info('Binomial association scan has started.')
     nsuccesses = ascontiguousarray(nsuccesses, dtype=float)
     ntrials = ascontiguousarray(ntrials, dtype=float)
+    X = ascontiguousarray(X, dtype=float)
 
     phenotype = BinomialPhenotype(nsuccesses, ntrials)
     background = Background()
