@@ -27,8 +27,9 @@ class BinomialQTLScan(QTLScan):
         self._covariates = offset_covariate(covariates, len(nsuccesses))
         self._fixed_ep = None
 
-    @cachedmethod(attrgetter('_cache_compute_null_model'),
-                  key=lambda self, progress: hashkey(self))
+    @cachedmethod(
+        attrgetter('_cache_compute_null_model'),
+        key=lambda self, progress: hashkey(self))
     def _compute_null_model(self, progress):
         nsuccesses = self._nsuccesses
         ntrials = self._ntrials
@@ -41,8 +42,9 @@ class BinomialQTLScan(QTLScan):
         self._null_lml = ep.lml()
         self._fixed_ep = ep.fixed_ep()
 
-    @cachedmethod(attrgetter('_cache_compute_alt_models'),
-                  key=lambda self, progress: hashkey(self))
+    @cachedmethod(
+        attrgetter('_cache_compute_alt_models'),
+        key=lambda self, progress: hashkey(self))
     def _compute_alt_models(self, progress):
         fixed_ep = self._fixed_ep
 

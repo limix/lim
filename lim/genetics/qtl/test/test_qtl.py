@@ -12,7 +12,7 @@ from lim.genetics.qtl import binomial_scan
 def test_qtl_binomial_scan():
     random = RandomState(9)
 
-    N = 500
+    N = 50
     G = random.randn(N, N + 100)
     G = stdnorm(G, 0)
     G /= sqrt(G.shape[1])
@@ -34,8 +34,11 @@ def test_qtl_binomial_scan():
     qtl = binomial_scan(
         nsuccesses, ntrials, X, G=G, covariates=None, progress=True)
     assert_allclose(qtl.pvalues(), [
-        2.77138951e-01, 8.77825102e-01, 7.76841975e-07, 6.98421437e-03,
-        9.47695283e-02
+        0.0275759504728,
+        0.570733489676,
+        0.69020414305,
+        0.757099966035,
+        0.0937948997269,
     ])
 
 
