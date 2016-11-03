@@ -12,6 +12,7 @@ from numpy import copyto
 
 from limix_math import (economic_qs, economic_qs_linear)
 
+from .normal import NormalQTLScan
 from .binomial import BinomialQTLScan
 from ..phenotype import NormalPhenotype
 from ..phenotype import BinomialPhenotype
@@ -55,17 +56,21 @@ def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
     logger = logging.getLogger(__name__)
     logger.info('Normal association scan has started.')
     y = ascontiguousarray(y, dtype=float)
+    n = len(y)
+    covariates = ones((n, 1)) if covariates is None else covariates
+    X = _clone(X)
+    G = _clone(G)
+    K = _clone(K)
 
-    ii = InputInfo()
-    ii.phenotype_info = NormalPhenotype(y)
+    phenotype = NormalPhenotype(y)
+    background = Background()
 
-    _genetic_preprocess(X, G, K, ii)
+    (Q0, Q1, S0) = _genetic_preprocess(X, G, K, background)
+    qtl = NormalQTLScan(y, covariates, X, Q0, Q1, S0)
+    qtl.progress = progress
+    qtl.compute_statistics()
 
-    lrt = CanonicalLRTScan(
-        y, ii.Q0, ii.Q1, ii.S0, covariates=covariates, progress=progress)
-    lrt.candidate_markers = ii.effective_X
-    lrt.pvalues()
-    return lrt
+    return qtl
 
 
 def binomial_scan(nsuccesses,

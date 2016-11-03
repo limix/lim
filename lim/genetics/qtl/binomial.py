@@ -30,9 +30,9 @@ class BinomialQTLScan(QTLScan):
     def _compute_null_model(self, progress):
         nsuccesses = self._nsuccesses
         ntrials = self._ntrials
+        covariates = self._covariates
         Q0, Q1 = self._Q0, self._Q1
         S0 = self._S0
-        covariates = self._covariates
 
         ep = BinomialEP(nsuccesses, ntrials, covariates, Q0=Q0, Q1=Q1, S0=S0)
         ep.optimize(progress=progress)
