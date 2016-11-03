@@ -5,11 +5,9 @@ from progressbar import NullBar
 import logging
 from math import fsum
 
-# from cachetools import cached
-# from cachetools import LRUCache
+from cachetools import LRUCache
 from operator import attrgetter
 from cachetools import cachedmethod
-# from cachetools.keys import hashkey
 
 from numpy import var as variance
 from numpy import (abs, all, any, asarray, diagonal, dot, empty, empty_like,
@@ -145,7 +143,19 @@ class EP(object):
     """
 
     def __init__(self, M, Q, S, overdispersion, QSQt=None):
-        # super(EP, self).__init__(maxsize=1)
+        self._cache_SQt = LRUCache(maxsize=1)
+        self._cache_m = LRUCache(maxsize=1)
+        self._cache_K = LRUCache(maxsize=1)
+        self._cache_diagK = LRUCache(maxsize=1)
+        self._cache_update = LRUCache(maxsize=1)
+        self._cache_lml_components = LRUCache(maxsize=1)
+        self._cache_L = LRUCache(maxsize=1)
+        self._cache_A = LRUCache(maxsize=1)
+        self._cache_C = LRUCache(maxsize=1)
+        self._cache_BiQt = LRUCache(maxsize=1)
+        self._cache_QBiQtAm = LRUCache(maxsize=1)
+        self._cache_QBiQtCteta = LRUCache(maxsize=1)
+
         self._logger = logging.getLogger(__name__)
 
         if not is_all_finite(Q) or not is_all_finite(isfinite(S)):
@@ -244,7 +254,7 @@ class EP(object):
         self._sitelik_tau[:] = 0.
         self._sitelik_eta[:] = 0.
 
-    @cachedmethod(attrgetter('cache'))
+    @cachedmethod(attrgetter('_cache_K'))
     def K(self):
         r"""Returns :math:`\mathrm K`."""
         return sum2diag(self.sigma2_b * self._QSQt(), self.sigma2_epsilon)
@@ -260,7 +270,7 @@ class EP(object):
         out *= self.v
         return out
 
-    @cachedmethod(attrgetter('cache'))
+    @cachedmethod(attrgetter('_cache_diagK'))
     def diagK(self):
         r"""Returns the diagonal of :math:`\mathrm K`."""
         return self.sigma2_b * self._diagQSQt() + self.sigma2_epsilon
@@ -268,7 +278,7 @@ class EP(object):
     def _diagQSQt(self):
         return self._QSQt().diagonal()
 
-    @cachedmethod(attrgetter('cache'))
+    @cachedmethod(attrgetter('_cache_m'))
     def m(self):
         r"""Returns :math:`\mathbf m = \mathrm M \boldsymbol\beta`."""
         return dot(self._tM, self._tbeta)
@@ -312,16 +322,16 @@ class EP(object):
     @delta.setter
     def delta(self, v):
         r"""Set :math:`\delta`."""
-        # self.clear_cache('K')
-        # self.clear_cache('diagK')
-        # self.clear_cache('_update')
-        # self.clear_cache('_lml_components')
-        # self.clear_cache('_L')
-        # self.clear_cache('_A')
-        # self.clear_cache('_C')
-        # self.clear_cache('_BiQt')
-        # self.clear_cache('_QBiQtAm')
-        # self.clear_cache('_QBiQtCteta')
+        self._cache_K.clear()
+        self._cache_diagK.clear()
+        self._cache_update.clear()
+        self._cache_lml_components.clear()
+        self._cache_L.clear()
+        self._cache_A.clear()
+        self._cache_C.clear()
+        self._cache_BiQt.clear()
+        self._cache_QBiQtAm.clear()
+        self._cache_QBiQtCteta.clear()
         assert 0 <= v <= 1
         self._delta = v
 
@@ -333,16 +343,16 @@ class EP(object):
     @v.setter
     def v(self, v):
         r"""Set :math:`v`."""
-        # self.clear_cache('K')
-        # self.clear_cache('diagK')
-        # self.clear_cache('_update')
-        # self.clear_cache('_lml_components')
-        # self.clear_cache('_L')
-        # self.clear_cache('_A')
-        # self.clear_cache('_C')
-        # self.clear_cache('_BiQt')
-        # self.clear_cache('_QBiQtAm')
-        # self.clear_cache('_QBiQtCteta')
+        self._cache_K.clear()
+        self._cache_diagK.clear()
+        self._cache_update.clear()
+        self._cache_lml_components.clear()
+        self._cache_L.clear()
+        self._cache_A.clear()
+        self._cache_C.clear()
+        self._cache_BiQt.clear()
+        self._cache_QBiQtAm.clear()
+        self._cache_QBiQtCteta.clear()
         assert 0 <= v
         self._v = max(v, epsilon.small)
 
@@ -352,10 +362,10 @@ class EP(object):
 
     @_tbeta.setter
     def _tbeta(self, value):
-        # self.clear_cache('_lml_components')
-        # self.clear_cache('_QBiQtAm')
-        # self.clear_cache('m')
-        # self.clear_cache('_update')
+        self._cache_lml_components.clear()
+        self._cache_QBiQtAm.clear()
+        self._cache_m.clear()
+        self._cache_update.clear()
         if self.__tbeta is None:
             self.__tbeta = asarray(value, float).copy()
         else:
@@ -378,12 +388,12 @@ class EP(object):
     @M.setter
     def M(self, value):
         self._covariate_setup(value)
-        # self.clear_cache('m')
-        # self.clear_cache('_QBiQtAm')
-        # self.clear_cache('_update')
-        # self.clear_cache('_lml_components')
+        self._cache_m.clear()
+        self._cache_QBiQtAm.clear()
+        self._cache_update.clear()
+        self._cache_lml_components.clear()
 
-    @cachedmethod(attrgetter('cache'))
+    @cachedmethod(attrgetter('_cache_lml_components'))
     def _lml_components(self):
         self._update()
 
@@ -554,7 +564,7 @@ class EP(object):
 
         return asarray([dv, ddelta])
 
-    @cachedmethod(attrgetter('cache'))
+    @cachedmethod(attrgetter('_cache_update'))
     def _update(self):
         self._init_ep_params()
 
@@ -586,13 +596,13 @@ class EP(object):
                                 ' or any(hsig2 == 0.).')
 
             self._sitelik_update()
-            # self.clear_cache('_lml_components')
-            # self.clear_cache('_L')
-            # self.clear_cache('_A')
-            # self.clear_cache('_C')
-            # self.clear_cache('_BiQt')
-            # self.clear_cache('_QBiQtAm')
-            # self.clear_cache('_QBiQtCteta')
+            self._cache_lml_components.clear()
+            self._cache_L.clear()
+            self._cache_A.clear()
+            self._cache_C.clear()
+            self._cache_BiQt.clear()
+            self._cache_QBiQtAm.clear()
+            self._cache_QBiQtCteta.clear()
 
             self._joint_update()
 
@@ -658,7 +668,6 @@ class EP(object):
     def _optimal_beta_nom(self):
         A = self._A()
         C = self._C()
-        import pdb; pdb.set_trace()
         teta = self._sitelik_eta
         Cteta = C * teta
         return Cteta - A * self._QBiQtCteta()
@@ -737,14 +746,14 @@ class EP(object):
         msg = "End of optimization (%.3f seconds, %d function calls)."
         self._logger.info(msg, timer.elapsed, func.nfev)
 
-    @cachedmethod(attrgetter('cache'))
+    @cachedmethod(attrgetter('_cache_A'))
     def _A(self):
         r"""Returns :math:`\mathcal A = \tilde{\mathrm T} \mathcal C^{-1}`."""
         ttau = self._sitelik_tau
         s2 = self.sigma2_epsilon
         return ttau / (ttau * s2 + 1)
 
-    @cachedmethod(attrgetter('cache'))
+    @cachedmethod(attrgetter('_cache_C'))
     def _C(self):
         r"""Returns :math:`\mathcal C = \sigma_{\epsilon}^2 \tilde{\mathrm T} +
             \mathrm I`."""
@@ -752,7 +761,7 @@ class EP(object):
         s2 = self.sigma2_epsilon
         return 1 / (ttau * s2 + 1)
 
-    @cachedmethod(attrgetter('cache'))
+    @cachedmethod(attrgetter('_cache_SQt'))
     def _SQt(self):
         r"""Returns :math:`\mathrm S \mathrm Q^\intercal`."""
         return ddot(self._S, self._Q.T, left=True)
@@ -764,12 +773,12 @@ class EP(object):
             self.__QSQt = dot(Q, self._SQt())
         return self.__QSQt
 
-    @cachedmethod(attrgetter('cache'))
+    @cachedmethod(attrgetter('_cache_BiQt'))
     def _BiQt(self):
         Q = self._Q
         return cho_solve(self._L(), Q.T)
 
-    @cachedmethod(attrgetter('cache'))
+    @cachedmethod(attrgetter('_cache_L'))
     def _L(self):
         r"""Returns the Cholesky factorization of :math:`\mathcal B`.
 
@@ -784,7 +793,7 @@ class EP(object):
         sum2diag(B, 1. / (self.sigma2_b * self._S), out=B)
         return cho_factor(B, lower=True)[0]
 
-    @cachedmethod(attrgetter('cache'))
+    @cachedmethod(attrgetter('_cache_QBiQtCteta'))
     def _QBiQtCteta(self):
         Q = self._Q
         L = self._L()
@@ -792,7 +801,7 @@ class EP(object):
         teta = self._sitelik_eta
         return dot(Q, cho_solve(L, dot(Q.T, C * teta)))
 
-    @cachedmethod(attrgetter('cache'))
+    @cachedmethod(attrgetter('_cache_QBiQtAm'))
     def _QBiQtAm(self):
         Q = self._Q
         L = self._L()

@@ -193,7 +193,6 @@ dependencies:
   - dynd==0.7.3.dev1
   - et-xmlfile==1.0.1
   - glob2==0.4.1
-  - hcache==0.0.8
   - humanfriendly==1.44.7
   - ipython-genutils==0.1.0
   - jupyter-client==4.3.0
@@ -215,3 +214,4 @@ dependencies:
   - tables==3.2.3.1
   - tabulate==0.7.5
   - pytest==3.0.1
+  - cachetools=2.0.0
