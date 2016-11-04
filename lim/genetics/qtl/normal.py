@@ -43,12 +43,13 @@ class NormalQTLScan(QTLScan):
         key=lambda self, progress: hashkey(self))
     def _compute_alt_models(self, progress):
         n, p = self._X.shape
+        nc = self._covariates.shape[1]
         self._alt_lmls = empty(p)
         self._effect_sizes = empty(p)
-        M = empty((n, p + 1))
-        M[:,:p] = self._covariates
+        M = empty((n, nc + 1))
+        M[:,:nc] = self._covariates
         for i in range(p):
-            M[:,p] = self._X[:, i]
+            M[:,nc] = self._X[:, i]
             flmm = self._flmm.copy()
             flmm.covariates = M
             flmm.learn()

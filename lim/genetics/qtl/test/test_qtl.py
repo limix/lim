@@ -29,7 +29,7 @@ def test_qtl_normal_scan():
 
     y = dot(G, u1) + dot(X, u2)
 
-    qtl = normal_scan(y, X, G=G)
+    qtl = normal_scan(y, X, G=G, progress=False)
 
 def test_qtl_binomial_scan():
     random = RandomState(9)

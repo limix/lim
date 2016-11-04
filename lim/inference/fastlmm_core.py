@@ -201,7 +201,6 @@ class FastLMMCore(object):
         n = self._n
         p = self._p
         LOG2PI = 1.837877066409345339081937709124758839607238769531250
-
         self._lml = -n * LOG2PI - n - n * log(self._scale)
         self._lml += -sum(log(self._diag0)) - p * log(self._diag1)
         self._lml /= 2
