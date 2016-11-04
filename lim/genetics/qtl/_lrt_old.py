@@ -192,7 +192,7 @@ class NormalLRT(LikelihoodRatioTest):
     def _process_marker(self, i):
         x = self._X[:, i]
         flmm = self._flmm.copy()
-        flmm.covariates = hstack((self._covariates, x[:, newaxis]))
+        flmm.M = hstack((self._covariates, x[:, newaxis]))
         flmm.learn()
         self._alt_lmls.append(flmm.lml())
         self._candidate_effect_sizes.append(flmm.beta[-1])
