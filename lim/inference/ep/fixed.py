@@ -44,7 +44,7 @@ class FixedEP(object):
         denom = row00 * row11
         denom -= row01**2
 
-        with errstate(divide='ignore'):
+        with errstate(divide='ignore', invalid='ignore'):
             betas0 /= denom
             betas1 /= denom
 

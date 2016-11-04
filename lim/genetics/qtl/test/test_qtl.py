@@ -58,6 +58,8 @@ def test_qtl_normal_scan():
 #
 #     X[:] = 1
 #     qtl = normal_scan(y, X, G=G, progress=False)
+#     for p in qtl.pvalues():
+#         print(p)
 
 
 def test_qtl_binomial_scan():
@@ -93,6 +95,32 @@ def test_qtl_binomial_scan():
         ],
         rtol=1e-5)
 
+
+def test_qtl_binomial_scan_covariate_redundance():
+    random = RandomState(9)
+
+    N = 50
+    G = random.randn(N, N + 100)
+    G = stdnorm(G, 0)
+    G /= sqrt(G.shape[1])
+
+    p = 5
+    X = random.randn(N, p)
+    X = stdnorm(X, 0)
+    X /= sqrt(X.shape[1])
+
+    ntrials = random.randint(1, 50, N)
+    nsuccesses = binomial(
+        ntrials,
+        -0.1,
+        G,
+        causal_variants=X,
+        causal_variance=0.1,
+        random_state=random)
+
+    X[:] = 1
+    qtl = binomial_scan(nsuccesses, ntrials, X, G=G, progress=False)
+    assert_allclose(qtl.pvalues(), [1] * p)
 
 if __name__ == '__main__':
     __import__('pytest').main([__file__, '-s'])
