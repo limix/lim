@@ -38,11 +38,11 @@ class FastLMM(Function):
 
     @property
     def covariates(self):
-        return self._flmmc.covariates
+        return self._flmmc.M
 
     @covariates.setter
     def covariates(self, v):
-        self._flmmc.covariates = v
+        self._flmmc.M = v
 
     def copy(self):
         o = FastLMM.__new__(FastLMM)
