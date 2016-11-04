@@ -126,8 +126,8 @@ class BinomialEP(EP):
         h2 = gv / (gv + nv)
         h2 = clip(h2, 0.01, 0.9)
 
-        mean = flmm.mean
-        self._tbeta = lstsq(self._tM, full(len(ntrials), mean))[0]
+        m = flmm.m
+        self._tbeta = lstsq(self._tM, full(len(ntrials), m))[0]
         self.delta = 1 - h2
         self.v = gv + nv
 

@@ -122,7 +122,7 @@ class FastLMMCore(object):
         self.__Q1tymD1 = None
 
     @property
-    def mean(self):
+    def m(self):
         return self._M.dot(self._beta)
 
     def _Q0tymD0(self):

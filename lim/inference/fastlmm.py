@@ -65,7 +65,7 @@ class FastLMM(Function):
 
     @property
     def fixed_effects_variance(self):
-        return self._flmmc.mean.var()
+        return self._flmmc.m.var()
 
     @property
     def genetic_variance(self):
@@ -80,8 +80,8 @@ class FastLMM(Function):
         return self._flmmc.beta
 
     @property
-    def mean(self):
-        return self._flmmc.mean
+    def m(self):
+        return self._flmmc.m
 
     def learn(self, progress=None):
         maximize_scalar(self, progress=progress)

@@ -114,7 +114,7 @@ class BernoulliEP(EP):
         h2 = _h2_correction(h2, ratio, ratio)
         h2 = clip(h2, 0.01, 0.9)
 
-        mean = flmm.mean
+        mean = flmm.m
         self._tbeta = lstsq(self._tM, full(len(y), mean))[0]
         self.delta = 0.
         self.v = self.environmental_variance * (h2 / (1 - h2))

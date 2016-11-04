@@ -114,7 +114,7 @@ class PoissonEP(EP):
         h2 = gv / (gv + nv)
         h2 = clip(h2, 0.01, 0.9)
 
-        mean = flmm.mean
+        mean = flmm.m
         self._tbeta = lstsq(self._tM, full(len(noccurrences), mean))[0]
 
         self.delta = 1 - h2
