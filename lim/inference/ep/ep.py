@@ -169,7 +169,7 @@ class EP(object):
 
         make_sure_reasonable_conditioning(S)
 
-        self._covariate_setup(M)
+
         self._S = S
         self._Q = Q
         self.__QSQt = QSQt
@@ -190,7 +190,9 @@ class EP(object):
         self._v = None
         self._delta = 0
         self._overdispersion = overdispersion
+        self._tM = None
         self.__tbeta = None
+        self._covariate_setup(M)
 
         self._loghz = empty(nsamples)
         self._hmu = empty(nsamples)
@@ -204,7 +206,6 @@ class EP(object):
         self._svd_S12 = sqrt(SVD[1])
         self._svd_V = SVD[2]
         self._tM = ddot(self._svd_U, self._svd_S12, left=False)
-        self.__tbeta = None
 
     def _init_ep_params(self):
         self._logger.info("EP parameters initialization.")

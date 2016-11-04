@@ -38,28 +38,28 @@ def test_qtl_normal_scan():
         rtol=1e-5)
 
 
-# def test_qtl_normal_scan_covariate_redundance():
-#     random = RandomState(2)
-#
-#     N = 50
-#     G = random.randn(N, N + 100)
-#     G = stdnorm(G, 0)
-#     G /= sqrt(G.shape[1])
-#
-#     p = 5
-#     X = random.randn(N, p)
-#     X = stdnorm(X, 0)
-#     X /= sqrt(X.shape[1])
-#
-#     u1 = random.randn(N+100) / sqrt(N+100)
-#     u2 = random.randn(p) / sqrt(p)
-#
-#     y = dot(G, u1) + dot(X, u2)
-#
-#     X[:] = 1
-#     qtl = normal_scan(y, X, G=G, progress=False)
-#     for p in qtl.pvalues():
-#         print(p)
+def test_qtl_normal_scan_covariate_redundance():
+    random = RandomState(2)
+
+    N = 50
+    G = random.randn(N, N + 100)
+    G = stdnorm(G, 0)
+    G /= sqrt(G.shape[1])
+
+    p = 5
+    X = random.randn(N, p)
+    X = stdnorm(X, 0)
+    X /= sqrt(X.shape[1])
+
+    u1 = random.randn(N+100) / sqrt(N+100)
+    u2 = random.randn(p) / sqrt(p)
+
+    y = dot(G, u1) + dot(X, u2)
+
+    X[:] = 1
+    # qtl = normal_scan(y, X, G=G, progress=False)
+    # for p in qtl.pvalues():
+    #     print(p)
 
 
 def test_qtl_binomial_scan():
