@@ -25,7 +25,6 @@ class FastLMMCore(object):
         self._M = M
 
         d = M.shape[1]
-        self._beta = zeros(d)
         self._scale = 1.0
         self._delta = 0.5
         self._lml = 0.0
@@ -44,8 +43,8 @@ class FastLMMCore(object):
         self._yTQ1 = dot(y.T, Q1)
         self._yTQ1_2x = self._yTQ1**2
 
-        self._oneTQ0 = M.T.dot(Q0)
-        self._oneTQ1 = M.T.dot(Q1)
+        self._oneTQ0 = self._tM.T.dot(Q0)
+        self._oneTQ1 = self._tM.T.dot(Q1)
 
         self._valid_update = 0
         self.__Q0tymD0 = None
@@ -69,7 +68,7 @@ class FastLMMCore(object):
         o._Q1 = self._Q1
         o._M = self._M
 
-        o._beta = self._beta.copy()
+        o.__tbeta = self.__tbeta.copy()
         o._scale = self._scale
         o._delta = self._delta
         o._lml = self._lml
@@ -105,8 +104,9 @@ class FastLMMCore(object):
     @M.setter
     def M(self, v):
         self._M = v
-        d = v.shape[1]
-        self._beta = zeros(d)
+        self._covariate_setup(v)
+        d = self._tM.shape[1]
+        self.__tbeta = zeros(d)
 
         self._b1 = zeros(d)
         self._c1 = zeros((d, d))
@@ -114,8 +114,8 @@ class FastLMMCore(object):
         self._b0 = zeros(d)
         self._c0 = zeros((d, d))
 
-        self._oneTQ0 = v.T.dot(self._Q0)
-        self._oneTQ1 = v.T.dot(self._Q1)
+        self._oneTQ0 = self._tM.T.dot(self._Q0)
+        self._oneTQ1 = self._tM.T.dot(self._Q1)
 
         self._valid_update = 0
         self.__Q0tymD0 = None
@@ -123,17 +123,18 @@ class FastLMMCore(object):
 
     @property
     def m(self):
-        return self._M.dot(self._beta)
+        r"""Returns :math:`\mathbf m = \mathrm M \boldsymbol\beta`."""
+        return dot(self._tM, self._tbeta)
 
     def _Q0tymD0(self):
         if self.__Q0tymD0 is None:
-            Q0tym = self._yTQ0 - self._beta.dot(self._oneTQ0)
+            Q0tym = self._yTQ0 - self.__tbeta.dot(self._oneTQ0)
             self.__Q0tymD0 = Q0tym / self._diag0
         return self.__Q0tymD0
 
     def _Q1tymD1(self):
         if self.__Q1tymD1 is None:
-            Q1tym = self._yTQ1 - self._beta.dot(self._oneTQ1)
+            Q1tym = self._yTQ1 - self.__tbeta.dot(self._oneTQ1)
             self.__Q1tymD1 = Q1tym / self._diag1
         return self.__Q1tymD1
 
@@ -150,7 +151,13 @@ class FastLMMCore(object):
 
     @property
     def beta(self):
-        return self._beta
+        r"""Returns :math:`\boldsymbol\beta`."""
+        return solve(self._svd_V.T, self._tbeta / self._svd_S12)
+
+    @beta.setter
+    def beta(self, value):
+        self._tbeta = self._svd_S12 * dot(self._svd_V.T, value)
+
 
     @property
     def scale(self):
@@ -182,10 +189,10 @@ class FastLMMCore(object):
     def _update_fixed_effects(self):
         nominator = self._b1 - self._b0
         denominator = self._c1 - self._c0
-        self._beta = solve(denominator, nominator)
+        self._tbeta = solve(denominator, nominator)
 
     def _update_scale(self):
-        b = self._beta
+        b = self.__tbeta
         p0 = self._a1 - 2 * self._b1.dot(b) + b.dot(self._c1.dot(b))
         p1 = self._a0 - 2 * self._b0.dot(b) + b.dot(self._c0).dot(b)
         self._scale = (p0 + p1) / self._n
