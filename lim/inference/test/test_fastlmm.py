@@ -2,7 +2,7 @@ from __future__ import division
 
 import numpy as np
 from numpy import ones
-from numpy.testing import assert_almost_equal
+from numpy.testing import assert_allclose
 
 from lim.inference.fastlmm import FastLMM
 from lim.util.fruits import Apples
@@ -16,8 +16,8 @@ from lim.random import FastLMMSampler
 
 def test_learn():
     random = np.random.RandomState(9458)
-    N = 800
-    X = random.randn(N, 900)
+    N = 50
+    X = random.randn(N, N+1)
     X -= X.mean(0)
     X /= X.std(0)
     X /= np.sqrt(X.shape[1])
@@ -43,15 +43,15 @@ def test_learn():
 
     flmm.learn()
 
-    assert_almost_equal(flmm.beta[0], 1.01207186704, decimal=6)
-    assert_almost_equal(flmm.genetic_variance, 1.29796143002, decimal=5)
-    assert_almost_equal(flmm.environmental_variance, 1.63176598726, decimal=5)
+    assert_allclose(flmm.beta[0], 0.709180072285, rtol=1e-5)
+    assert_allclose(flmm.genetic_variance, 2.26638555117, rtol=1e-5)
+    assert_allclose(flmm.environmental_variance, 1.02391614253, rtol=1e-5)
 
 
 def test_predict_1():
     random = np.random.RandomState(228)
-    N = 800
-    X = random.randn(N, 900)
+    N = 50
+    X = random.randn(N, N+1)
 
     offset = 1.2
     scale = 3.0
@@ -60,16 +60,13 @@ def test_predict_1():
 
     flmm = FastLMM(y, ones((N, 1)), X)
     flmm.learn()
-    assert_almost_equal(
-        flmm.predict(ones((N, 1)), X).logpdf(y),
-        -1092.1273501778442,
-        decimal=4)
+    assert_allclose(flmm.predict(ones((N, 1)), X).logpdf(y), -54.1934992524)
 
 
 def test_predict_2():
     random = np.random.RandomState(228)
-    N = 200
-    X = random.randn(N, 300)
+    N = 50
+    X = random.randn(N, N+1)
 
     offset = 1.2
     scale = 3.0
@@ -81,8 +78,8 @@ def test_predict_2():
     p = flmm.predict(ones((N, 1))[5, :], X[5, :])
     y5 = y[5]
     y6 = y[6]
-    assert_almost_equal(p.logpdf(y5), -1.28820823178, decimal=5)
-    assert_almost_equal(p.logpdf(y6), -4.28963888498, decimal=5)
+    assert_allclose(p.logpdf(y5), -1.02552843174, rtol=1e-5)
+    assert_allclose(p.logpdf(y6), -5.39355862337, rtol=1e-5)
 
 
 if __name__ == '__main__':

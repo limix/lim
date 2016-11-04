@@ -133,50 +133,5 @@ def test_maximize_2():
     lmm.feed().maximize()
     assert_almost_equal(lmm.feed().value(), -79.365136339619610)
 
-
-# def test_maximize_3():
-#     random = RandomState(94584)
-#     N = 50
-#
-#     X1 = random.randn(N, 3)
-#     X2 = random.randn(N, 100)
-#
-#     mean = LinearMean(3)
-#     mean.set_data(X1)
-#
-#     cov = LinearCov()
-#     cov.scale = 1.0
-#     cov.set_data((X2, X2))
-#
-#     y = random.randn(N)
-#
-#     lmm = SlowLMM(y, mean, cov)
-#
-#     lmm.feed().maximize()
-#
-#     assert_almost_equal(lmm.feed().value(), -73.5638040543)
-#
-#
-# def test_maximize_4():
-#     random = RandomState(94584)
-#     N = 50
-#
-#     X1 = random.randn(N, 3)
-#     X2 = random.randn(N, 100)
-#     X3 = random.randn(N, 50)
-#
-#     mean = LinearMean(3)
-#     mean.set_data(X1)
-#
-#     cov1 = LinearCov()
-#     cov1.scale = 1.0
-#     cov1.set_data((X2, X2))
-#
-#     cov2 = LinearCov()
-#     cov2.scale = 0.5
-#     cov2.set_data((X3, X3))
-#
-#     cov = SumCov([cov1, cov2])
-#
-#     assert_almost_equal(cov.feed().value(),
-#                         1.0 * X2.dot(X2.T) + 0.5 * X3.dot(X3.T))
+if __name__ == '__main__':
+    __import__('pytest').main([__file__, '-s'])

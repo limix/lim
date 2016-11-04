@@ -25,9 +25,5 @@ def test_stdnorm():
     assert_allclose(stdnorm(x).mean(0), [0])
     assert_allclose(stdnorm(x).std(0), [0])
 
-
 if __name__ == '__main__':
-    import os
-    folder = os.path.dirname(os.path.realpath(__file__))
-    import pytest
-    pytest.main(['-x', folder, '-s'])
+    __import__('pytest').main([__file__, '-s'])

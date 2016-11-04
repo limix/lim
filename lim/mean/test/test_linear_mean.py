@@ -36,3 +36,6 @@ def test_gradient():
         return [mean.derivative_effsizes(x)[0]]
 
     assert_almost_equal(check_grad(func, grad, [1.2]), 0, decimal=6)
+
+if __name__ == '__main__':
+    __import__('pytest').main([__file__, '-s'])

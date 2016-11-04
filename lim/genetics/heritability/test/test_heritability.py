@@ -12,20 +12,20 @@ from lim.random.canonical import binomial as binomial_sampler
 
 def test_heritability_bernoulli_estimate():
     random = RandomState(1)
-    N = 100
-    X = random.randn(N, 200)
+    N = 50
+    X = random.randn(N, N+1)
     y = bernoulli_sampler(0.1, X, random_state=random)
-    assert_allclose(bernoulli_estimate(y, X), 0.1619266499, rtol=1e-4)
+    assert_allclose(bernoulli_estimate(y, X), 0.627441483331, rtol=1e-5)
 
 
 def test_heritability_binomial_estimate():
     random = RandomState(1)
-    N = 100
-    X = random.randn(N, N + 100)
+    N = 50
+    X = random.randn(N, N+1)
     ntrials = random.randint(1, 100, size=N)
     y = binomial_sampler(ntrials, 0.1, X, random_state=random)
-    assert_allclose(
-        binomial_estimate(y, ntrials, X), 0.504838223617, rtol=1e-4)
+    assert_allclose(binomial_estimate(y, ntrials, X), 0.38072991066,
+                    rtol=1e-5)
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 from __future__ import division
 
 from numpy.random import RandomState
-from numpy.testing import assert_almost_equal
+from numpy.testing import assert_allclose
 from numpy import sqrt
 from numpy import ones
 
@@ -52,5 +52,8 @@ def test_optimization():
     QS = economic_qs_linear(DesignMatrixTrans(X).transform(X))
     flmm = FastLMMCore(y, ones((N, 1)), QS[0][0], QS[0][1], QS[1])
     flmm.delta = delta
-    assert_almost_equal(gp.feed().value(), flmm.lml())
-    assert_almost_equal(mean.offset, flmm.beta[0], decimal=6)
+    assert_allclose(gp.feed().value(), flmm.lml(), rtol=1e-5)
+    assert_allclose(mean.offset, flmm.beta[0], rtol=1e-5)
+
+if __name__ == '__main__':
+    __import__('pytest').main([__file__, '-s'])
