@@ -37,11 +37,11 @@ class FastLMM(Function):
         self.set_nodata()
 
     @property
-    def covariates(self):
+    def M(self):
         return self._flmmc.M
 
-    @covariates.setter
-    def covariates(self, v):
+    @M.setter
+    def M(self, v):
         self._flmmc.M = v
 
     def copy(self):

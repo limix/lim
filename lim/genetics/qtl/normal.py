@@ -25,9 +25,9 @@ class NormalQTLScan(QTLScan):
 
         self._flmm = None
 
-    # @cachedmethod(
-    #     attrgetter('_cache_compute_null_model'),
-    #     key=lambda self, progress: hashkey(self))
+    @cachedmethod(
+        attrgetter('_cache_compute_null_model'),
+        key=lambda self, progress: hashkey(self))
     def _compute_null_model(self, progress):
         y = self._y
         covariates = self._covariates
@@ -39,9 +39,9 @@ class NormalQTLScan(QTLScan):
         self._flmm = flmm
         self._null_lml = flmm.lml()
 
-    # @cachedmethod(
-    #     attrgetter('_cache_compute_alt_models'),
-    #     key=lambda self, progress: hashkey(self))
+    @cachedmethod(
+        attrgetter('_cache_compute_alt_models'),
+        key=lambda self, progress: hashkey(self))
     def _compute_alt_models(self, progress):
         n, p = self._X.shape
         nc = self._covariates.shape[1]
@@ -52,7 +52,7 @@ class NormalQTLScan(QTLScan):
         for i in range(p):
             M[:, nc] = self._X[:, i]
             flmm = self._flmm.copy()
-            flmm.covariates = M
+            flmm.M = M
             flmm.learn()
             self._alt_lmls[i] = flmm.lml()
             self._effect_sizes[i] = flmm.beta[-1]
