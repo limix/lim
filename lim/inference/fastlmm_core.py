@@ -92,11 +92,11 @@ class FastLMMCore(object):
         return o
 
     @property
-    def M(self):
+    def covariates(self):
         return self._covariates
 
-    @M.setter
-    def M(self, v):
+    @covariates.setter
+    def covariates(self, v):
         self._covariates = v
         d = v.shape[1]
         self._beta = zeros(d)

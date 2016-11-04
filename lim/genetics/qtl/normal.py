@@ -52,7 +52,7 @@ class NormalQTLScan(QTLScan):
         for i in range(p):
             M[:, nc] = self._X[:, i]
             flmm = self._flmm.copy()
-            flmm.M = M
+            flmm.covariates = M
             flmm.learn()
             self._alt_lmls[i] = flmm.lml()
             self._effect_sizes[i] = flmm.beta[-1]
