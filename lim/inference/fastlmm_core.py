@@ -1,17 +1,14 @@
 from __future__ import division
 
-from numpy import dot
-from numpy import log
-from numpy import var
-from numpy import zeros
+from numpy import (dot, log, var, zeros, sqrt)
 
 from scipy.stats import multivariate_normal
 
-from limix_math import (sum2diag, solve)
+from limix_math import (sum2diag, solve, economic_svd, ddot)
 
 
 class FastLMMCore(object):
-    def __init__(self, y, covariates, Q0, Q1, S0):
+    def __init__(self, y, M, Q0, Q1, S0):
         if var(y) < 1e-8:
             raise ValueError("The phenotype variance is too low: %e." % var(y))
 
@@ -22,9 +19,12 @@ class FastLMMCore(object):
         self._diag1 = 0.5
         self._Q0 = Q0
         self._Q1 = Q1
-        self._covariates = covariates
+        self._tM = None
+        self.__tbeta = None
+        self._covariate_setup(M)
+        self._M = M
 
-        d = covariates.shape[1]
+        d = M.shape[1]
         self._beta = zeros(d)
         self._scale = 1.0
         self._delta = 0.5
@@ -44,12 +44,19 @@ class FastLMMCore(object):
         self._yTQ1 = dot(y.T, Q1)
         self._yTQ1_2x = self._yTQ1**2
 
-        self._oneTQ0 = covariates.T.dot(Q0)
-        self._oneTQ1 = covariates.T.dot(Q1)
+        self._oneTQ0 = M.T.dot(Q0)
+        self._oneTQ1 = M.T.dot(Q1)
 
         self._valid_update = 0
         self.__Q0tymD0 = None
         self.__Q1tymD1 = None
+
+    def _covariate_setup(self, M):
+        SVD = economic_svd(M)
+        self._svd_U = SVD[0]
+        self._svd_S12 = sqrt(SVD[1])
+        self._svd_V = SVD[2]
+        self._tM = ddot(self._svd_U, self._svd_S12, left=False)
 
     def copy(self):
         o = FastLMMCore.__new__(FastLMMCore)
@@ -60,7 +67,7 @@ class FastLMMCore(object):
         o._diag1 = self._diag1
         o._Q0 = self._Q0
         o._Q1 = self._Q1
-        o._covariates = self._covariates
+        o._M = self._M
 
         o._beta = self._beta.copy()
         o._scale = self._scale
@@ -93,11 +100,11 @@ class FastLMMCore(object):
 
     @property
     def M(self):
-        return self._covariates
+        return self._M
 
     @M.setter
     def M(self, v):
-        self._covariates = v
+        self._M = v
         d = v.shape[1]
         self._beta = zeros(d)
 
@@ -116,7 +123,7 @@ class FastLMMCore(object):
 
     @property
     def mean(self):
-        return self._covariates.dot(self._beta)
+        return self._M.dot(self._beta)
 
     def _Q0tymD0(self):
         if self.__Q0tymD0 is None:
@@ -152,9 +159,6 @@ class FastLMMCore(object):
     def _update_joints(self):
         yTQ0_2x = self._yTQ0_2x
         yTQ1_2x = self._yTQ1_2x
-
-        # yTQ0_oneTQ0 = self._yTQ0_oneTQ0 = self._yTQ0 * self._oneTQ0
-        # yTQ1_oneTQ1 = self._yTQ1_oneTQ1 = self._yTQ1 * self._oneTQ1
 
         self._a1 = yTQ1_2x.sum() / self._diag1
         self._b1[:] = (self._yTQ1 / self._diag1).dot(self._oneTQ1.T)
