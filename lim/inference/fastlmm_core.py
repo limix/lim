@@ -1,6 +1,6 @@
 from __future__ import division
 
-from numpy import (dot, log, var, zeros, sqrt)
+from numpy import (dot, log, var, zeros, sqrt, ascontiguousarray)
 
 from scipy.stats import multivariate_normal
 
@@ -136,6 +136,17 @@ class FastLMMCore(object):
             Q1tym = self._yTQ1 - self._beta.dot(self._oneTQ1)
             self.__Q1tymD1 = Q1tym / self._diag1
         return self.__Q1tymD1
+
+    @property
+    def _tbeta(self):
+        return self.__tbeta
+
+    @_tbeta.setter
+    def _tbeta(self, value):
+        if self.__tbeta is None:
+            self.__tbeta = ascontiguousarray(value, float).copy()
+        else:
+            self.__tbeta[:] = value
 
     @property
     def beta(self):
