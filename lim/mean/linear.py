@@ -1,4 +1,3 @@
-from numpy import full
 from numpy import zeros
 from numpy import ascontiguousarray
 

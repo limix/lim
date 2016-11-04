@@ -4,8 +4,7 @@ import logging
 
 import scipy.stats as st
 
-from numpy import (all, asarray, clip, exp, full, isfinite, log, ones, pi,
-                   sqrt)
+from numpy import (all, asarray, clip, full, isfinite, ones, pi)
 from numpy.linalg import lstsq
 
 from ...inference import FastLMM

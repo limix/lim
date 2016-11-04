@@ -1,6 +1,5 @@
 from numpy import copyto
 
-
 def gower_normalization(K, out=None):
     """Perform Gower normalizion on covariance matrix K.
 
