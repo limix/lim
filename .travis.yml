@@ -1,4 +1,7 @@
 language: python
+cache:
+  directories:
+  - $HOME/download
 matrix:
   include:
   - os: linux
