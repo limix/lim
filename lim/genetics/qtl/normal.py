@@ -11,6 +11,7 @@ from numpy import empty
 from .qtl import QTLScan
 from ...inference import FastLMM
 
+
 class NormalQTLScan(QTLScan):
     def __init__(self, y, covariates, X, Q0, Q1, S0):
         super(NormalQTLScan, self).__init__(X)
@@ -47,9 +48,9 @@ class NormalQTLScan(QTLScan):
         self._alt_lmls = empty(p)
         self._effect_sizes = empty(p)
         M = empty((n, nc + 1))
-        M[:,:nc] = self._covariates
+        M[:, :nc] = self._covariates
         for i in range(p):
-            M[:,nc] = self._X[:, i]
+            M[:, nc] = self._X[:, i]
             flmm = self._flmm.copy()
             flmm.covariates = M
             flmm.learn()

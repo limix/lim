@@ -51,7 +51,7 @@ class FixedEP(object):
         betas0 = nan_to_num(betas0)
         betas1 = nan_to_num(betas1)
 
-        ms = dot(covariates, betas0[newaxis,:])
+        ms = dot(covariates, betas0[newaxis, :])
         ms += X * betas1
         QBiQtCteta = self._QBiQtCteta
         teta = self._teta

@@ -176,6 +176,7 @@ def _genetic_preprocess(X, G, K, background):
 
     return (Q0, Q1, S0)
 
+
 def _clone(X):
     if X is None:
         return None
