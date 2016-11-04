@@ -57,10 +57,8 @@ def test_qtl_normal_scan_covariate_redundance():
     y = dot(G, u1) + dot(X, u2)
 
     X[:] = 1
-    # qtl = normal_scan(y, X, G=G, progress=False)
-    # for p in qtl.pvalues():
-    #     print(p)
-
+    qtl = normal_scan(y, X, G=G, progress=False)
+    assert_allclose(qtl.pvalues(), [1]*p)
 
 def test_qtl_binomial_scan():
     random = RandomState(9)
@@ -94,7 +92,6 @@ def test_qtl_binomial_scan():
             0.0937948997269,
         ],
         rtol=1e-5)
-
 
 def test_qtl_binomial_scan_covariate_redundance():
     random = RandomState(9)
