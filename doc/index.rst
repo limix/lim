@@ -11,5 +11,5 @@ You can get the source and open issues `on Github.`_
     :maxdepth: 2
 
     installation
-    tutorial.qtl_analysis
-    reference
+#    tutorial.qtl_analysis
+#    reference

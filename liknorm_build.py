@@ -5,10 +5,10 @@ import logging
 
 from glob import glob
 from os.path import join
-import six
 
 
 def make_sure_string(msg):
+    import six
     if six.PY2:
         return bytes(msg)
     else:

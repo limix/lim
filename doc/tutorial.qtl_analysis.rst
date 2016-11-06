@@ -18,7 +18,7 @@ association scan between markers contained in `X` and the phenotype defined by
 
 The output should be similar to:
 
-.. program-output:: python ../examples/normal_qtl_analysis.py
+#.. program-output:: python ../examples/normal_qtl_analysis.py
 
 
 Count phenotypes
