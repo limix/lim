@@ -17,25 +17,12 @@ from ..util.fruits import Apples
 from ..tool.normalize import stdnorm
 
 
-def bernoulli(offset, G, heritability=0.5, random_state=None):
-
-    nsamples = G.shape[0]
-    G = stdnorm(G, axis=0)
-    G /= sqrt(G.shape[1])
+def bernoulli(offset, G, heritability=0.5, causal_variants=None,
+              causal_variance=0, random_state=None):
 
     link = LogitLink()
-
-    mean = OffsetMean()
-    mean.offset = offset
-
-    cov = LinearCov()
-
-    mean.set_data(nsamples, 'sample')
-    cov.set_data((G, G), 'sample')
-
-    r = heritability / (1 - heritability)
-    cov.scale = BernoulliLik.latent_variance(link) * r
-
+    mean, cov = _mean_cov(offset, G, heritability, causal_variants,
+                          causal_variance, random_state)
     lik = BernoulliProdLik(None, link)
     sampler = GLMMSampler(lik, mean, cov)
 
