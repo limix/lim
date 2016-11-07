@@ -7,8 +7,10 @@ from numpy.testing import assert_allclose
 
 from lim.tool.normalize import stdnorm
 from lim.random.canonical import binomial
+from lim.random.canonical import poisson
 from lim.genetics.qtl import normal_scan
 from lim.genetics.qtl import binomial_scan
+from lim.genetics.qtl import poisson_scan
 
 
 def test_qtl_normal_scan():
@@ -118,6 +120,38 @@ def test_qtl_binomial_scan_covariate_redundance():
     X[:] = 1
     qtl = binomial_scan(nsuccesses, ntrials, X, G=G, progress=False)
     assert_allclose(qtl.pvalues(), [1] * p)
+
+def test_qtl_poisson_scan():
+    random = RandomState(9)
+
+    N = 50
+    G = random.randn(N, N + 100)
+    G = stdnorm(G, 0)
+    G /= sqrt(G.shape[1])
+
+    p = 5
+    X = random.randn(N, p)
+    X = stdnorm(X, 0)
+    X /= sqrt(X.shape[1])
+
+    ntrials = random.randint(1, 50, N)
+    noccurrences = poisson(
+        -0.1,
+        G,
+        causal_variants=X,
+        causal_variance=0.1,
+        random_state=random)
+
+    qtl = poisson_scan(noccurrences, X, G=G, progress=False)
+    assert_allclose(
+        qtl.pvalues(), [
+            0.0628182169533,
+            0.462206136491,
+            0.965204871907,
+            0.72419412302,
+            0.370762962645
+        ],
+        rtol=1e-3)
 
 if __name__ == '__main__':
     __import__('pytest').main([__file__, '-s'])

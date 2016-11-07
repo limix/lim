@@ -14,7 +14,9 @@ from limix_math import (economic_qs, economic_qs_linear)
 
 from .normal import NormalQTLScan
 from .binomial import BinomialQTLScan
+from .poisson import PoissonQTLScan
 from ..phenotype import NormalPhenotype
+from ..phenotype import PoissonPhenotype
 from ..phenotype import BinomialPhenotype
 from ..background import Background
 from ...tool.kinship import gower_normalization
@@ -137,6 +139,67 @@ def binomial_scan(nsuccesses,
 
     return qtl
 
+def poisson_scan(noccurrences,
+                 X,
+                 G=None,
+                 K=None,
+                 covariates=None,
+                 progress=True):
+    """Association between genetic markers and phenotype for continuous traits.
+
+    Matrix `X` shall contain the genetic markers (e.g., number of minor
+    alleles) with rows and columns representing samples and genetic markers,
+    respectively.
+
+    The user must specify only one of the parameters `G` and `K` for defining
+    the genetic background.
+
+    Let :math:`N` be the sample size, :math:`S` the number of covariates,
+    :math:`P_c` the number of genetic markers to be tested, and :math:`P_b`
+    the number of genetic markers used for Kinship estimation.
+
+    Args:
+        nsuccesses (array_like): Phenotype described by the number of
+                                 successes, as non-negative integers.
+                                 Dimension (:math:`N\\times 0`).
+        ntrials    (array_like): Phenotype described by the number of
+                                 trials, as positive integers. Dimension
+                                 (:math:`N\\times 0`).
+        X          (array_like): Candidate genetic markers (or any other
+                                 type of explanatory variable) whose
+                                 association with the phenotype will be
+                                 tested. Dimension (:math:`N\\times P_c`).
+        G          (array_like): Genetic markers matrix used internally for
+                                 kinship estimation. Dimension
+                                 (:math:`N\\times P_b`).
+        K          (array_like): Kinship matrix. Dimension
+                                 (:math:`N\\times N`).
+        covariates (array_like): Covariates. Default is an offset.
+                                 Dimension (:math:`N\\times S`).
+        progress         (bool): Shows progress. Defaults to `True`.
+
+    Returns:
+        A :class:`lim.genetics.qtl.LikelihoodRatioTest` instance.
+    """
+
+    logger = logging.getLogger(__name__)
+    logger.info('Poisson association scan has started.')
+    noccurrences = ascontiguousarray(noccurrences, dtype=float)
+    n = len(noccurrences)
+    covariates = ones((n, 1)) if covariates is None else covariates
+    X = _clone(X)
+    G = _clone(G)
+    K = _clone(K)
+
+    phenotype = PoissonPhenotype(noccurrences)
+    background = Background()
+
+    (Q0, Q1, S0) = _genetic_preprocess(X, G, K, background)
+    qtl = PoissonQTLScan(noccurrences, covariates, X, Q0, Q1, S0)
+    qtl.progress = progress
+    qtl.compute_statistics()
+
+    return qtl
 
 def _genetic_preprocess(X, G, K, background):
     logger = logging.getLogger(__name__)

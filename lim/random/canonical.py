@@ -50,62 +50,21 @@ def binomial(ntrials,
              causal_variance=0,
              random_state=None):
 
-    nsamples = G.shape[0]
-    G = stdnorm(G, axis=0)
-    G /= sqrt(G.shape[1])
-
     link = LogitLink()
-
-    mean1 = OffsetMean()
-    mean1.offset = offset
-
-    cov1 = LinearCov()
-    cov2 = EyeCov()
-    cov = SumCov([cov1, cov2])
-
-    mean1.set_data(nsamples, 'sample')
-    cov1.set_data((G, G), 'sample')
-    a = Apples(nsamples)
-    cov2.set_data((a, a), 'sample')
-
-    cov1.scale = heritability - causal_variance
-    cov2.scale = 1 - heritability - causal_variance
-
-    means = [mean1]
-    if causal_variants is not None:
-        means += [_causal_mean(causal_variants, causal_variance, random_state)]
-
-    mean = SumMean(means)
-
+    mean, cov = _mean_cov(offset, G, heritability, causal_variants,
+                          causal_variance, random_state)
     lik = BinomialProdLik(None, ntrials, link)
     sampler = GLMMSampler(lik, mean, cov)
 
     return sampler.sample(random_state)
 
 
-def poisson(offset, G, heritability=0.5, random_state=None):
+def poisson(offset, G, heritability=0.5, causal_variants=None,
+            causal_variance=0, random_state=None):
 
-    nsamples = G.shape[0]
-    G = stdnorm(G, axis=0)
-    G /= sqrt(G.shape[1])
-
+    mean, cov = _mean_cov(offset, G, heritability, causal_variants,
+                          causal_variance, random_state)
     link = LogLink()
-
-    mean = OffsetMean()
-    mean.offset = offset
-
-    cov1 = LinearCov()
-    cov2 = EyeCov()
-    cov = SumCov([cov1, cov2])
-
-    mean.set_data(nsamples, 'sample')
-    cov1.set_data((G, G), 'sample')
-    a = Apples(nsamples)
-    cov2.set_data((a, a), 'sample')
-
-    cov1.scale = heritability
-    cov2.scale = 1 - heritability
-
     lik = PoissonProdLik(None, link)
     sampler = GLMMSampler(lik, mean, cov)
 
@@ -128,3 +87,33 @@ def _causal_mean(causal_variants, causal_variance, random):
     mean.set_data((causal_variants, ), 'sample')
     mean.effsizes = directions
     return mean
+
+def _mean_cov(offset, G, heritability, causal_variants, causal_variance,
+              random_state):
+    nsamples = G.shape[0]
+    G = stdnorm(G, axis=0)
+
+    G /= sqrt(G.shape[1])
+
+    mean1 = OffsetMean()
+    mean1.offset = offset
+
+    cov1 = LinearCov()
+    cov2 = EyeCov()
+    cov = SumCov([cov1, cov2])
+
+    mean1.set_data(nsamples, 'sample')
+    cov1.set_data((G, G), 'sample')
+    a = Apples(nsamples)
+    cov2.set_data((a, a), 'sample')
+
+    cov1.scale = heritability - causal_variance
+    cov2.scale = 1 - heritability - causal_variance
+
+    means = [mean1]
+    if causal_variants is not None:
+        means += [_causal_mean(causal_variants, causal_variance, random_state)]
+
+    mean = SumMean(means)
+
+    return mean, cov

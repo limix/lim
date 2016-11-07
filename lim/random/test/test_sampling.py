@@ -1,10 +1,11 @@
 from __future__ import division
 
 from numpy.random import RandomState
-from numpy.testing import (assert_equal, assert_array_less)
+from numpy.testing import (assert_equal, assert_array_less, assert_allclose)
 
 from lim.random import GLMMSampler
 from lim.random.canonical import binomial
+from lim.random.canonical import poisson
 from lim.mean import OffsetMean
 from lim.cov import LinearCov
 from lim.cov import EyeCov
@@ -129,6 +130,13 @@ def test_canonical_binomial_sampler():
     ntrials = [2, 3, 1, 1, 4, 5, 1, 2, 1, 1]
     y = binomial(ntrials, -0.1, G, random_state=random)
     assert_array_less(y, [i + 1 for i in ntrials])
+
+def test_canonical_poisson_sampler():
+    random = RandomState(9)
+    G = random.randn(10, 5)
+
+    y = poisson(0.1, G, random_state=random)
+    assert_allclose(y,  [1, 0, 0, 2, 1, 11, 5, 1, 0, 0])
 
 
 if __name__ == '__main__':
