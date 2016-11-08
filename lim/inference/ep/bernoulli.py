@@ -17,7 +17,7 @@ from .ep import EP
 class BernoulliEP(EP):
     r"""Bernoulli EP inference.
 
-    Let :math:`p_i` be the probability of success for the i-th individual and
+    Let :math:`p_i` be the probability of outcome for the i-th individual and
 
     .. math::
 
@@ -43,7 +43,7 @@ class BernoulliEP(EP):
     :math:`\mathrm K = v \mathrm Q_0 \mathrm S_0 \mathrm Q_0^\intercal`.
 
     Args:
-        success (array_like): Array of :math:`y_i \in \{0, 1\}`.
+        outcome (array_like): Array of :math:`y_i \in \{0, 1\}`.
         M (array_like): :math:`\mathrm M` covariates.
         Q0 (array_like): :math:`\mathrm Q_0` of the eigendecomposition.
         Q1 (array_like): :math:`\mathrm Q_1` of the eigendecomposition.
@@ -53,29 +53,46 @@ class BernoulliEP(EP):
                         been computed. Defaults to `None`.
     """
 
-    def __init__(self, success, M, Q0, Q1, S0, Q0S0Q0t=None):
-        super(BernoulliEP, self).__init__(M, Q0, S0, False, QSQt=Q0S0Q0t)
+    def __init__(self, outcome, M, Q0, Q1, S0, Q0S0Q0t=None):
+        super(BernoulliEP, self).__init__(M, Q0, S0, True, QSQt=Q0S0Q0t)
         self._logger = logging.getLogger(__name__)
 
-        success = asarray(success, float)
-        self._success = success
+        outcome = asarray(outcome, float)
+        self._outcome = outcome
 
-        if issingleton(success):
+        if issingleton(outcome):
             msg = "The phenotype array has a single unique value only."
             raise ValueError(msg)
 
-        if not all(isfinite(success)):
+        if not all(isfinite(outcome)):
             raise ValueError("There are non-finite numbers in phenotype.")
 
         msg = 'Number of individuals mismatch.'
-        assert success.shape[0] == M.shape[0], msg
-        assert success.shape[0] == Q0.shape[0], msg
-        assert success.shape[0] == Q1.shape[0], msg
+        assert outcome.shape[0] == M.shape[0], msg
+        assert outcome.shape[0] == Q0.shape[0], msg
+        assert outcome.shape[0] == Q1.shape[0], msg
 
         self._Q1 = Q1
 
         self._moments = LikNormMoments(350)
         self.initialize()
+
+    # @property
+    # def genetic_variance(self):
+    #     r"""Returns :math:`\sigma_b^2`."""
+    #     return self.sigma2_b
+    #
+    # @property
+    # def environmental_variance(self):
+    #     r"""Returns :math:`\pi^2/3`."""
+    #     return (pi * pi) / 3
+    #
+    # @property
+    # def heritability(self):
+    #     r"""Returns :math:`\sigma_b^2/(\sigma_a^2+\sigma_b^2+\pi^2/3)`."""
+    #     total = self.genetic_variance + self.covariates_variance
+    #     total += self.environmental_variance
+    #     return self.genetic_variance / total
 
     @property
     def genetic_variance(self):
@@ -84,18 +101,19 @@ class BernoulliEP(EP):
 
     @property
     def environmental_variance(self):
-        r"""Returns :math:`\pi^2/3`."""
-        return (pi * pi) / 3
+        r"""Returns :math:`\sigma_{\epsilon}^2`."""
+        return self.sigma2_epsilon
 
     @property
     def heritability(self):
-        r"""Returns :math:`\sigma_b^2/(\sigma_a^2+\sigma_b^2+\pi^2/3)`."""
+        r"""Returns
+:math:`\sigma_b^2/(\sigma_a^2+\sigma_b^2+\sigma_{\epsilon}^2)`."""
         total = self.genetic_variance + self.covariates_variance
         total += self.environmental_variance
         return self.genetic_variance / total
 
     def initialize(self):
-        y = self._success
+        y = self._outcome
         ratio = sum(y) / float(len(y))
         latent_mean = st.norm(0, 1).isf(1 - ratio)
         latent = y / y.std()
@@ -113,13 +131,18 @@ class BernoulliEP(EP):
         h2 = _h2_correction(h2, ratio, ratio)
         h2 = clip(h2, 0.01, 0.9)
 
-        mean = flmm.m
-        self._tbeta = lstsq(self._tM, full(len(y), mean))[0]
-        self.delta = 0.
-        self.v = self.environmental_variance * (h2 / (1 - h2))
+        m = flmm.m
+        self._tbeta = lstsq(self._tM, full(len(y), m))[0]
+        self.delta = 1 - h2
+        # self.v = gv + nv
+        self.v = 1.
+
+        # self._tbeta = lstsq(self._tM, full(len(y), mean))[0]
+        # self.delta = 0.
+        # self.v = self.environmental_variance * (h2 / (1 - h2))
 
     def _tilted_params(self):
-        y = self._success
+        y = self._outcome
         ctau = self._cav_tau
         ceta = self._cav_eta
         lmom0 = self._loghz
