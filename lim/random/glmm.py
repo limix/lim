@@ -3,6 +3,7 @@ from __future__ import division
 from numpy.random import RandomState
 from limix_math import sum2diag
 from limix_math import epsilon
+from limix_math import multivariate_normal
 
 
 class GLMMSampler(object):
@@ -19,7 +20,7 @@ class GLMMSampler(object):
         K = self._cov.feed('sample').value()
 
         sum2diag(K, +epsilon.small, out=K)
-        u = random_state.multivariate_normal(m, K)
+        u = multivariate_normal(m, K, random_state)
         sum2diag(K, -epsilon.small, out=K)
 
         return self._lik.sample(u, random_state)

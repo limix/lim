@@ -2,9 +2,8 @@ from __future__ import division
 
 from numpy import (dot, log, var, zeros, sqrt, ascontiguousarray)
 
-from scipy.stats import multivariate_normal
-
-from limix_math import (sum2diag, solve, economic_svd, ddot)
+from limix_math import (sum2diag, solve, economic_svd, ddot,
+                        multivariate_normal)
 
 
 class FastLMMCore(object):

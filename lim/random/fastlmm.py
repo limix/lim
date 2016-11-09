@@ -1,7 +1,7 @@
 from numpy import full
 from numpy.random import RandomState
 
-from limix_math import sum2diag
+from limix_math import (sum2diag, multivariate_normal)
 
 from ..util.transformation import DesignMatrixTrans
 
@@ -21,4 +21,4 @@ class FastLMMSampler(object):
 
         K = self._cov
         o = full(K.shape[0], self._offset)
-        return random_state.multivariate_normal(o, K)
+        return multivariate_normal(o, K, random_state)

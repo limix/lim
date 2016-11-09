@@ -1,4 +1,5 @@
 from numpy.random import RandomState
+from limix_math import multivariate_normal
 
 
 class RegGPSampler(object):
@@ -12,4 +13,4 @@ class RegGPSampler(object):
 
         m = self._mean.feed('sample').value()
         K = self._cov.feed('sample').value()
-        return random_state.multivariate_normal(m, K)
+        return multivariate_normal(m, K, random_state)
