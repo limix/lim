@@ -1,6 +1,6 @@
 from __future__ import division
 
-from numpy import array, dot, empty, hstack, ones, sqrt, zeros, exp
+from numpy import array, dot, empty, ones, sqrt, zeros, exp
 from numpy.random import RandomState
 from numpy.testing import assert_almost_equal
 
@@ -14,7 +14,7 @@ def test_poisson_lml():
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
     (Q, S0) = economic_qs_linear(G)
     noccurrences = array([1., 0., 5.])
-    ep = PoissonEP(noccurrences, M, hstack(Q), empty((n, 0)), S0 + 1)
+    ep = PoissonEP(noccurrences, M, Q[0], Q[1], S0 + 1)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.

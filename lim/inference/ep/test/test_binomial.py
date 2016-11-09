@@ -1,6 +1,6 @@
 from __future__ import division
 
-from numpy import array, dot, empty, hstack, ones, pi, sqrt, zeros
+from numpy import array, dot, ones, pi, sqrt, zeros
 from numpy.random import RandomState
 from numpy.testing import assert_almost_equal
 
@@ -15,7 +15,7 @@ def test_binomial_lml():
     (Q, S0) = economic_qs_linear(G)
     nsuccesses = array([1., 0., 1.])
     ntrials = array([1., 1., 1.])
-    ep = BinomialEP(nsuccesses, ntrials, M, hstack(Q), empty((n, 0)), S0 + 1)
+    ep = BinomialEP(nsuccesses, ntrials, M, Q[0], Q[1], S0 + 1)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.
@@ -27,11 +27,10 @@ def test_binomial_gradient_over_v():
     n = 3
     M = ones((n, 1)) * 1.
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
-    (Q, S) = economic_qs_linear(G)
+    (Q, S0) = economic_qs_linear(G)
     nsuccesses = array([1., 0., 1.])
     ntrials = array([1., 1., 1.])
-    ep = BinomialEP(nsuccesses, ntrials, M,
-                    hstack(Q), empty((n, 0)), hstack(S) + 1.0)
+    ep = BinomialEP(nsuccesses, ntrials, M, Q[0], Q[1], S0 + 1)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.
@@ -67,11 +66,10 @@ def test_binomial_gradient_over_delta():
     n = 3
     M = ones((n, 1)) * 1.
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
-    (Q, S) = economic_qs_linear(G)
+    (Q, S0) = economic_qs_linear(G)
     nsuccesses = array([1., 0., 1.])
     ntrials = array([1., 1., 1.])
-    ep = BinomialEP(nsuccesses, ntrials, M,
-                    hstack(Q), empty((n, 0)), hstack(S) + 1.0)
+    ep = BinomialEP(nsuccesses, ntrials, M, Q[0], Q[1], S0 + 1.0)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.
@@ -93,11 +91,10 @@ def test_binomial_gradient_over_both():
     n = 3
     M = ones((n, 1)) * 1.
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
-    (Q, S) = economic_qs_linear(G)
+    (Q, S0) = economic_qs_linear(G)
     nsuccesses = array([1., 0., 1.])
     ntrials = array([1., 1., 1.])
-    ep = BinomialEP(nsuccesses, ntrials, M,
-                    hstack(Q), empty((n, 0)), hstack(S) + 1.0)
+    ep = BinomialEP(nsuccesses, ntrials, M, Q[0], Q[1], S0 + 1.0)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.5

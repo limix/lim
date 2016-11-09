@@ -25,7 +25,7 @@ def test_heritability_binomial_estimate():
     X = random.randn(N, N+1)
     ntrials = random.randint(1, 100, size=N)
     y = binomial_sampler(ntrials, 0.1, X, random_state=random)
-    assert_allclose(binomial_estimate(y, ntrials, X), 0.38072991066,
+    assert_allclose(binomial_estimate(y, ntrials, X), 0.3759737757201841,
                     rtol=1e-5)
 
 
