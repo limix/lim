@@ -3,12 +3,15 @@ from __future__ import unicode_literals
 
 import logging
 
+from ...inference import ExpFamEP
+from ...inference import FastLMM
+
 from cachetools import LRUCache
 from operator import attrgetter
 from cachetools import cachedmethod
 
 from numpy import asarray
-from numpy import nan
+from numpy import nan, empty
 
 class QTLScan(object):
     def __init__(self, phenotype, covariates, X, Q0, Q1, S0):
@@ -52,17 +55,39 @@ class QTLScan(object):
         covariates = self._covariates
         Q0, Q1 = self._Q0, self._Q1
         S0 = self._S0
-        ep = ExpFamEP(self._phenotype, covariates, Q0=Q0, Q1=Q1, S0=S0)
-        ep.optimize()
-        self._null_lml = ep.lml()
-        self._fixed_ep = ep.fixed_ep()
+        if self._phenotype.likelihood_name.lower() == 'normal':
+            flmm = FastLMM(self._phenotype.outcome, Q0=Q0, Q1=Q1, S0=S0,
+                           covariates=covariates)
+            flmm.learn()
+            self._flmm = flmm
+            self._null_lml = flmm.lml()
+        else:
+            ep = ExpFamEP(self._phenotype, covariates, Q0=Q0, Q1=Q1, S0=S0)
+            ep.optimize()
+            self._null_lml = ep.lml()
+            self._fixed_ep = ep.fixed_ep()
 
     @cachedmethod(attrgetter('_cache_compute_alt_models'))
     def _compute_alt_models(self):
-        fep = self._fixed_ep
-        covariates = self._covariates
-        X = self._X
-        self._alt_lmls, self._effect_sizes = fep.compute(covariates, X)
+        if self._phenotype.likelihood_name.lower() == 'normal':
+            n, p = self._X.shape
+            nc = self._covariates.shape[1]
+            self._alt_lmls = empty(p)
+            self._effect_sizes = empty(p)
+            M = empty((n, nc + 1))
+            M[:, :nc] = self._covariates
+            for i in range(p):
+                M[:, nc] = self._X[:, i]
+                flmm = self._flmm.copy()
+                flmm.M = M
+                flmm.learn()
+                self._alt_lmls[i] = flmm.lml()
+                self._effect_sizes[i] = flmm.beta[-1]
+        else:
+            fep = self._fixed_ep
+            covariates = self._covariates
+            X = self._X
+            self._alt_lmls, self._effect_sizes = fep.compute(covariates, X)
 
     def null_lml(self):
         """Log marginal likelihood for the null hypothesis."""
