@@ -1,1 +1,1 @@
-from .liknorm import LikNormMoments
+from ._liknorm import create_liknorm

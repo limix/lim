@@ -4,6 +4,10 @@ import numpy as np
 from numpy import ones
 from numpy.testing import assert_allclose
 
+from limix_math import economic_qs_linear
+
+from lim.util.transformation import DesignMatrixTrans
+
 from lim.inference.fastlmm import FastLMM
 from lim.util.fruits import Apples
 from lim.cov import LinearCov
@@ -39,7 +43,9 @@ def test_learn():
 
     y = RegGPSampler(mean, cov).sample(random)
 
-    flmm = FastLMM(y, ones((N, 1)), X)
+    (Q0, Q1), S0 = economic_qs_linear(X)
+
+    flmm = FastLMM(y, Q0, Q1, S0, covariates=ones((N, 1)))
 
     flmm.learn()
 
@@ -58,9 +64,13 @@ def test_predict_1():
     delta = 0.5
     y = FastLMMSampler(offset, scale, delta, X).sample(random)
 
-    flmm = FastLMM(y, ones((N, 1)), X)
+    X = DesignMatrixTrans(X).transform(X)
+    (Q0, Q1), S0 = economic_qs_linear(X)
+
+
+    flmm = FastLMM(y, Q0, Q1, S0, covariates=ones((N, 1)))
     flmm.learn()
-    assert_allclose(flmm.predict(ones((N, 1)), X).logpdf(y), -54.1934992524)
+    assert_allclose(flmm.predict(X, ones((N, 1)), X).logpdf(y), -54.1934992524)
 
 
 def test_predict_2():
@@ -73,9 +83,12 @@ def test_predict_2():
     delta = 0.5
     y = FastLMMSampler(offset, scale, delta, X).sample(random)
 
-    flmm = FastLMM(y, ones((N, 1)), X)
+    X = DesignMatrixTrans(X).transform(X)
+    (Q0, Q1), S0 = economic_qs_linear(X)
+
+    flmm = FastLMM(y, Q0, Q1, S0, covariates=ones((N, 1)))
     flmm.learn()
-    p = flmm.predict(ones((N, 1))[5, :], X[5, :])
+    p = flmm.predict(X, ones((N, 1))[5, :], X[5, :])
     y5 = y[5]
     y6 = y[6]
     assert_allclose(p.logpdf(y5), -1.02552843174, rtol=1e-5)

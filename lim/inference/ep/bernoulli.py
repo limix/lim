@@ -9,7 +9,6 @@ from numpy.linalg import lstsq
 
 from ...inference import FastLMM
 from limix_math import issingleton
-from .liknorm import LikNormMoments
 
 from .ep import EP
 

@@ -4,20 +4,40 @@ from numpy import ndarray
 
 from . import _liknorm_ffi
 
-
 def ptr(a):
     if isinstance(a, ndarray):
         return _liknorm_ffi.ffi.cast("double *", a.ctypes.data)
     return a
 
+def create_liknorm(likelihood_name, nintervals):
+    _liknorm_ffi.lib.initialize(nintervals)
+    if likelihood_name.lower() == 'bernoulli':
+        return BernoulliLikNorm()
+    elif likelihood_name.lower() == 'binomial':
+        return BinomialLikNorm()
+    elif likelihood_name.lower() == 'poisson':
+        return PoissonLikNorm()
+    elif likelihood_name.lower() == 'exponential':
+        return ExponentialLikNorm()
+    raise ValueError
 
-class LikNormMoments(object):
-    def __init__(self, nintervals):
-        super(LikNormMoments, self).__init__()
+class BernoulliLikNorm(object):
+    def __init__(self):
+        self._moments = _liknorm_ffi.lib.bernoulli_moments
 
-        _liknorm_ffi.lib.initialize(nintervals)
+    def moments(self, outcome, eta, tau, log_zeroth, mean, variance):
+        size = len(outcome)
+        self._moments(size, ptr(outcome), ptr(eta), ptr(tau),
+                      ptr(log_zeroth), ptr(mean), ptr(variance))
 
-    def binomial(self, k, n, eta, tau, log_zeroth, mean, variance):
+    def destroy(self):
+        _liknorm_ffi.lib.destroy()
+
+class BinomialLikNorm(object):
+    def __init__(self):
+        self._moments = _liknorm_ffi.lib.binomial_moments
+
+    def moments(self, k, n, eta, tau, log_zeroth, mean, variance):
         size = len(k)
         _liknorm_ffi.lib.binomial_moments(size,
                                           ptr(k),
@@ -27,7 +47,11 @@ class LikNormMoments(object):
                                           ptr(log_zeroth),
                                           ptr(mean), ptr(variance))
 
-    def poisson(self, k, eta, tau, log_zeroth, mean, variance):
+    def destroy(self):
+        _liknorm_ffi.lib.destroy()
+
+class PoissonLikNorm(object):
+    def moments(self, k, eta, tau, log_zeroth, mean, variance):
         size = len(k)
         _liknorm_ffi.lib.poisson_moments(size,
                                          ptr(k),
@@ -36,7 +60,11 @@ class LikNormMoments(object):
                                          ptr(log_zeroth),
                                          ptr(mean), ptr(variance))
 
-    def exponential(self, x, eta, tau, log_zeroth, mean, variance):
+    def destroy(self):
+        _liknorm_ffi.lib.destroy()
+
+class ExponentialLikNorm(object):
+    def moments(self, x, eta, tau, log_zeroth, mean, variance):
         size = len(x)
         _liknorm_ffi.lib.exponential_moments(size,
                                              ptr(x),

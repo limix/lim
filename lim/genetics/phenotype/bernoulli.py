@@ -1,7 +1,10 @@
-from ._phenotype import Phenotype
+from numpy import ascontiguousarray
 
-
-class BernoulliPhenotype(Phenotype):
+class BernoulliPhenotype(object):
     def __init__(self, outcome):
-        super(BernoulliPhenotype, self).__init__('Bernoulli')
-        self.outcome = outcome
+        self.outcome = ascontiguousarray(outcome, dtype=float)
+        self.likelihood_name = 'Bernoulli'
+
+    @property
+    def sample_size(self):
+        return len(self.outcome)

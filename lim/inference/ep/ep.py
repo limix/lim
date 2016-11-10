@@ -142,7 +142,7 @@ class EP(object):
 
     """
 
-    def __init__(self, M, Q, S, overdispersion, QSQt=None):
+    def __init__(self, M, Q, S, overdispersion):
         self._cache_SQt = LRUCache(maxsize=1)
         self._cache_m = LRUCache(maxsize=1)
         self._cache_K = LRUCache(maxsize=1)
@@ -172,7 +172,7 @@ class EP(object):
 
         self._S = S
         self._Q = Q
-        self.__QSQt = QSQt
+        self.__QSQt = None
 
         nsamples = M.shape[0]
         self._previous_sitelik_tau = zeros(nsamples)
@@ -229,9 +229,6 @@ class EP(object):
                        self._C(),
                        self._L(), self._Q,
                        self._QBiQtCteta(), self._sitelik_eta, beta_nom)
-
-    def initialize(self):
-        raise NotImplementedError
 
     def _joint_initialize(self):
         r"""Initialize the mean and covariance of the posterior.

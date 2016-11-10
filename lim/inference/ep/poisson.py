@@ -10,7 +10,6 @@ from limix_math import issingleton
 
 from ...inference import FastLMM
 from limix_math import issingleton
-from .liknorm import LikNormMoments
 
 from .ep import EP
 

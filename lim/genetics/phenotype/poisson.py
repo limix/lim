@@ -1,7 +1,10 @@
-from ._phenotype import Phenotype
+from numpy import ascontiguousarray
 
-
-class PoissonPhenotype(Phenotype):
+class PoissonPhenotype(object):
     def __init__(self, noccurrences):
-        super(PoissonPhenotype, self).__init__('Poisson')
-        self.noccurrences = noccurrences
+        self.noccurrences = ascontiguousarray(noccurrences, dtype=float)
+        self.likelihood_name = 'Poisson'
+
+    @property
+    def sample_size(self):
+        return len(self.noccurrences)

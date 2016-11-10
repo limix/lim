@@ -3,29 +3,29 @@ from __future__ import unicode_literals
 
 import logging
 
+from cachetools import LRUCache
+from operator import attrgetter
+from cachetools import cachedmethod
+
 from numpy import asarray
 from numpy import nan
 
-from progressbar import ProgressBar
-from progressbar import NullBar
-from progressbar import Counter
-from progressbar import AdaptiveETA
-from progressbar import UnknownLength
-
-
-def _indent(msg):
-    return '\n'.join(['    ' + s for s in msg.split('\n')])
-
-
 class QTLScan(object):
-    def __init__(self, X, progress=True):
+    def __init__(self, phenotype, covariates, X, Q0, Q1, S0):
         self._logger = logging.getLogger(__name__)
 
+        self._cache_compute_null_model = LRUCache(maxsize=1)
+        self._cache_compute_alt_models = LRUCache(maxsize=1)
+        self._phenotype = phenotype
+        self._covariates = covariates
         self._X = X
+        self._Q0 = Q0
+        self._Q1 = Q1
+        self._S0 = S0
         self._null_lml = nan
         self._alt_lmls = None
         self._effect_sizes = None
-        self.progress = progress
+        self.progress = True
 
     @property
     def candidate_markers(self):
@@ -35,7 +35,6 @@ class QTLScan(object):
         :setter: Sets candidate markers
         :type: `array_like` (:math:`N\\times P_c`)
         """
-
         return self._X
 
     @candidate_markers.setter
@@ -44,33 +43,26 @@ class QTLScan(object):
         self._cache_compute_alt_models.clear()
 
     def compute_statistics(self):
-        self._logger.info('Computing Likelihood-ratio test statistics.')
+        self._logger.info('Computing likelihood-ratio test statistics.')
+        self._compute_null_model()
+        self._compute_alt_models()
 
-        self._logger.info('Null model computation has started.')
-        if self.progress:
-            msg = "Null model fitting: "
-            widgets = [msg, Counter(), " function evaluations"]
-            progress = ProgressBar(widgets=widgets, max_value=UnknownLength)
-        else:
-            progress = NullBar()
-        self._compute_null_model(progress)
-        self._logger.info('Null model computation has finished.')
+    @cachedmethod(attrgetter('_cache_compute_null_model'))
+    def _compute_null_model(self):
+        covariates = self._covariates
+        Q0, Q1 = self._Q0, self._Q1
+        S0 = self._S0
+        ep = ExpFamEP(self._phenotype, covariates, Q0=Q0, Q1=Q1, S0=S0)
+        ep.optimize()
+        self._null_lml = ep.lml()
+        self._fixed_ep = ep.fixed_ep()
 
-        self._logger.info('Alternative models computation have started.')
-        if self.progress:
-            msg = "Scanning markers: "
-            widgets = [msg, AdaptiveETA()]
-            progress = ProgressBar(widgets=widgets, max_value=self._X.shape[1])
-        else:
-            progress = NullBar()
-        self._compute_alt_models(progress)
-        self._logger.info('Alternative models computation have finished.')
-
-    def _compute_null_model(self, progress):
-        raise NotImplementedError
-
-    def _compute_alt_models(self, progress):
-        raise NotImplementedError
+    @cachedmethod(attrgetter('_cache_compute_alt_models'))
+    def _compute_alt_models(self):
+        fep = self._fixed_ep
+        covariates = self._covariates
+        X = self._X
+        self._alt_lmls, self._effect_sizes = fep.compute(covariates, X)
 
     def null_lml(self):
         """Log marginal likelihood for the null hypothesis."""

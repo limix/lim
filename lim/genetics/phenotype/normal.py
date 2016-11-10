@@ -1,7 +1,10 @@
-from ._phenotype import Phenotype
+from numpy import ascontiguousarray
 
-
-class NormalPhenotype(Phenotype):
+class NormalPhenotype(object):
     def __init__(self, outcome):
-        super(NormalPhenotype, self).__init__('Normal')
-        self.outcome = outcome
+        self.outcome = ascontiguousarray(outcome, dtype=float)
+        self.likelihood_name = 'Normal'
+
+    @property
+    def sample_size(self):
+        return len(self.outcome)

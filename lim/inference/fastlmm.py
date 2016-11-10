@@ -2,38 +2,26 @@ from __future__ import division
 
 from numpy import exp
 from numpy import clip
-from numpy import isfinite
 from numpy import atleast_2d
-from numpy import all as all_
-from numpy import set_printoptions
 
-from limix_math import economic_qs_linear
+from limix_math import is_all_finite
 
 from optimix import maximize_scalar
 from optimix import Function
 from optimix import Scalar
 
-from ..util.transformation import DesignMatrixTrans
 from .fastlmm_core import FastLMMCore
 from ..genetics.model import CanonicalModel
 
 
 class FastLMM(Function):
-    def __init__(self, y, covariates, X=None, QS=None):
+    def __init__(self, y, Q0, Q1, S0, covariates=None):
         super(FastLMM, self).__init__(logistic=Scalar(0.0))
 
-        assert (X is None) != (QS is None)
-        if not all_(isfinite(y)):
+        if not is_all_finite(y):
             raise ValueError("There are non-finite values in the phenotype.")
 
-        self._trans = None
-        if QS is None:
-            self._trans = DesignMatrixTrans(X)
-            X = self._trans.transform(X)
-            QS = economic_qs_linear(X)
-            self._X = X
-
-        self._flmmc = FastLMMCore(y, covariates, QS[0][0], QS[0][1], QS[1])
+        self._flmmc = FastLMMCore(y, covariates, Q0, Q1, S0)
         self.set_nodata()
 
     @property
@@ -48,7 +36,6 @@ class FastLMM(Function):
         o = FastLMM.__new__(FastLMM)
         super(FastLMM, o).__init__(logistic=Scalar(self.get('logistic')))
         o._flmmc = self._flmmc.copy()
-        o._trans = self._trans
         o.set_nodata()
         return o
 
@@ -95,11 +82,12 @@ class FastLMM(Function):
         self._flmmc.delta = self._delta()
         return self._flmmc.lml()
 
-    def predict(self, covariates, Xp):
+    def predict(self, X, covariates, Xp, trans=None):
         covariates = atleast_2d(covariates)
         Xp = atleast_2d(Xp)
-        Xp = self._trans.transform(Xp)
-        Cp = Xp.dot(self._X.T)
+        if trans is not None:
+            Xp = trans.transform(Xp)
+        Cp = Xp.dot(X.T)
         Cpp = Xp.dot(Xp.T)
         return self._flmmc.predict(covariates, Cp, Cpp)
 
