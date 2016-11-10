@@ -7,7 +7,6 @@ from cachetools import cachedmethod
 from cachetools.keys import hashkey
 
 from .qtl import QTLScan
-from ...inference import BernoulliEP
 
 
 class BernoulliQTLScan(QTLScan):

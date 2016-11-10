@@ -8,3 +8,8 @@ class BernoulliPhenotype(object):
     @property
     def sample_size(self):
         return len(self.outcome)
+
+    def to_normal(self):
+        y = self.outcome / self.outcome.std()
+        y -= y.mean()
+        return y

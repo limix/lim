@@ -6,9 +6,6 @@ from numpy import copy
 from numpy import sqrt
 from numpy import ones
 
-from ...inference import BernoulliEP
-from ...inference import BinomialEP
-from ...inference import PoissonEP
 from ...tool.normalize import stdnorm
 from ...tool.kinship import gower_normalization
 

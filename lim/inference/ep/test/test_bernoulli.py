@@ -5,7 +5,9 @@ from numpy.random import RandomState
 from numpy.testing import assert_almost_equal, assert_allclose
 
 from limix_math import economic_qs_linear
-from lim.inference.ep import BernoulliEP
+
+from lim.inference.ep import ExpFamEP
+from lim.genetics.phenotype import BernoulliPhenotype
 
 def test_bernoulli_lml():
     n = 3
@@ -13,7 +15,7 @@ def test_bernoulli_lml():
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
     (Q, S0) = economic_qs_linear(G)
     y = array([1., 0., 1.])
-    ep = BernoulliEP(y, M, Q[0], Q[1], S0 + 1.0)
+    ep = ExpFamEP(BernoulliPhenotype(y), M, Q[0], Q[1], S0 + 1.0)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.
@@ -29,7 +31,7 @@ def test_bernoulli_gradient_over_v():
     G = array([[1.2, 3.4], [-.1, 1.2], [0.0, .2]])
     (Q, S0) = economic_qs_linear(G)
     y = array([1., 0., 1.])
-    ep = BernoulliEP(y, M, Q[0], Q[1], S0 + 1.0)
+    ep = ExpFamEP(BernoulliPhenotype(y), M, Q[0], Q[1], S0 + 1.0)
     ep.beta = array([1.])
     assert_almost_equal(ep.beta, array([1.]))
     ep.v = 1.
@@ -66,12 +68,11 @@ def test_bernoulli_optimize():
 
     (Q, S0) = economic_qs_linear(G)
 
-    ep = BernoulliEP(y, M, Q[0], Q[1], S0)
+    ep = ExpFamEP(BernoulliPhenotype(y), M, Q[0], Q[1], S0)
     ep.optimize()
     assert_allclose(ep.lml(), -67.68161933698035, rtol=1e-5)
-    assert_allclose(ep.sigma2_epsilon, 0.0566444476171275, rtol=1e-5)
-    assert_allclose(ep.sigma2_b, 2.971540832801831, rtol=1e-5)
-    assert_allclose(ep.beta[0], -0.15581338784597942, rtol=1e-5)
+    assert_allclose(ep.heritability, 0.931995296712, rtol=1e-5)
+    assert_allclose(ep.beta[0], -0.16082171171359558, rtol=1e-5)
 
 
 if __name__ == '__main__':

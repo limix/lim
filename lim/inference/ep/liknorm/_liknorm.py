@@ -23,12 +23,16 @@ def create_liknorm(likelihood_name, nintervals):
 
 class BernoulliLikNorm(object):
     def __init__(self):
-        self._moments = _liknorm_ffi.lib.bernoulli_moments
+        self._moments = _liknorm_ffi.lib.binomial_moments
 
-    def moments(self, outcome, eta, tau, log_zeroth, mean, variance):
+    def moments(self, phenotype, eta, tau, log_zeroth, mean, variance):
+        outcome = phenotype.outcome
+        from numpy import ones
+        ntrials = ones((len(outcome), ))
         size = len(outcome)
-        self._moments(size, ptr(outcome), ptr(eta), ptr(tau),
-                      ptr(log_zeroth), ptr(mean), ptr(variance))
+        self._moments(size, ptr(outcome), ptr(ntrials),
+                                          ptr(eta), ptr(tau), ptr(log_zeroth),
+                                          ptr(mean), ptr(variance))
 
     def destroy(self):
         _liknorm_ffi.lib.destroy()
@@ -37,11 +41,13 @@ class BinomialLikNorm(object):
     def __init__(self):
         self._moments = _liknorm_ffi.lib.binomial_moments
 
-    def moments(self, k, n, eta, tau, log_zeroth, mean, variance):
-        size = len(k)
+    def moments(self, phenotype, eta, tau, log_zeroth, mean, variance):
+        nsuccesses = phenotype.nsuccesses
+        ntrials = phenotype.ntrials
+        size = len(nsuccesses)
         _liknorm_ffi.lib.binomial_moments(size,
-                                          ptr(k),
-                                          ptr(n),
+                                          ptr(nsuccesses),
+                                          ptr(ntrials),
                                           ptr(eta),
                                           ptr(tau),
                                           ptr(log_zeroth),
@@ -51,10 +57,11 @@ class BinomialLikNorm(object):
         _liknorm_ffi.lib.destroy()
 
 class PoissonLikNorm(object):
-    def moments(self, k, eta, tau, log_zeroth, mean, variance):
-        size = len(k)
+    def moments(self, phenotype, eta, tau, log_zeroth, mean, variance):
+        noccurrences = phenotype.noccurrences
+        size = len(noccurrences)
         _liknorm_ffi.lib.poisson_moments(size,
-                                         ptr(k),
+                                         ptr(noccurrences),
                                          ptr(eta),
                                          ptr(tau),
                                          ptr(log_zeroth),

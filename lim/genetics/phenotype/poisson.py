@@ -8,3 +8,7 @@ class PoissonPhenotype(object):
     @property
     def sample_size(self):
         return len(self.noccurrences)
+
+    def to_normal(self):
+        y = self.noccurrences
+        return (y - y.mean()) / y.std()
