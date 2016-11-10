@@ -4,12 +4,13 @@ from numpy import array, empty, set_printoptions
 from numpy.testing import assert_allclose
 
 from lim.inference.ep.liknorm import create_liknorm
+from lim.genetics.phenotype import BinomialPhenotype, PoissonPhenotype
 
 
 def test_liknorm_binomial():
     set_printoptions(precision=16)
 
-    ln = LikNormMoments(500)
+    ln = create_liknorm('Binomial', 500)
 
     N = array([3, 7, 1, 98], float)
     K = array([2, 0, 1, 66], float)
@@ -21,7 +22,7 @@ def test_liknorm_binomial():
     mean = empty(4)
     variance = empty(4)
 
-    ln.binomial(K, N, eta, tau, log_zeroth, mean, variance)
+    ln.moments(BinomialPhenotype(K, N), eta, tau, log_zeroth, mean, variance)
 
     assert_allclose([
         -1.9523944026844868, -2.8039404963019825, -0.3788565926515431,
@@ -42,7 +43,7 @@ def test_liknorm_binomial():
 def test_liknorm_poisson():
     set_printoptions(precision=16)
 
-    ln = LikNormMoments(500)
+    ln = create_liknorm('Poisson', 500)
 
     k = array([2, 0, 1, 66], float)
 
@@ -53,7 +54,7 @@ def test_liknorm_poisson():
     mean = empty(4)
     variance = empty(4)
 
-    ln.poisson(k, eta, tau, log_zeroth, mean, variance)
+    ln.moments(PoissonPhenotype(k), eta, tau, log_zeroth, mean, variance)
 
     assert_allclose([
         -2.9206093278791672, -0.9585584570898347, -1.649214737245454,
