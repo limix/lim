@@ -1,7 +1,7 @@
 from __future__ import division
 
 from numpy.random import RandomState
-from numpy.testing import (assert_equal, assert_array_less, assert_allclose)
+from numpy.testing import (assert_equal, assert_array_less)
 
 from lim.random import GLMMSampler
 from lim.random.canonical import bernoulli

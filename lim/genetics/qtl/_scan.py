@@ -14,7 +14,6 @@ from limix_math import (economic_qs, economic_qs_linear)
 
 from .normal import QTLScan
 from ..phenotype import NormalPhenotype
-from ...util.transformation import DesignMatrixTrans
 from ..background import Background
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
