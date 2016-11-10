@@ -4,7 +4,6 @@ from __future__ import absolute_import
 
 import logging
 
-from numpy import ascontiguousarray
 from numpy import sqrt
 from numpy import ones
 from numpy import empty_like
@@ -12,8 +11,7 @@ from numpy import copyto
 
 from limix_math import (economic_qs, economic_qs_linear)
 
-from .normal import QTLScan
-from ..phenotype import NormalPhenotype
+from ._qtl import QTLScan
 from ..background import Background
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
@@ -68,66 +66,10 @@ def scan(phenotype, X, G=None, K=None, covariates=None, progress=True):
     qtl.compute_statistics()
 
     return qtl
-
-
-
-def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
-    """Association between genetic markers and phenotype for continuous traits.
-
-    Matrix `X` shall contain the genetic markers (e.g., number of minor
-    alleles) with rows and columns representing samples and genetic markers,
-    respectively.
-
-    The user must specify only one of the parameters `G` and `K` for defining
-    the genetic background.
-
-    Let :math:`N` be the sample size, :math:`S` the number of covariates,
-    :math:`P_c` the number of genetic markers to be tested, and :math:`P_b`
-    the number of genetic markers used for Kinship estimation.
-
-    Args:
-        y          (array_like): Phenotype. Dimension (:math:`N\\times 0`).
-        X          (array_like): Candidate genetic markers (or any other
-                                 type of explanatory variable) whose
-                                 association with the phenotype will be
-                                 tested. Dimension (:math:`N\\times P_c`).
-        G          (array_like): Genetic markers matrix used internally for
-                                 kinship estimation. Dimension
-                                 (:math:`N\\times P_b`).
-        K          (array_like): Kinship matrix. Dimension
-                                 (:math:`N\\times N`).
-        covariates (array_like): Covariates. Default is an offset.
-                                 Dimension (:math:`N\\times S`).
-        progress    (bool)     : Shows progress. Defaults to `True`.
-
-    Returns:
-        A :class:`lim.genetics.qtl._canonical.CanonicalLRTScan` instance.
-    """
-    logger = logging.getLogger(__name__)
-    logger.info('Normal association scan has started.')
-    y = ascontiguousarray(y, dtype=float)
-    n = len(y)
-    covariates = ones((n, 1)) if covariates is None else covariates
-    X = _clone(X)
-    G = _clone(G)
-    K = _clone(K)
-
-    phenotype = NormalPhenotype(y)
-    background = Background()
-
-    (Q0, Q1, S0) = _genetic_preprocess(X, G, K, background)
-    qtl = NormalQTLScan(y, covariates, X, Q0, Q1, S0)
-    qtl.progress = progress
-    qtl.compute_statistics()
-
-    return qtl
 #
-# def bernoulli_scan(outcome,
-#                  X,
-#                  G=None,
-#                  K=None,
-#                  covariates=None,
-#                  progress=True):
+#
+#
+# def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
 #     """Association between genetic markers and phenotype for continuous traits.
 #
 #     Matrix `X` shall contain the genetic markers (e.g., number of minor
@@ -142,12 +84,7 @@ def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
 #     the number of genetic markers used for Kinship estimation.
 #
 #     Args:
-#         nsuccesses (array_like): Phenotype described by the number of
-#                                  successes, as non-negative integers.
-#                                  Dimension (:math:`N\\times 0`).
-#         ntrials    (array_like): Phenotype described by the number of
-#                                  trials, as positive integers. Dimension
-#                                  (:math:`N\\times 0`).
+#         y          (array_like): Phenotype. Dimension (:math:`N\\times 0`).
 #         X          (array_like): Candidate genetic markers (or any other
 #                                  type of explanatory variable) whose
 #                                  association with the phenotype will be
@@ -159,156 +96,217 @@ def normal_scan(y, X, G=None, K=None, covariates=None, progress=True):
 #                                  (:math:`N\\times N`).
 #         covariates (array_like): Covariates. Default is an offset.
 #                                  Dimension (:math:`N\\times S`).
-#         progress         (bool): Shows progress. Defaults to `True`.
+#         progress    (bool)     : Shows progress. Defaults to `True`.
 #
 #     Returns:
-#         A :class:`lim.genetics.qtl.LikelihoodRatioTest` instance.
+#         A :class:`lim.genetics.qtl._canonical.CanonicalLRTScan` instance.
 #     """
-#
 #     logger = logging.getLogger(__name__)
-#     logger.info('Bernoulli association scan has started.')
-#     outcome = ascontiguousarray(outcome, dtype=float)
-#     n = len(outcome)
+#     logger.info('Normal association scan has started.')
+#     y = ascontiguousarray(y, dtype=float)
+#     n = len(y)
 #     covariates = ones((n, 1)) if covariates is None else covariates
 #     X = _clone(X)
 #     G = _clone(G)
 #     K = _clone(K)
 #
-#     phenotype = BernoulliPhenotype(outcome)
+#     phenotype = NormalPhenotype(y)
 #     background = Background()
 #
 #     (Q0, Q1, S0) = _genetic_preprocess(X, G, K, background)
-#     qtl = BernoulliQTLScan(outcome, covariates, X, Q0, Q1, S0)
+#     qtl = QTLScan(y, covariates, X, Q0, Q1, S0)
 #     qtl.progress = progress
 #     qtl.compute_statistics()
 #
 #     return qtl
-#
-# def binomial_scan(nsuccesses,
-#                   ntrials,
-#                   X,
-#                   G=None,
-#                   K=None,
-#                   covariates=None,
-#                   progress=True):
-#     """Association between genetic markers and phenotype for continuous traits.
-#
-#     Matrix `X` shall contain the genetic markers (e.g., number of minor
-#     alleles) with rows and columns representing samples and genetic markers,
-#     respectively.
-#
-#     The user must specify only one of the parameters `G` and `K` for defining
-#     the genetic background.
-#
-#     Let :math:`N` be the sample size, :math:`S` the number of covariates,
-#     :math:`P_c` the number of genetic markers to be tested, and :math:`P_b`
-#     the number of genetic markers used for Kinship estimation.
-#
-#     Args:
-#         nsuccesses (array_like): Phenotype described by the number of
-#                                  successes, as non-negative integers.
-#                                  Dimension (:math:`N\\times 0`).
-#         ntrials    (array_like): Phenotype described by the number of
-#                                  trials, as positive integers. Dimension
-#                                  (:math:`N\\times 0`).
-#         X          (array_like): Candidate genetic markers (or any other
-#                                  type of explanatory variable) whose
-#                                  association with the phenotype will be
-#                                  tested. Dimension (:math:`N\\times P_c`).
-#         G          (array_like): Genetic markers matrix used internally for
-#                                  kinship estimation. Dimension
-#                                  (:math:`N\\times P_b`).
-#         K          (array_like): Kinship matrix. Dimension
-#                                  (:math:`N\\times N`).
-#         covariates (array_like): Covariates. Default is an offset.
-#                                  Dimension (:math:`N\\times S`).
-#         progress         (bool): Shows progress. Defaults to `True`.
-#
-#     Returns:
-#         A :class:`lim.genetics.qtl.LikelihoodRatioTest` instance.
-#     """
-#
-#     logger = logging.getLogger(__name__)
-#     logger.info('Binomial association scan has started.')
-#     nsuccesses = ascontiguousarray(nsuccesses, dtype=float)
-#     ntrials = ascontiguousarray(ntrials, dtype=float)
-#     n = len(ntrials)
-#     covariates = ones((n, 1)) if covariates is None else covariates
-#     X = _clone(X)
-#     G = _clone(G)
-#     K = _clone(K)
-#
-#     phenotype = BinomialPhenotype(nsuccesses, ntrials)
-#     background = Background()
-#
-#     (Q0, Q1, S0) = _genetic_preprocess(X, G, K, background)
-#     qtl = BinomialQTLScan(nsuccesses, ntrials, covariates, X, Q0, Q1, S0)
-#     qtl.progress = progress
-#     qtl.compute_statistics()
-#
-#     return qtl
-#
-# def poisson_scan(noccurrences,
-#                  X,
-#                  G=None,
-#                  K=None,
-#                  covariates=None,
-#                  progress=True):
-#     """Association between genetic markers and phenotype for continuous traits.
-#
-#     Matrix `X` shall contain the genetic markers (e.g., number of minor
-#     alleles) with rows and columns representing samples and genetic markers,
-#     respectively.
-#
-#     The user must specify only one of the parameters `G` and `K` for defining
-#     the genetic background.
-#
-#     Let :math:`N` be the sample size, :math:`S` the number of covariates,
-#     :math:`P_c` the number of genetic markers to be tested, and :math:`P_b`
-#     the number of genetic markers used for Kinship estimation.
-#
-#     Args:
-#         nsuccesses (array_like): Phenotype described by the number of
-#                                  successes, as non-negative integers.
-#                                  Dimension (:math:`N\\times 0`).
-#         ntrials    (array_like): Phenotype described by the number of
-#                                  trials, as positive integers. Dimension
-#                                  (:math:`N\\times 0`).
-#         X          (array_like): Candidate genetic markers (or any other
-#                                  type of explanatory variable) whose
-#                                  association with the phenotype will be
-#                                  tested. Dimension (:math:`N\\times P_c`).
-#         G          (array_like): Genetic markers matrix used internally for
-#                                  kinship estimation. Dimension
-#                                  (:math:`N\\times P_b`).
-#         K          (array_like): Kinship matrix. Dimension
-#                                  (:math:`N\\times N`).
-#         covariates (array_like): Covariates. Default is an offset.
-#                                  Dimension (:math:`N\\times S`).
-#         progress         (bool): Shows progress. Defaults to `True`.
-#
-#     Returns:
-#         A :class:`lim.genetics.qtl.LikelihoodRatioTest` instance.
-#     """
-#
-#     logger = logging.getLogger(__name__)
-#     logger.info('Poisson association scan has started.')
-#     noccurrences = ascontiguousarray(noccurrences, dtype=float)
-#     n = len(noccurrences)
-#     covariates = ones((n, 1)) if covariates is None else covariates
-#     X = _clone(X)
-#     G = _clone(G)
-#     K = _clone(K)
-#
-#     phenotype = PoissonPhenotype(noccurrences)
-#     background = Background()
-#
-#     (Q0, Q1, S0) = _genetic_preprocess(X, G, K, background)
-#     qtl = PoissonQTLScan(noccurrences, covariates, X, Q0, Q1, S0)
-#     qtl.progress = progress
-#     qtl.compute_statistics()
-#
-#     return qtl
+# #
+# # def bernoulli_scan(outcome,
+# #                  X,
+# #                  G=None,
+# #                  K=None,
+# #                  covariates=None,
+# #                  progress=True):
+# #     """Association between genetic markers and phenotype for continuous traits.
+# #
+# #     Matrix `X` shall contain the genetic markers (e.g., number of minor
+# #     alleles) with rows and columns representing samples and genetic markers,
+# #     respectively.
+# #
+# #     The user must specify only one of the parameters `G` and `K` for defining
+# #     the genetic background.
+# #
+# #     Let :math:`N` be the sample size, :math:`S` the number of covariates,
+# #     :math:`P_c` the number of genetic markers to be tested, and :math:`P_b`
+# #     the number of genetic markers used for Kinship estimation.
+# #
+# #     Args:
+# #         nsuccesses (array_like): Phenotype described by the number of
+# #                                  successes, as non-negative integers.
+# #                                  Dimension (:math:`N\\times 0`).
+# #         ntrials    (array_like): Phenotype described by the number of
+# #                                  trials, as positive integers. Dimension
+# #                                  (:math:`N\\times 0`).
+# #         X          (array_like): Candidate genetic markers (or any other
+# #                                  type of explanatory variable) whose
+# #                                  association with the phenotype will be
+# #                                  tested. Dimension (:math:`N\\times P_c`).
+# #         G          (array_like): Genetic markers matrix used internally for
+# #                                  kinship estimation. Dimension
+# #                                  (:math:`N\\times P_b`).
+# #         K          (array_like): Kinship matrix. Dimension
+# #                                  (:math:`N\\times N`).
+# #         covariates (array_like): Covariates. Default is an offset.
+# #                                  Dimension (:math:`N\\times S`).
+# #         progress         (bool): Shows progress. Defaults to `True`.
+# #
+# #     Returns:
+# #         A :class:`lim.genetics.qtl.LikelihoodRatioTest` instance.
+# #     """
+# #
+# #     logger = logging.getLogger(__name__)
+# #     logger.info('Bernoulli association scan has started.')
+# #     outcome = ascontiguousarray(outcome, dtype=float)
+# #     n = len(outcome)
+# #     covariates = ones((n, 1)) if covariates is None else covariates
+# #     X = _clone(X)
+# #     G = _clone(G)
+# #     K = _clone(K)
+# #
+# #     phenotype = BernoulliPhenotype(outcome)
+# #     background = Background()
+# #
+# #     (Q0, Q1, S0) = _genetic_preprocess(X, G, K, background)
+# #     qtl = BernoulliQTLScan(outcome, covariates, X, Q0, Q1, S0)
+# #     qtl.progress = progress
+# #     qtl.compute_statistics()
+# #
+# #     return qtl
+# #
+# # def binomial_scan(nsuccesses,
+# #                   ntrials,
+# #                   X,
+# #                   G=None,
+# #                   K=None,
+# #                   covariates=None,
+# #                   progress=True):
+# #     """Association between genetic markers and phenotype for continuous traits.
+# #
+# #     Matrix `X` shall contain the genetic markers (e.g., number of minor
+# #     alleles) with rows and columns representing samples and genetic markers,
+# #     respectively.
+# #
+# #     The user must specify only one of the parameters `G` and `K` for defining
+# #     the genetic background.
+# #
+# #     Let :math:`N` be the sample size, :math:`S` the number of covariates,
+# #     :math:`P_c` the number of genetic markers to be tested, and :math:`P_b`
+# #     the number of genetic markers used for Kinship estimation.
+# #
+# #     Args:
+# #         nsuccesses (array_like): Phenotype described by the number of
+# #                                  successes, as non-negative integers.
+# #                                  Dimension (:math:`N\\times 0`).
+# #         ntrials    (array_like): Phenotype described by the number of
+# #                                  trials, as positive integers. Dimension
+# #                                  (:math:`N\\times 0`).
+# #         X          (array_like): Candidate genetic markers (or any other
+# #                                  type of explanatory variable) whose
+# #                                  association with the phenotype will be
+# #                                  tested. Dimension (:math:`N\\times P_c`).
+# #         G          (array_like): Genetic markers matrix used internally for
+# #                                  kinship estimation. Dimension
+# #                                  (:math:`N\\times P_b`).
+# #         K          (array_like): Kinship matrix. Dimension
+# #                                  (:math:`N\\times N`).
+# #         covariates (array_like): Covariates. Default is an offset.
+# #                                  Dimension (:math:`N\\times S`).
+# #         progress         (bool): Shows progress. Defaults to `True`.
+# #
+# #     Returns:
+# #         A :class:`lim.genetics.qtl.LikelihoodRatioTest` instance.
+# #     """
+# #
+# #     logger = logging.getLogger(__name__)
+# #     logger.info('Binomial association scan has started.')
+# #     nsuccesses = ascontiguousarray(nsuccesses, dtype=float)
+# #     ntrials = ascontiguousarray(ntrials, dtype=float)
+# #     n = len(ntrials)
+# #     covariates = ones((n, 1)) if covariates is None else covariates
+# #     X = _clone(X)
+# #     G = _clone(G)
+# #     K = _clone(K)
+# #
+# #     phenotype = BinomialPhenotype(nsuccesses, ntrials)
+# #     background = Background()
+# #
+# #     (Q0, Q1, S0) = _genetic_preprocess(X, G, K, background)
+# #     qtl = BinomialQTLScan(nsuccesses, ntrials, covariates, X, Q0, Q1, S0)
+# #     qtl.progress = progress
+# #     qtl.compute_statistics()
+# #
+# #     return qtl
+# #
+# # def poisson_scan(noccurrences,
+# #                  X,
+# #                  G=None,
+# #                  K=None,
+# #                  covariates=None,
+# #                  progress=True):
+# #     """Association between genetic markers and phenotype for continuous traits.
+# #
+# #     Matrix `X` shall contain the genetic markers (e.g., number of minor
+# #     alleles) with rows and columns representing samples and genetic markers,
+# #     respectively.
+# #
+# #     The user must specify only one of the parameters `G` and `K` for defining
+# #     the genetic background.
+# #
+# #     Let :math:`N` be the sample size, :math:`S` the number of covariates,
+# #     :math:`P_c` the number of genetic markers to be tested, and :math:`P_b`
+# #     the number of genetic markers used for Kinship estimation.
+# #
+# #     Args:
+# #         nsuccesses (array_like): Phenotype described by the number of
+# #                                  successes, as non-negative integers.
+# #                                  Dimension (:math:`N\\times 0`).
+# #         ntrials    (array_like): Phenotype described by the number of
+# #                                  trials, as positive integers. Dimension
+# #                                  (:math:`N\\times 0`).
+# #         X          (array_like): Candidate genetic markers (or any other
+# #                                  type of explanatory variable) whose
+# #                                  association with the phenotype will be
+# #                                  tested. Dimension (:math:`N\\times P_c`).
+# #         G          (array_like): Genetic markers matrix used internally for
+# #                                  kinship estimation. Dimension
+# #                                  (:math:`N\\times P_b`).
+# #         K          (array_like): Kinship matrix. Dimension
+# #                                  (:math:`N\\times N`).
+# #         covariates (array_like): Covariates. Default is an offset.
+# #                                  Dimension (:math:`N\\times S`).
+# #         progress         (bool): Shows progress. Defaults to `True`.
+# #
+# #     Returns:
+# #         A :class:`lim.genetics.qtl.LikelihoodRatioTest` instance.
+# #     """
+# #
+# #     logger = logging.getLogger(__name__)
+# #     logger.info('Poisson association scan has started.')
+# #     noccurrences = ascontiguousarray(noccurrences, dtype=float)
+# #     n = len(noccurrences)
+# #     covariates = ones((n, 1)) if covariates is None else covariates
+# #     X = _clone(X)
+# #     G = _clone(G)
+# #     K = _clone(K)
+# #
+# #     phenotype = PoissonPhenotype(noccurrences)
+# #     background = Background()
+# #
+# #     (Q0, Q1, S0) = _genetic_preprocess(X, G, K, background)
+# #     qtl = PoissonQTLScan(noccurrences, covariates, X, Q0, Q1, S0)
+# #     qtl.progress = progress
+# #     qtl.compute_statistics()
+# #
+# #     return qtl
 
 def _genetic_preprocess(X, G, K, background):
     logger = logging.getLogger(__name__)
