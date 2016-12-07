@@ -710,7 +710,7 @@ class EP(object):
 
     def _start_optimizer(self):
         x0 = [self.v]
-        bounds = [(epsilon.small, inf)]
+        bounds = [(epsilon.small * 100, inf)]
 
         if self._overdispersion:
             klass = FunCostOverdispersion
