@@ -26,7 +26,7 @@ def setup_package():
 
     metadata = dict(
         name='lim',
-        version='1.2.0.dev1',
+        version='1.2.0.dev2',
         maintainer="Limix Developers",
         maintainer_email="horta@ebi.ac.uk",
         license="MIT",
