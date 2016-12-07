@@ -10,7 +10,7 @@ from ...tool.normalize import stdnorm
 from ...tool.kinship import gower_normalization
 from ...inference import ExpFamEP
 
-from limix_math import (economic_qs, economic_qs_linear)
+from numpy_sugar.linalg import (economic_qs, economic_qs_linear)
 
 def estimate(phenotype, G=None, K=None, covariates=None):
     """Estimate the so-called narrow-sense heritability.

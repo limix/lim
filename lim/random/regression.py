@@ -1,5 +1,5 @@
 from numpy.random import RandomState
-from limix_math import multivariate_normal
+from numpy_sugar.random import multivariate_normal
 
 
 class RegGPSampler(object):

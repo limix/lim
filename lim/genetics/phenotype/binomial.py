@@ -2,7 +2,7 @@ from __future__ import absolute_import, division, unicode_literals
 
 from numpy import ascontiguousarray
 
-from limix_math import (issingleton, is_all_finite)
+from numpy_sugar import (is_all_equal, is_all_finite)
 
 class BinomialPhenotype(object):
     def __init__(self, nsuccesses, ntrials):
@@ -10,7 +10,7 @@ class BinomialPhenotype(object):
         self.ntrials = ascontiguousarray(ntrials, dtype=float)
         self.likelihood_name = 'Binomial'
 
-        if issingleton(nsuccesses):
+        if is_all_equal(nsuccesses):
             raise ValueError("The phenotype array has a single unique value" +
                              " only.")
 

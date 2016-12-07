@@ -15,7 +15,7 @@ from numpy import asarray
 from numpy import sqrt
 from numpy import ones
 
-from limix_math import economic_svd
+from numpy_sugar.linalg import economic_svd
 
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm

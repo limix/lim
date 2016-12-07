@@ -1,7 +1,8 @@
 from numpy import full
 from numpy.random import RandomState
 
-from limix_math import (sum2diag, multivariate_normal)
+from numpy_sugar.linalg import sum2diag
+from numpy_sugar.random import multivariate_normal
 
 from ..util.transformation import DesignMatrixTrans
 

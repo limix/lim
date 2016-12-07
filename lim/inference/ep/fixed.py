@@ -2,9 +2,8 @@ from numpy import sum
 from numpy import dot
 from numpy import newaxis
 from numpy import nan_to_num
-from limix_math import cho_solve
+from numpy_sugar.linalg import cho_solve, ddot
 from numpy import errstate
-from limix_math import ddot
 
 
 class FixedEP(object):

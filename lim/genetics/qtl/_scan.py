@@ -9,7 +9,7 @@ from numpy import ones
 from numpy import empty_like
 from numpy import copyto
 
-from limix_math import (economic_qs, economic_qs_linear)
+from numpy_sugar.linalg import (economic_qs, economic_qs_linear)
 
 from ._qtl import QTLScan
 from ..background import Background

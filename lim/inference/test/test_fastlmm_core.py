@@ -5,7 +5,7 @@ from numpy.testing import assert_allclose
 from numpy import sqrt
 from numpy import ones
 
-from limix_math import economic_qs_linear
+from numpy_sugar.linalg import economic_qs_linear
 
 from lim.inference.fastlmm_core import FastLMMCore
 from lim.inference import SlowLMM
