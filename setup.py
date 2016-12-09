@@ -5,6 +5,12 @@ import sys
 
 from setuptools import find_packages, setup
 
+try:
+    import pypandoc
+    long_description = pypandoc.convert('README.md', 'rst')
+except(IOError, ImportError):
+    long_description = open('README.md').read()
+
 
 def setup_package():
     src_path = os.path.dirname(os.path.abspath(sys.argv[0]))
@@ -30,6 +36,8 @@ def setup_package():
         maintainer="Limix Developers",
         maintainer_email="horta@ebi.ac.uk",
         license="MIT",
+        description='Lim.',
+        long_description=long_description,
         url='http://pmbio.github.io/limix/',
         packages=find_packages(),
         zip_safe=True,
