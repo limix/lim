@@ -5,7 +5,7 @@ from six import string_types
 from numpy import ndarray
 
 from limix_util import symbol
-from ..util import unicode_compatible
+from ...util import unicode_compatible
 
 
 def _stringit(v):
