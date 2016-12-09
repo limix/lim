@@ -1,3 +1,11 @@
+.. toctree::
+  :caption: Table of Contents
+  :name: mastertoc
+  :maxdepth: 3
+
+  index
+
+===================
 Lim's documentation
 ===================
 
@@ -5,11 +13,22 @@ You can get the source and open issues `on Github.`_
 
 .. _on Github.: https://github.com/glimix/lim
 
-.. toctree::
-    :caption: Table of contents
-    :name: mastertoc
-    :maxdepth: 2
+*******
+Install
+*******
 
-    installation
-#    tutorial.qtl_analysis
-#    reference
+The recommended way of installing it **will be** via `conda`_::
+
+  conda install -c conda-forge lim
+
+But as of now, you should do install via pip.
+First, make sure you have [Numba](http://numba.pydata.org/)::
+
+  conda install numba
+
+and then
+
+  pip install lim
+
+
+.. _conda: http://conda.pydata.org/docs/index.html
