@@ -2,21 +2,8 @@ name: py35
 channels:
 - r
 - defaults
-- conda-forge
 dependencies:
 - cffi=1.9.1=py35_0
-- conda-forge::asciitree=0.3.3=py35_0
-- conda-forge::brent_search=1.0.15=py35_0
-- conda-forge::cachetools=2.0.0=py35_0
-- conda-forge::humanfriendly=1.44.7=py35_2
-- conda-forge::limix_util=1.0.7=py35_0
-- conda-forge::ncephes=1.0.14=py35_0
-- conda-forge::ndarray_listener=1.0.15=py35_0
-- conda-forge::numpy_sugar=1.0.8=py35_0
-- conda-forge::optimix=1.1.1=py35_0
-- conda-forge::progressbar2=3.10.1=py35_0
-- conda-forge::pytest-runner=2.9=py35_1
-- conda-forge::python-utils=2.0.0=py35_0
 - h5py=2.6.0=np111py35_2
 - hdf5=1.8.17=1
 - libffi=3.2.1=0
