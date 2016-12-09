@@ -31,7 +31,7 @@ association scan between markers contained in `X` and the phenotype defined by
 
   # genetic markers
   X = random.randn(N, P)
-  X = lim.tool.normalize.stdnorm(X)
+  X = lim.tool.normalize.stdnorm(X, axis=0)
   X /= sqrt(X.shape[1])
 
   # effect sizes
@@ -85,54 +85,73 @@ This example uses :func:`lim.genetics.qtl.binomial_scan` to perform an
 association scan between markers contained in `X` and the phenotype defined by
 `y`, while accounting for background signal via `G`:
 
-.. literalinclude:: /../examples/binomial_qtl_analysis.py
+.. testcode::
 
-The output should be similar to::
+  import lim
 
-    Null model:
+  from numpy import random
+  from numpy import asarray
+  from numpy import zeros
+  from numpy import empty
+  from numpy import ones
+  from numpy import sqrt
+  from numpy import ones
 
-        Phenotype:
-            y_i = ∑_{j=1}^{n_i} 𝟏(f_i + ε_{i,j} > 0)
+  random = random.RandomState(0)
+  N = 50
+  P = 100
 
-        Latent phenotype:
-            f_i = o_i + u_i + e_i
+  # genetic markers
+  X = random.randn(N, P)
+  X = lim.tool.normalize.stdnorm(X, axis=0)
+  X /= sqrt(X.shape[1])
 
-        Definitions:
-            M      : covariates
-            o      : fixed-effects signal = M [ 2.3302].T
-            u      : background signal    ~ Normal(0,   4.9600 * Kinship)
-            e      : environmental signal ~ Normal(0,   1.2388 * I)
-            ε_{i,j}: instrumental signal  ~ Normal(0,   1)
-            n_i    : number of draws of the i-th sample
+  # effect sizes
+  u = zeros(P)
+  u[0] = +1
+  u[1] = +1
+  u[2] = -1
+  u[3] = -1
+  u[4] = -1
+  u[5] = +1
 
-        Model statistics:
-            Covariate effect sizes: [ 2.3302]
-            Fixed-effect variances:  0.0000
-            Genetic variance:        4.9600
-            Environmental variance:  1.2388
-            Instrumental variance:   1.0000
-            Heritability:            0.8002
-            Genetic ratio:           0.6890
-            Noise ratio:             0.5533
+  offset = 0.4
 
-    Alternative model:
+  # latent phenotype definition
+  f = offset + X.dot(u) + 0.2 * random.randn(N)
 
-        Latent phenotype:
-            f_i = o_i + b_j x_{i,j} + u_i + e_i
+  # phenotype definition
+  nsuccesses = empty(N)
+  ntrials = random.randint(1, 30, N)
+  for i in range(N):
+      nsuccesses[i] = sum(f[i] > 0.2 * random.randn(ntrials[i]))
+  ntrials = asarray(ntrials, float)
 
-        Definitions:
-            b_j    : effect-size of the j-th candidate marker
-            x_{i,j}: j-th candidate marker of the i-th sample
+  G = X[:, 2:].copy()
 
+  from lim.genetics.phenotype import BinomialPhenotype
+  lrt = lim.genetics.qtl.scan(BinomialPhenotype(nsuccesses, ntrials), X,
+                              G, progress=False)
+  print(lrt.pvalues())
 
-        Candidate effect sizes:
-                 Min         1Q      Median        3Q       Max
-            -1.19916  -0.314468  -0.0183151  0.294666  0.964101
+The output should be similar to:
 
-        Candidate log marginal likelihoods:
-                Min        1Q    Median        3Q       Max
-            -77.904  -77.8699  -77.6554  -77.2389  -73.7476
+.. testoutput::
 
-        Candidate p-values:
-                     Min            1Q        Median            3Q           Max
-            3.936413e-03  2.487912e-01  4.807105e-01  7.939106e-01  9.975996e-01
+  [ 0.01941533  0.05974973  0.22287607  0.12196036  0.00390464  0.05484215
+    0.73410739  0.77561839  0.02139017  0.37770498  0.38665833  0.42453626
+    0.54323949  0.93475895  0.60918312  0.89924375  0.88113106  0.49228679
+    0.68271584  0.374527    0.94550831  0.72927318  0.85459755  0.91193689
+    0.75023152  0.17971294  0.01314011  0.01941229  0.31704706  0.86447582
+    0.61602016  0.51567901  0.13453806  0.81132991  0.87330082  0.6095185
+    0.67192862  0.23207296  0.39602648  0.06313886  0.06008298  0.58746426
+    0.82310481  0.26534184  0.45359096  0.36038528  0.56077226  0.2152736
+    0.2502973   0.25361016  0.3827223   0.36221456  0.30415115  0.40922751
+    0.38122384  0.70966208  0.12365265  0.86024364  0.22792395  0.41876851
+    0.14306838  0.91980698  0.32779147  0.45793564  0.79928185  0.43292091
+    0.10158896  0.63442848  0.20173139  0.19715465  0.62092913  0.90962452
+    0.35988164  0.2692583   0.65899755  0.99096715  0.83528285  0.96926421
+    0.7062866   0.15391244  0.93020241  0.59675382  0.59728103  0.1798022
+    0.76862858  0.9121716   0.47676206  0.91313978  0.9609639   0.48296364
+    0.65658776  0.88089504  0.01616766  0.67807704  0.11466733  0.71584291
+    0.96650256  0.98655773  0.45722517  0.98681809]

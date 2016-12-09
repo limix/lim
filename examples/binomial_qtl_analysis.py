@@ -14,7 +14,7 @@ P = 100
 
 # genetic markers
 X = random.randn(N, P)
-X = lim.tool.normalize.stdnorm(X)
+X = lim.tool.normalize.stdnorm(X, axis=0)
 X /= sqrt(X.shape[1])
 
 # effect sizes
