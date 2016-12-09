@@ -49,8 +49,6 @@ branches:
 deploy:
   provider: pypi
   user: dhorta
-  password:
-    secure: hTHSuMzFrfTfbTXFviskRH0DFWvj9B5vpToPwDuSCdwUAXMoQ+baBwnF6NdczFBwCz7tK5/Jq2hB8zkqrkz9Phd1Dzi565KXVoqB5RDqMjPLkLouKpCRoFGguRACaiQKdVLh93+QFWDpbimOnQji+zhPowhqbyQmEgr2TzsIkBMjtBTja1/Py1eD2EYlDiXOUSh4A1TAkFT0IW/37pdNWV54r3CUjDjK5mjPaWUZHOJEFOctDPxy1yv9vDzIQ+u/PgOcXtkRynEWVTweoFeO/qAd7gWqVtUt9gTEy3Uy/wbcXGK3yM47EsBYjqKhlQGHRQXCUzORIRT2yPthCfJh0ug2QA8MIN24SALl75RdQCzCfw/spHHYGcN4A5UUUdqtxRsCYwBy3RaT3kdUV/+V+X2WyAdC0Oaz/oIE0sldSadOTWwaztf7WE4PPXbkOJ02yKRyHgwD0MC5NJCjol/CbJDjojLdTVb7hJdA2Sc5gokWEcPqYMFgnTvigLYcqLOD/z0OJN6uAfp953YtyyXDGTHyGOH9QC9/D4NW05bH8I8Ij/4JjsibK4l+86Vo25lMCRPiJHXAFn7Uwaz7NObsQnejHajGl3sAS9McHmrkxYs32lzUgYjdV3TOD8UM9UvcFVsoOhuzoxkha9iaDQJ294LweYHDDAVHkXbuofhNSFA=
   on:
     distributions: sdist bdist_wheel
-    repo: Horta/lim
+    repo: glimix/lim

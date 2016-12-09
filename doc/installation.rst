@@ -60,6 +60,6 @@ an extra package
 
 .. code-block:: console
 
-    pip install git+https://github.com/Horta/limix-qep.git
+    pip install git+https://github.com/glimix/lim.git
 
 which is only possible if you have given permission (contact horta@ebi.ac.uk).
