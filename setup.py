@@ -45,7 +45,7 @@ def setup_package():
         pass
     else:
         metadata['distclass'] = CondaDistribution
-        metadata['conda_buildnum'] = 1
+        metadata['conda_buildnum'] = 0
         metadata['conda_features'] = ['mkl']
 
     try:
