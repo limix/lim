@@ -1,7 +1,7 @@
 language: python
 cache:
   directories:
-  - $HOME/download
+  - "$HOME/download"
 matrix:
   include:
   - os: linux
@@ -49,6 +49,8 @@ branches:
 deploy:
   provider: pypi
   user: dhorta
+  password:
+    secure: bY65bP2ijDI28+lrsVb2FiByBE85qaKISRhv0rfhFBoxel9avbIsh8H/5bGqybe9Sxn3E4aZqA6NcZpJIHTzuir2a07l4wcaOJunu60lvqztdVYZBixwTt8WE+89O5wr0JbHaUjfujy40C8B9+f51X5yfSTaoI2USOXs8L0zATyNvBKnWQ7+Vrpn264VhMnVTFgDuu+dvZpt+u4WxPds8gPJiGoKwObaf8wUT7T3EbKzC2xzKf4BYnGVvnd+82uACRAtS21iQ8rKHJjeLWWA1xyPYh9AlpDVA2nnnHCjdBk4sJa8M5ed88NJ4spCnbOx1IbtlDTRJd38iIscN0EIIJ8GqOzRpcYsH7FQb1D64JbJEBN7IykGZ2XC0fjsoOqK5D6AUYdk52a/GDl2/meTE/1wXo4KMO+wq9ZD2r19jKtBec7TCVHCO1Y1Xbhjm5ggsHFxGU1aGjK51daujBSyQD3NU95INmvFxMeKTBNb2LzFAWPaBqrL0/bCy8W4xA79LHsZ1l5Rbvuspm9voxdxdyteIZUUMgw2OmaptqbOMiyoLQUGn1sRtWzkPqChJsvSer0G8lrnEHxy8u3QEUCmHWxkvpTyc0qg6TP5DW8AOvD+xiNWHPUV2LnJxBpFuPsUQQqSeYFCrA4crY9vMLX0tezOzphGWN1qI6zlk7pWjTQ=
   on:
     distributions: sdist bdist_wheel
     repo: glimix/lim
