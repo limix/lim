@@ -15,7 +15,8 @@ The recommended way of installing **will be** via
 conda install -c conda-forge lim
 ```
 
-As of now, first make sure you have [conda-forge](https://conda-forge.github.io/)
+Bu as of now, first make sure you have
+[conda-forge](https://conda-forge.github.io/)
 channel set
 ```bash
 conda config --add channels new_channel

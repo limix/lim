@@ -3,7 +3,6 @@
   :name: mastertoc
   :maxdepth: 3
 
-  index
   tutorial/qtl_analysis
 
 ===================
