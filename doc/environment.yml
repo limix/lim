@@ -41,5 +41,7 @@ dependencies:
 - pandas=0.19.1
 - h5py=2.6.0=np111py35_2
 - hdf5=1.8.17=1
+- scipy=0.18.1=np111py35_0
+- numba=0.28.1=np111py35_0
 - pip:
   - sphinx-rtd-theme==0.1.9

@@ -4,6 +4,7 @@
   :maxdepth: 3
 
   index
+  tutorial/qtl_analysis
 
 ===================
 Lim's documentation
@@ -21,7 +22,7 @@ The recommended way of installing it **will be** via `conda`_::
 
   conda install -c conda-forge lim
 
-But as of now, you should do install via pip.
+But as of now, you should install it via pip.
 First, make sure you have [Numba](http://numba.pydata.org/)::
 
   conda install numba
