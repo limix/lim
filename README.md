@@ -15,15 +15,19 @@ The recommended way of installing **will be** via
 conda install -c conda-forge lim
 ```
 
-An alternative way would be via pip
+As of now, first make sure you have [conda-forge](https://conda-forge.github.io/)
+channel set
 ```bash
-pip install lim
+conda config --add channels new_channel
 ```
-
-but make sure you have [Numba](http://numba.pydata.org/) installed
-beforehand::
+and the [Numba](http://numba.pydata.org/) package installed::
 ```bash
 conda install numba
+```
+
+Then type
+```bash
+pip install lim
 ```
 
 ## Running the tests
