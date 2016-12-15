@@ -33,7 +33,8 @@ effect sizes, log marginal likelihoods, and other statistics can be retrieved.
 Continuous phenotypes
 ^^^^^^^^^^^^^^^^^^^^^
 
-This example uses :func:`lim.genetics.qtl.scan` to perform an
+This example uses :func:`lim.genetics.qtl.scan` together with the
+:class:`lim.genetics.phenotype.NormalPhenotype` phenotype to perform an
 association scan between markers contained in `X` and the phenotype defined by
 `y`, while accounting for background signal via `G`:
 
@@ -105,7 +106,7 @@ Count phenotypes
 ^^^^^^^^^^^^^^^^
 
 This example uses :func:`lim.genetics.qtl.scan` together with the
-:class:`lim.genetics.phenotype` phenotype to perform an
+:class:`lim.genetics.phenotype.BinomialPhenotype` phenotype to perform an
 association scan between markers contained in `X` and the phenotype defined by
 `y`, while accounting for background signal via `G`:
 
