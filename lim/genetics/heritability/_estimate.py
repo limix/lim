@@ -8,7 +8,7 @@ from numpy import ones
 
 from ...tool.normalize import stdnorm
 from ...tool.kinship import gower_normalization
-from ...inference import ExpFamEP
+from limix_inference.glmm import ExpFamEP
 
 from numpy_sugar.linalg import (economic_qs, economic_qs_linear)
 

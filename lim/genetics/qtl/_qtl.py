@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 
 import logging
 
-from ...inference import ExpFamEP
-from ...inference import FastLMM
+from limix_inference.glmm import ExpFamEP
+from limix_inference.lmm import FastLMM
 
 from cachetools import LRUCache
 from operator import attrgetter

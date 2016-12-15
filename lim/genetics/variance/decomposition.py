@@ -19,10 +19,10 @@ from numpy_sugar.linalg import economic_svd
 
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
-from ...inference import SlowLMM
-from ...mean import LinearMean
-from ...cov import LinearCov
-from ...cov import SumCov
+from limix_inference.lmm import SlowLMM
+from limix_inference.mean import LinearMean
+from limix_inference.cov import LinearCov
+from limix_inference.cov import SumCov
 
 
 class InputInfo(object):
