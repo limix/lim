@@ -31,13 +31,13 @@ def setup_package():
 
     metadata = dict(
         name='lim',
-        version='1.2.0.dev9',
+        version='1.2.0.rc0',
         maintainer="Limix Developers",
         maintainer_email="horta@ebi.ac.uk",
         license="MIT",
         description='Lim.',
         long_description=long_description,
-        url='http://pmbio.github.io/limix/',
+        url='https://github.com/glimix/lim',
         packages=find_packages(),
         zip_safe=True,
         install_requires=install_requires,

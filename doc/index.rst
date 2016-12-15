@@ -39,7 +39,9 @@ association scan between markers contained in `X` and the phenotype defined by
 
 .. testcode::
 
-  import lim
+  from lim.tool import normalize
+  from lim.genetics import qtl
+  from lim.genetics.phenotype import NormalPhenotype
 
   from numpy import random
   from numpy import ones
@@ -53,7 +55,7 @@ association scan between markers contained in `X` and the phenotype defined by
 
   # genetic markers
   X = random.randn(N, P)
-  X = lim.tool.normalize.stdnorm(X, axis=0)
+  X = normalize.stdnorm(X, axis=0)
   X /= sqrt(X.shape[1])
 
   # effect sizes
@@ -72,8 +74,7 @@ association scan between markers contained in `X` and the phenotype defined by
 
   G = X[:, 2:].copy()
 
-  from lim.genetics.phenotype import NormalPhenotype
-  lrt = lim.genetics.qtl.scan(NormalPhenotype(y), X, G, progress=False)
+  lrt = qtl.scan(NormalPhenotype(y), X, G, progress=False)
   print(lrt.pvalues())
 
 
@@ -103,13 +104,16 @@ The output should be similar to:
 Count phenotypes
 ^^^^^^^^^^^^^^^^
 
-This example uses :func:`lim.genetics.qtl.binomial_scan` to perform an
+This example uses :func:`lim.genetics.qtl.scan` together with the
+:class:`lim.genetics.phenotype` phenotype to perform an
 association scan between markers contained in `X` and the phenotype defined by
 `y`, while accounting for background signal via `G`:
 
 .. testcode::
 
-  import lim
+  from lim.tool import normalize
+  from lim.genetics import qtl
+  from lim.genetics.phenotype import BinomialPhenotype
 
   from numpy import random
   from numpy import asarray
@@ -125,7 +129,7 @@ association scan between markers contained in `X` and the phenotype defined by
 
   # genetic markers
   X = random.randn(N, P)
-  X = lim.tool.normalize.stdnorm(X, axis=0)
+  X = normalize.stdnorm(X, axis=0)
   X /= sqrt(X.shape[1])
 
   # effect sizes
@@ -151,9 +155,8 @@ association scan between markers contained in `X` and the phenotype defined by
 
   G = X[:, 2:].copy()
 
-  from lim.genetics.phenotype import BinomialPhenotype
-  lrt = lim.genetics.qtl.scan(BinomialPhenotype(nsuccesses, ntrials), X,
-                              G, progress=False)
+  lrt = qtl.scan(BinomialPhenotype(nsuccesses, ntrials), X,
+                 G, progress=False)
   print(lrt.pvalues())
 
 The output should be similar to:
