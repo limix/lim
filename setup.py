@@ -51,8 +51,7 @@ def setup_package():
             "Programming Language :: Python :: 2.7",
             "Programming Language :: Python :: 3.5",
             "Operating System :: OS Independent",
-        ],
-        cffi_modules=['liknorm_build.py:liknorm'])
+        ])
 
     try:
         setup(**metadata)
