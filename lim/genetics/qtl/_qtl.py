@@ -1,17 +1,14 @@
-from __future__ import absolute_import
-from __future__ import unicode_literals
+from __future__ import absolute_import, unicode_literals
 
 import logging
+from operator import attrgetter
 
+from numpy import asarray, empty, nan
+
+from cachetools import LRUCache, cachedmethod
 from limix_inference.glmm import ExpFamEP
 from limix_inference.lmm import FastLMM
 
-from cachetools import LRUCache
-from operator import attrgetter
-from cachetools import cachedmethod
-
-from numpy import asarray
-from numpy import nan, empty
 
 class QTLScan(object):
     def __init__(self, phenotype, covariates, X, Q0, Q1, S0):
@@ -56,13 +53,22 @@ class QTLScan(object):
         Q0, Q1 = self._Q0, self._Q1
         S0 = self._S0
         if self._phenotype.likelihood_name.lower() == 'normal':
-            flmm = FastLMM(self._phenotype.outcome, Q0=Q0, Q1=Q1, S0=S0,
-                           covariates=covariates)
+            flmm = FastLMM(
+                self._phenotype.outcome,
+                Q0=Q0,
+                Q1=Q1,
+                S0=S0,
+                covariates=covariates)
             flmm.learn()
             self._flmm = flmm
             self._null_lml = flmm.lml()
         else:
-            ep = ExpFamEP(self._phenotype, covariates, Q0=Q0, Q1=Q1, S0=S0)
+            ep = ExpFamEP(
+                self._phenotype.to_likelihood(),
+                covariates,
+                Q0=Q0,
+                Q1=Q1,
+                S0=S0)
             ep.optimize()
             self._null_lml = ep.lml()
             self._fixed_ep = ep.fixed_ep()

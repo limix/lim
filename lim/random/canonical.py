@@ -52,7 +52,7 @@ def poisson(offset, G, heritability=0.5, causal_variants=None,
     mean, cov = _mean_cov(offset, G, heritability, causal_variants,
                           causal_variance, random_state)
     link = LogLink()
-    lik = PoissonProdLik(None, link)
+    lik = PoissonProdLik(link)
     sampler = GLMMSampler(lik, mean, cov)
 
     return sampler.sample(random_state)
