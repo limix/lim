@@ -15,11 +15,16 @@ The recommended way of installing it is via
 ```bash
 conda install -c conda-forge lim
 ```
+which requires having [Anaconda package](https://www.continuum.io/downloads)
+installed beforehand. (Don't be shy, it is hassle-free.)
 
 An alternative way would be via pip
 ```bash
 pip install lim
 ```
+which requires a deep understanding of Python packages and C libraries
+dependency resolution.
+This is not recommended for most users.
 
 Refer to [documentation](http://lim.readthedocs.io/) for more information.
 
