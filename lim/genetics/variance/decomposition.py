@@ -6,11 +6,6 @@ import logging
 
 from tabulate import tabulate
 
-from progressbar import ProgressBar
-from progressbar import NullBar
-from progressbar import UnknownLength
-from progressbar import Counter
-
 from numpy import asarray
 from numpy import sqrt
 from numpy import ones
@@ -152,15 +147,15 @@ class VarDec(object):
 
     def learn(self):
         self._logger.info('Variance decomposition computation: has started.')
-        if self._progress:
-            print("Null model fitting: ")
-            progress = ProgressBar(
-                widgets=["  ", Counter(), " function evaluations"],
-                max_value=UnknownLength)
-        else:
-            progress = NullBar()
+        # if self._progress:
+        #     print("Null model fitting: ")
+        #     progress = ProgressBar(
+        #         widgets=["  ", Counter(), " function evaluations"],
+        #         max_value=UnknownLength)
+        # else:
+        #     progress = NullBar()
 
-        self._learn(progress)
+        self._learn(progress=False)
 
 
 class NormalVarDec(VarDec):
