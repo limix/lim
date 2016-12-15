@@ -8,7 +8,7 @@ from setuptools import find_packages, setup
 try:
     import pypandoc
     long_description = pypandoc.convert_file('README.md', 'rst')
-except(OSError, IOError, ImportError):
+except (OSError, IOError, ImportError):
     long_description = open('README.md').read()
 
 
@@ -23,10 +23,9 @@ def setup_package():
 
     setup_requires = ['cffi>=1.7'] + pytest_runner
     install_requires = [
-        'pytest>=2.9', 'scipy', 'numpy', 'cffi>=1.7',
-        'numpy-sugar', 'tqdm', 'h5py',
-        'pandas', 'tabulate>=0.7', 'six', 'optimix',
-        'limix-util', 'cachetools>=2.0'
+        'pytest>=2.9', 'scipy', 'numpy', 'cffi>=1.7', 'numpy-sugar', 'tqdm',
+        'h5py', 'pandas', 'tabulate>=0.7', 'six', 'optimix', 'limix-util',
+        'cachetools>=2.0'
     ]
     tests_require = install_requires
 

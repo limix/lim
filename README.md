@@ -9,27 +9,21 @@ Lim.
 
 ## Install
 
-The recommended way of installing **will be** via
+## Install
+
+The recommended way of installing it is via
 [conda](http://conda.pydata.org/docs/index.html)
 ```bash
 conda install -c conda-forge lim
 ```
 
-Bu as of now, first make sure you have
-[conda-forge](https://conda-forge.github.io/)
-channel set
-```bash
-conda config --add channels new_channel
-```
-and the [Numba](http://numba.pydata.org/) package installed::
-```bash
-conda install numba
-```
-
-Then type
+An alternative way would be via pip
 ```bash
 pip install lim
 ```
+
+Refer to [documentation](http://lim.readthedocs.io/en/latest/)
+for more information.
 
 ## Running the tests
 
@@ -41,7 +35,10 @@ as long as you have [pytest](http://docs.pytest.org/en/latest/).
 
 ## Authors
 
+* **Christoph Lippert** - [https://github.com/clippert](https://github.com/clippert)
 * **Danilo Horta** - [https://github.com/Horta](https://github.com/Horta)
+* **Oliver Stegle** - [https://github.com/ostegle](https://github.com/ostegle)
+* **Paolo Francesco Casale** - [https://github.com/fpcasale](https://github.com/fpcasale)
 
 ## License
 
