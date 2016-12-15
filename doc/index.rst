@@ -5,9 +5,9 @@ Lim's documentation
 Lim is an efficient implementation of Generalized Linear Mixed Models for
 genomic analysis.
 
-*******
+-------
 Install
-*******
+-------
 
 The recommended way of installing it is via `conda`_::
 
@@ -19,9 +19,9 @@ An alternative way would be via pip::
 
 .. _conda: http://conda.pydata.org/docs/index.html
 
-************
+------------
 QTL Analysis
-************
+------------
 
 We have support for Normal, Bernoulli, Binomial, and Poisson phenotypes
 (i.e., residual noise).
@@ -181,9 +181,9 @@ The output should be similar to:
     0.65658776  0.88089504  0.01616766  0.67807704  0.11466733  0.71584291
     0.96650256  0.98655773  0.45722517  0.98681809]
 
-*****************
+-----------------
 Comments and bugs
-*****************
+-----------------
 
 You can get the source and open issues `on Github.`_
 
