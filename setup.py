@@ -24,14 +24,14 @@ def setup_package():
     setup_requires = ['cffi>=1.7'] + pytest_runner
     install_requires = [
         'pytest>=2.9', 'scipy', 'numpy', 'cffi>=1.7', 'numpy-sugar', 'tqdm',
-        'h5py', 'pandas', 'tabulate>=0.7', 'six', 'optimix', 'limix-util',
+        'h5py', 'pandas', 'tabulate>=0.7', 'six', 'optimix',
         'limix-inference', 'cachetools>=2.0'
     ]
     tests_require = install_requires
 
     metadata = dict(
         name='lim',
-        version='1.2.0',
+        version='1.2.1',
         maintainer="Limix Developers",
         maintainer_email="horta@ebi.ac.uk",
         license="MIT",
