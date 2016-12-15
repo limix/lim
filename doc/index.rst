@@ -33,7 +33,7 @@ effect sizes, log marginal likelihoods, and other statistics can be retrieved.
 Continuous phenotypes
 ^^^^^^^^^^^^^^^^^^^^^
 
-This example uses :func:`lim.genetics.qtl.normal_scan` to perform an
+This example uses :func:`lim.genetics.qtl.scan` to perform an
 association scan between markers contained in `X` and the phenotype defined by
 `y`, while accounting for background signal via `G`:
 
