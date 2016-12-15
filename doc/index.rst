@@ -1,13 +1,7 @@
-.. toctree::
-  :caption: Table of Contents
-  :name: mastertoc
-  :maxdepth: 3
-
-  tutorial/qtl_analysis
-
 ===================
 Lim's documentation
 ===================
+
 
 You can get the source and open issues `on Github.`_
 
