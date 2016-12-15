@@ -5,9 +5,8 @@
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/lim/badges/version.svg)](https://anaconda.org/conda-forge/lim)
 [![Documentation Status](https://readthedocs.org/projects/lim/badge/?style=flat-square&version=latest)](http://lim.readthedocs.io/en/latest/?badge=latest)
 
-Lim.
-
-## Install
+Lim is an efficient implementation of Generalized Linear Mixed Models for
+genomic analysis.
 
 ## Install
 
@@ -22,8 +21,7 @@ An alternative way would be via pip
 pip install lim
 ```
 
-Refer to [documentation](http://lim.readthedocs.io/en/latest/)
-for more information.
+Refer to [documentation](http://lim.readthedocs.io/) for more information.
 
 ## Running the tests
 
