@@ -1,4 +1,6 @@
 from numpy import ascontiguousarray
+from limix_inference.lik import BernoulliProdLik
+from limix_inference.link import LogitLink
 
 class BernoulliPhenotype(object):
     def __init__(self, outcome):
@@ -13,3 +15,8 @@ class BernoulliPhenotype(object):
         y = self.outcome / self.outcome.std()
         y -= y.mean()
         return y
+
+    def to_likelihood(self):
+        lik = BernoulliProdLik(LogitLink())
+        lik.outcome = self.outcome
+        return lik

@@ -3,6 +3,8 @@ from __future__ import absolute_import, division, unicode_literals
 from numpy import ascontiguousarray
 
 from numpy_sugar import (is_all_equal, is_all_finite)
+from limix_inference.lik import BinomialProdLik
+from limix_inference.link import LogitLink
 
 class BinomialPhenotype(object):
     def __init__(self, nsuccesses, ntrials):
@@ -26,3 +28,8 @@ class BinomialPhenotype(object):
         y = y / y.std()
         y -= y.mean()
         return y
+
+    def to_likelihood(self):
+        lik = BinomialProdLik(self.ntrials, LogitLink())
+        lik.nsuccesses = self.nsuccesses
+        return lik

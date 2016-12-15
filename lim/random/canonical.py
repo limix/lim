@@ -23,7 +23,7 @@ def bernoulli(offset, G, heritability=0.5, causal_variants=None,
     link = LogitLink()
     mean, cov = _mean_cov(offset, G, heritability, causal_variants,
                           causal_variance, random_state)
-    lik = BernoulliProdLik(None, link)
+    lik = BernoulliProdLik(link)
     sampler = GLMMSampler(lik, mean, cov)
 
     return sampler.sample(random_state)
@@ -40,7 +40,7 @@ def binomial(ntrials,
     link = LogitLink()
     mean, cov = _mean_cov(offset, G, heritability, causal_variants,
                           causal_variance, random_state)
-    lik = BinomialProdLik(None, ntrials, link)
+    lik = BinomialProdLik(ntrials, link)
     sampler = GLMMSampler(lik, mean, cov)
 
     return sampler.sample(random_state)

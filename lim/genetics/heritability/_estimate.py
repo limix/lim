@@ -53,7 +53,7 @@ def estimate(phenotype, G=None, K=None, covariates=None):
         covariates = ones((phenotype.sample_size, 1))
 
     logger.debug('Constructing EP.')
-    ep = ExpFamEP(phenotype, covariates, Q0, Q1, S0)
+    ep = ExpFamEP(phenotype.to_likelihood(), covariates, Q0, Q1, S0)
 
     logger.debug('EP optimization.')
     ep.optimize()
