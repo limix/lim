@@ -19,9 +19,9 @@ An alternative way would be via pip::
 
 .. _conda: http://conda.pydata.org/docs/index.html
 
-------------
+************
 QTL Analysis
-------------
+************
 
 We have support for Normal, Bernoulli, Binomial, and Poisson phenotypes
 (i.e., residual noise).
@@ -177,16 +177,6 @@ The output should be similar to:
     0.76862858  0.9121716   0.47676206  0.91313978  0.9609639   0.48296364
     0.65658776  0.88089504  0.01616766  0.67807704  0.11466733  0.71584291
     0.96650256  0.98655773  0.45722517  0.98681809]
-
-----------
-QTL Module
-----------
-
-#.. autofunction:: lim.genetics.qtl.normal_scan
-#.. autofunction:: lim.genetics.qtl.binomial_scan
-#.. autoclass:: lim.genetics.qtl.LikelihoodRatioTest
-#    :members:
-
 
 *****************
 Comments and bugs
