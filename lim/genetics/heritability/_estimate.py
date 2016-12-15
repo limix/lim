@@ -6,10 +6,6 @@ from numpy import copy
 from numpy import sqrt
 from numpy import ones
 
-from ...tool.normalize import stdnorm
-from ...tool.kinship import gower_normalization
-from limix_inference.glmm import ExpFamEP
-
 from numpy_sugar.linalg import (economic_qs, economic_qs_linear)
 
 def estimate(phenotype, G=None, K=None, covariates=None):
@@ -53,6 +49,7 @@ def estimate(phenotype, G=None, K=None, covariates=None):
         covariates = ones((phenotype.sample_size, 1))
 
     logger.debug('Constructing EP.')
+    from limix_inference.glmm import ExpFamEP
     ep = ExpFamEP(phenotype.to_likelihood(), covariates, Q0, Q1, S0)
 
     logger.debug('EP optimization.')
@@ -64,6 +61,8 @@ def estimate(phenotype, G=None, K=None, covariates=None):
     return h2
 
 def _background_standardize(G, K):
+    from ...tool.normalize import stdnorm
+    from ...tool.kinship import gower_normalization
     logger = logging.getLogger(__name__)
 
     if K is not None:
