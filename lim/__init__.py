@@ -1,5 +1,13 @@
 from __future__ import absolute_import as _absolute_import
 
+import logging as _log
+from logging.config import fileConfig as _fileConfig
+
+try:
+    _fileConfig('config.ini')
+except KeyError:
+    _log.basicConfig(level=_log.INFO)
+
 from . import genetics
 from . import random
 from . import tool
