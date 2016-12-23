@@ -5,7 +5,7 @@ from logging.config import fileConfig as _fileConfig
 
 try:
     _fileConfig('config.ini')
-except KeyError:
+except Exception:
     _log.basicConfig(level=_log.INFO)
 
 from . import genetics
