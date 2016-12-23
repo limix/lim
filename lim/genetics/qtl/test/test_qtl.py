@@ -151,7 +151,7 @@ def test_qtl_poisson_scan():
             0.1923094375,
             0.5163075213
         ],
-        rtol=1e-4)
+        rtol=1e-2)
 
 def test_qtl_bernoulli_scan():
     random = RandomState(9)
