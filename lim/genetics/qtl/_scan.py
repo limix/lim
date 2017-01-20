@@ -59,13 +59,13 @@ def scan(phenotype, X, G=None, K=None, covariates=None, progress=True):
     G = _clone(G)
     K = _clone(K)
 
-    if is_all_finite(X):
+    if not is_all_finite(X):
         raise ValueError("The candidate matrix X has non-finite values.")
 
-    if G is not None and is_all_finite(G):
+    if G is not None and not is_all_finite(G):
         raise ValueError("The genetic markers matrix G has non-finite values.")
 
-    if K is not None and is_all_finite(K):
+    if K is not None and not is_all_finite(K):
         raise ValueError("The Kinship matrix K has non-finite values.")
 
     background = Background()
