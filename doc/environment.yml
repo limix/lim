@@ -32,7 +32,6 @@ dependencies:
 - wheel=0.29.0=py35_0
 - xz=5.2.2=0
 - zlib=1.2.8=3
-- libliknorm=1.2.0=0
 - pip:
   - brent-search==1.0.15
   - limix-util==1.0.7

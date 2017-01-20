@@ -20,7 +20,7 @@ before_install:
 install:
 - export PATH="$HOME/miniconda/bin:$PATH"
 - source activate travisci
-- conda install -c horta libliknorm=1.2.0
+- conda install -c conda-forge liknorm
 before_script:
 - export PATH="$HOME/miniconda/bin:$PATH"
 - source activate travisci
