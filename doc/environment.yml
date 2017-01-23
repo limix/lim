@@ -34,6 +34,5 @@ dependencies:
 - zlib=1.2.8=3
 - pip:
   - brent-search==1.0.15
-  - limix-util==1.0.7
   - ndarray-listener==1.0.15
   - numpy-sugar==1.0.8
