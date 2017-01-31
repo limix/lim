@@ -11,9 +11,9 @@ Install
 
 The recommended way of installing it is via `conda`_::
 
-  conda install -c conda-forge lim
+  conda install -c conda-forge limix-inference
 
-An alternative way would be via pip::
+and then
 
   pip install lim
 
