@@ -23,8 +23,9 @@ and then
 QTL Analysis
 ------------
 
-We have support for Normal, Bernoulli, Binomial, and Poisson phenotypes
-(i.e., residual noise).
+We have support for Normal, Bernoulli, Binomial, and Poisson residual noises.
+In other words, we can handle phenotypes that follows those aforementioned
+distributions when conditioned on the latent variables.
 The scan functions described bellow return an instance of
 :func:`lim.genetics.qtl.LikelihoodRatioTest` from which p-values, candidate
 effect sizes, log marginal likelihoods, and other statistics can be retrieved.
