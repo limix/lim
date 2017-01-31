@@ -22,7 +22,7 @@ conda install pytest
 and then
 
 ```bash
-  pip install lim
+pip install lim
 ```
 
 ## Running the tests
