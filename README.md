@@ -13,6 +13,10 @@ The recommended way of installing it is via [conda](http://conda.pydata.org/docs
 
 ```bash
 conda install -c conda-forge limix-inference
+conda install h5py
+conda install pandas
+conda install tabulate
+conda install pytest
 ```
 
 and then
@@ -43,5 +47,5 @@ information.
 
 ## License
 
-This project is licensed under the MIT License - see the
-[LICENSE](LICENSE) file for details
+This project is licensed under the MIT License -- see the
+[LICENSE](LICENSE) file for details.
