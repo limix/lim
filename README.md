@@ -1,7 +1,7 @@
 # lim
 
-[![PyPIl](https://img.shields.io/pypi/l/lim.svg?style=flat-square)](https://pypi.python.org/pypi/lim/)
-[![PyPIv](https://img.shields.io/pypi/v/lim.svg?style=flat-square)](https://pypi.python.org/pypi/lim/)
+[![PyPI-License](https://img.shields.io/pypi/l/lim.svg?style=flat-square)](https://pypi.python.org/pypi/lim/)
+[![PyPI-Version](https://img.shields.io/pypi/v/lim.svg?style=flat-square)](https://pypi.python.org/pypi/lim/)
 [![Documentation Status](https://readthedocs.org/projects/lim/badge/?style=flat-square&version=latest)](http://lim.readthedocs.io/en/latest/)
 
 Lim is an efficient implementation of Generalized Linear Mixed Models for
@@ -13,10 +13,7 @@ The recommended way of installing it is via [conda](http://conda.pydata.org/docs
 
 ```bash
 conda install -c conda-forge limix-inference
-conda install h5py
-conda install pandas
-conda install tabulate
-conda install pytest
+conda install h5py pandas tabulate pytest
 ```
 
 and then
