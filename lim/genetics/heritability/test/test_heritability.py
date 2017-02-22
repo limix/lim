@@ -31,5 +31,3 @@ def test_heritability_binomial_estimate():
 
 if __name__ == '__main__':
     __import__('pytest').main([__file__, '-s'])
-
-python -c "import lim; print(lim.__version__)"
