@@ -1,17 +1,14 @@
 from __future__ import division
 
-from numpy import sqrt
-from numpy import dot
+from numpy import dot, sqrt
 from numpy.random import RandomState
 from numpy.testing import assert_allclose
 
-from lim.tool.normalize import stdnorm
-from lim.random.canonical import bernoulli
-from lim.random.canonical import binomial
-from lim.random.canonical import poisson
+from lim.genetics.phenotype import (BernoulliPhenotype, BinomialPhenotype,
+                                    NormalPhenotype, PoissonPhenotype)
 from lim.genetics.qtl import scan
-from lim.genetics.phenotype import (NormalPhenotype, BernoulliPhenotype,
-                                    BinomialPhenotype, PoissonPhenotype)
+from lim.random.canonical import bernoulli, binomial, poisson
+from lim.tool.normalize import stdnorm
 
 
 def test_qtl_normal_scan():
@@ -40,6 +37,7 @@ def test_qtl_normal_scan():
         ],
         rtol=1e-5)
 
+
 def test_qtl_normal_scan_covariate_redundance():
     random = RandomState(2)
 
@@ -53,14 +51,15 @@ def test_qtl_normal_scan_covariate_redundance():
     X = stdnorm(X, 0)
     X /= sqrt(X.shape[1])
 
-    u1 = random.randn(N+100) / sqrt(N+100)
+    u1 = random.randn(N + 100) / sqrt(N + 100)
     u2 = random.randn(p) / sqrt(p)
 
     y = dot(G, u1) + dot(X, u2)
 
     X[:] = 1
     qtl = scan(NormalPhenotype(y), X, G=G, progress=False)
-    assert_allclose(qtl.pvalues(), [1]*p)
+    assert_allclose(qtl.pvalues(), [1] * p)
+
 
 def test_qtl_binomial_scan():
     random = RandomState(9)
@@ -85,15 +84,17 @@ def test_qtl_binomial_scan():
         random_state=random)
 
     qtl = scan(BinomialPhenotype(nsuccesses, ntrials), X, G=G, progress=False)
+
     assert_allclose(
         qtl.pvalues(), [
-            0.0275759504728,
-            0.570733489676,
-            0.69020414305,
-            0.757099966035,
-            0.0937948997269,
+            0.0277724599907628,
+            0.5797984189523812,
+            0.6973145511356642,
+            0.7628100163469629,
+            0.0976450688182573,
         ],
         rtol=1e-2)
+
 
 def test_qtl_binomial_scan_covariate_redundance():
     random = RandomState(9)
@@ -121,6 +122,7 @@ def test_qtl_binomial_scan_covariate_redundance():
     qtl = scan(BinomialPhenotype(nsuccesses, ntrials), X, G=G, progress=False)
     assert_allclose(qtl.pvalues(), [1] * p)
 
+
 def test_qtl_poisson_scan():
     random = RandomState(9)
 
@@ -135,23 +137,17 @@ def test_qtl_poisson_scan():
     X /= sqrt(X.shape[1])
 
     noccurrences = poisson(
-        -0.1,
-        G,
-        causal_variants=X,
-        causal_variance=0.1,
-        random_state=random)
+        -0.1, G, causal_variants=X, causal_variance=0.1, random_state=random)
 
     qtl = scan(PoissonPhenotype(noccurrences), X, G=G, progress=False)
 
     assert_allclose(
         qtl.pvalues(), [
-            0.3321663377,
-            0.6568225859,
-            0.2170163554,
-            0.1923094375,
-            0.5163075213
+            0.3755326794420951, 0.3545816059145352, 0.2797940813682779,
+            0.2634796260673962, 0.2693468606477469
         ],
         rtol=1e-2)
+
 
 def test_qtl_bernoulli_scan():
     random = RandomState(9)
@@ -167,22 +163,17 @@ def test_qtl_bernoulli_scan():
     X /= sqrt(X.shape[1])
 
     outcome = bernoulli(
-        -0.1,
-        G,
-        causal_variants=X,
-        causal_variance=0.1,
-        random_state=random)
+        -0.1, G, causal_variants=X, causal_variance=0.1, random_state=random)
 
     qtl = scan(BernoulliPhenotype(outcome), X, G=G, progress=False)
 
     assert_allclose(
-        qtl.pvalues(), [0.275255011086,
-                        0.798092933746,
-                        0.293941509957,
-                        0.0454495193992,
-                        0.900534408095
+        qtl.pvalues(), [
+            0.2707576093088693, 0.8722700379820193, 0.2484124753211198,
+            0.0394451319035113, 0.9568346531126692
         ],
         rtol=1e-4)
+
 
 if __name__ == '__main__':
     __import__('pytest').main([__file__, '-s'])
