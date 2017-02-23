@@ -1,5 +1,6 @@
 from numpy import sqrt
 from numpy import std
+from numpy import arange
 from limix_inference.link import LogitLink
 from limix_inference.link import LogLink
 from limix_inference.lik import BernoulliLik
@@ -13,7 +14,6 @@ from limix_inference.cov import LinearCov
 from limix_inference.cov import SumCov
 from limix_inference.cov import EyeCov
 from .glmm import GLMMSampler
-from ..util.fruits import Apples
 from ..tool.normalize import stdnorm
 
 
@@ -91,7 +91,7 @@ def _mean_cov(offset, G, heritability, causal_variants, causal_variance,
 
     mean1.set_data(nsamples, 'sample')
     cov1.set_data((G, G), 'sample')
-    a = Apples(nsamples)
+    a = arange(nsamples)
     cov2.set_data((a, a), 'sample')
 
     cov1.scale = heritability - causal_variance

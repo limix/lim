@@ -7,7 +7,6 @@ from lim.random import GLMMSampler
 from lim.random.canonical import bernoulli
 from lim.random.canonical import binomial
 from lim.random.canonical import poisson
-from lim.util.fruits import Apples
 
 def test_canonical_bernoulli_sampler():
     random = RandomState(9)
