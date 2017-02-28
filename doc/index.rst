@@ -11,13 +11,14 @@ Install
 
 The recommended way of installing it is via `conda`_::
 
+  conda install -c conda-forge ncephes
   conda install -c conda-forge limix-inference
   conda install h5py
   conda install pandas
   conda install tabulate
   conda install pytest
 
-and then
+and then::
 
   pip install lim
 
