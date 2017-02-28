@@ -147,14 +147,6 @@ class VarDec(object):
 
     def learn(self):
         self._logger.info('Variance decomposition computation: has started.')
-        # if self._progress:
-        #     print("Null model fitting: ")
-        #     progress = ProgressBar(
-        #         widgets=["  ", Counter(), " function evaluations"],
-        #         max_value=UnknownLength)
-        # else:
-        #     progress = NullBar()
-
         self._learn(progress=False)
 
 

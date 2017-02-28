@@ -53,7 +53,7 @@ def estimate(phenotype, G=None, K=None, covariates=None):
     ep = ExpFamEP(phenotype.to_likelihood(), covariates, Q0, Q1, S0)
 
     logger.debug('EP optimization.')
-    ep.optimize()
+    ep.learn()
 
     h2 = ep.heritability
     logger.info('Found heritability before correction: %.5f.', h2)

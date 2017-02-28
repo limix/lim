@@ -1,5 +1,6 @@
 from __future__ import division
 
+import numpy as np
 from numpy import dot, sqrt
 from numpy.random import RandomState
 from numpy.testing import assert_allclose
@@ -84,14 +85,10 @@ def test_qtl_binomial_scan():
         random_state=random)
 
     qtl = scan(BinomialPhenotype(nsuccesses, ntrials), X, G=G, progress=False)
-
     assert_allclose(
         qtl.pvalues(), [
-            0.0277724599907628,
-            0.5797984189523812,
-            0.6973145511356642,
-            0.7628100163469629,
-            0.0976450688182573,
+            0.0204700427237634, 0.5696100459850757, 0.6900110532522933,
+            0.7514419325181403, 0.0888395185085836
         ],
         rtol=1e-2)
 
@@ -120,7 +117,7 @@ def test_qtl_binomial_scan_covariate_redundance():
 
     X[:] = 1
     qtl = scan(BinomialPhenotype(nsuccesses, ntrials), X, G=G, progress=False)
-    assert_allclose(qtl.pvalues(), [1] * p)
+    assert_allclose(qtl.pvalues(), [1] * p, rtol=1e-4)
 
 
 def test_qtl_poisson_scan():
@@ -143,8 +140,8 @@ def test_qtl_poisson_scan():
 
     assert_allclose(
         qtl.pvalues(), [
-            0.3755326794420951, 0.3545816059145352, 0.2797940813682779,
-            0.2634796260673962, 0.2693468606477469
+            0.323780186575525, 0.6535310373144236, 0.2103207985450398,
+            0.1849561475202371, 0.4953569917862007
         ],
         rtol=1e-2)
 
@@ -169,8 +166,8 @@ def test_qtl_bernoulli_scan():
 
     assert_allclose(
         qtl.pvalues(), [
-            0.2707576093088693, 0.8722700379820193, 0.2484124753211198,
-            0.0394451319035113, 0.9568346531126692
+            0.2743931472870954, 0.7925543535174397, 0.2762730442807277,
+            0.0408349293752539, 0.8994393017110111
         ],
         rtol=1e-4)
 
