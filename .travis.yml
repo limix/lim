@@ -29,7 +29,7 @@ before_script:
 script:
 - export PATH="$HOME/miniconda/bin:$PATH"
 - source activate travisci
-- python setup.py sdist
+- python setup.py sdist bdist_wheel
 - pip install dist/`ls dist | grep -i -E '\.(gz)$' | head -1`
 - pushd /
 - python -c "import lim; lim.test()"
