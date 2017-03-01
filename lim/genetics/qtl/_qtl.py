@@ -47,7 +47,6 @@ class QTLScan(object):
         self._valid_alt_models = False
 
     def compute_statistics(self):
-        self._logger.info('Computing likelihood-ratio test statistics.')
         self._compute_null_model()
         self._compute_alt_models()
 
