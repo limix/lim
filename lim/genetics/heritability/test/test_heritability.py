@@ -16,7 +16,7 @@ def test_heritability_bernoulli_estimate():
     X = random.randn(N, N+1)
     y = bernoulli_sampler(0.0, X, random_state=random)
     assert_allclose(estimate(BernoulliPhenotype(y), X),
-                    0.7178183037210546, rtol=1e-4, atol=1e-4)
+                    0.2809967333366733, rtol=1e-4, atol=1e-4)
 
 
 def test_heritability_binomial_estimate():

@@ -11,12 +11,8 @@ Install
 
 The recommended way of installing it is via `conda`_::
 
-  conda install -c conda-forge ncephes
-  conda install -c conda-forge limix-inference
-  conda install h5py
-  conda install pandas
-  conda install tabulate
-  conda install pytest
+  conda install -c conda-forge ncephes limix-inference
+  conda install h5py pandas tabulate pytest
 
 and then::
 
@@ -46,15 +42,11 @@ association scan between markers contained in `X` and the phenotype defined by
 
 .. testcode::
 
-  from lim.tool import normalize
   from lim.genetics import qtl
   from lim.genetics.phenotype import NormalPhenotype
 
   from numpy import random
-  from numpy import ones
   from numpy import zeros
-  from numpy import sqrt
-  from numpy import ones
 
   random = random.RandomState(0)
   N = 50
@@ -62,8 +54,6 @@ association scan between markers contained in `X` and the phenotype defined by
 
   # genetic markers
   X = random.randn(N, P)
-  X = normalize.stdnorm(X, axis=0)
-  X /= sqrt(X.shape[1])
 
   # effect sizes
   u = zeros(P)
@@ -89,23 +79,32 @@ The output should be similar to:
 
 .. testoutput::
 
-  [ 0.0033316   0.02921172  0.01820074  0.00701774  0.03461768  0.01167527
-    0.94692018  0.81973856  0.08117947  0.86643508  0.57083216  0.69779772
-    0.60996543  0.77978829  0.75514675  0.84236536  0.45432517  0.61710616
-    0.48900144  0.34261678  0.35086873  0.62351578  0.71528971  0.8871672
-    0.59728122  0.12720746  0.09100303  0.00853008  0.1994399   0.6647478
-    0.37264595  0.72843704  0.47056861  0.99961927  0.96317648  0.93515525
-    0.32407077  0.35827617  0.14577005  0.09390726  0.02432996  0.15756909
-    0.70482818  0.92614646  0.59598903  0.15551889  0.80515554  0.44285868
-    0.31682123  0.30309932  0.66117806  0.18398747  0.35233084  0.78545959
-    0.12947138  0.76652024  0.49702157  0.71669496  0.12607443  0.23364216
-    0.1708559   0.41224431  0.16092503  0.36767752  0.83013318  0.96856704
-    0.17093528  0.11393999  0.27513107  0.25051797  0.67973977  0.95171302
-    0.33991434  0.52360602  0.36217087  0.92046059  0.3357004   0.99753087
-    0.367863    0.53227975  0.58445471  0.94780799  0.6358703   0.35140349
-    0.39540056  0.68762739  0.48245462  0.16427795  0.83561238  0.91194995
-    0.88152921  0.50662769  0.0928629   0.95011819  0.21613037  0.7304005
-    0.61591707  0.87132833  0.16530783  0.675803  ]
+  [  6.87226966e-09   1.65621740e-04   1.45057979e-02   9.08631729e-03
+   2.88430470e-02   1.05599085e-03   3.83901168e-01   4.75244513e-01
+   2.06062424e-01   4.33645056e-01   9.99052400e-01   8.01023844e-01
+   5.33902238e-01   3.03104210e-01   7.02316567e-01   5.46747256e-01
+
+   6.07466135e-01   9.15258586e-01   3.74982775e-01   1.68710256e-01
+   3.49574705e-01   7.15444096e-01   3.84825920e-01   9.12717538e-01
+   6.88843100e-01   9.06313721e-01   3.54342123e-01   6.57525420e-03
+   2.33376259e-01   4.53280271e-01   3.01684699e-01   9.92464728e-01
+   2.40974542e-01   9.01601013e-01   4.26648639e-01   5.85426518e-01
+   1.97365816e-01   9.28328495e-01   1.51583678e-01   4.24944895e-01
+   1.06593762e-01   1.33648645e-01   9.40653230e-01   7.53116792e-01
+   7.38882698e-01   9.89767694e-02   4.86112325e-01   9.16625928e-01
+   7.28234152e-01   4.46989040e-01   9.17845023e-01   7.41522322e-01
+   2.31972282e-01   6.02540180e-01   3.18359928e-01   6.98488103e-01
+   7.87115649e-01   7.54821171e-01   1.96862866e-01   4.82670717e-01
+   5.85543401e-01   4.01501698e-01   5.92180818e-01   6.86091889e-01
+   3.37132717e-01   5.87199932e-01   1.40895638e-01   1.98146742e-02
+   1.64466477e-01   3.86691215e-01   4.95486769e-01   5.34303914e-01
+   1.38382652e-01   8.64088766e-01   4.17129488e-01   4.64317758e-01
+   4.73011413e-01   9.31850226e-01   5.18027105e-01   2.52311113e-01
+   8.72660187e-01   8.74407171e-01   5.43104679e-01   1.68190811e-01
+   4.13711687e-01   6.98381079e-01   9.16977846e-01   2.27596988e-01
+   7.74743294e-01   8.91415290e-01   2.28252559e-01   5.03789557e-01
+   2.06060858e-01   9.64448330e-01   1.77800487e-01   5.19077492e-01
+   9.40306149e-01   8.08048306e-01   8.44523318e-02   7.38634876e-01]
 
 
 Count phenotypes
@@ -118,7 +117,6 @@ association scan between markers contained in `X` and the phenotype defined by
 
 .. testcode::
 
-  from lim.tool import normalize
   from lim.genetics import qtl
   from lim.genetics.phenotype import BinomialPhenotype
 
@@ -126,18 +124,13 @@ association scan between markers contained in `X` and the phenotype defined by
   from numpy import asarray
   from numpy import zeros
   from numpy import empty
-  from numpy import ones
-  from numpy import sqrt
-  from numpy import ones
 
   random = random.RandomState(0)
-  N = 50
-  P = 100
+  N = 10
+  P = 15
 
   # genetic markers
   X = random.randn(N, P)
-  X = normalize.stdnorm(X, axis=0)
-  X /= sqrt(X.shape[1])
 
   # effect sizes
   u = zeros(P)
@@ -157,36 +150,22 @@ association scan between markers contained in `X` and the phenotype defined by
   nsuccesses = empty(N)
   ntrials = random.randint(1, 30, N)
   for i in range(N):
-      nsuccesses[i] = sum(f[i] > 0.2 * random.randn(ntrials[i]))
+    nsuccesses[i] = sum(f[i] > 0.2 * random.randn(ntrials[i]))
   ntrials = asarray(ntrials, float)
 
   G = X[:, 2:].copy()
 
   lrt = qtl.scan(BinomialPhenotype(nsuccesses, ntrials), X,
-                 G, progress=False)
+               G, progress=False)
   print(lrt.pvalues())
 
 The output should be similar to:
 
 .. testoutput::
 
-  [ 0.01941533  0.05974973  0.22287607  0.12196036  0.00390464  0.05484215
-    0.73410739  0.77561839  0.02139017  0.37770498  0.38665833  0.42453626
-    0.54323949  0.93475895  0.60918312  0.89924375  0.88113106  0.49228679
-    0.68271584  0.374527    0.94550831  0.72927318  0.85459755  0.91193689
-    0.75023152  0.17971294  0.01314011  0.01941229  0.31704706  0.86447582
-    0.61602016  0.51567901  0.13453806  0.81132991  0.87330082  0.6095185
-    0.67192862  0.23207296  0.39602648  0.06313886  0.06008298  0.58746426
-    0.82310481  0.26534184  0.45359096  0.36038528  0.56077226  0.2152736
-    0.2502973   0.25361016  0.3827223   0.36221456  0.30415115  0.40922751
-    0.38122384  0.70966208  0.12365265  0.86024364  0.22792395  0.41876851
-    0.14306838  0.91980698  0.32779147  0.45793564  0.79928185  0.43292091
-    0.10158896  0.63442848  0.20173139  0.19715465  0.62092913  0.90962452
-    0.35988164  0.2692583   0.65899755  0.99096715  0.83528285  0.96926421
-    0.7062866   0.15391244  0.93020241  0.59675382  0.59728103  0.1798022
-    0.76862858  0.9121716   0.47676206  0.91313978  0.9609639   0.48296364
-    0.65658776  0.88089504  0.01616766  0.67807704  0.11466733  0.71584291
-    0.96650256  0.98655773  0.45722517  0.98681809]
+  [ 0.94456703  0.01903082  0.02929448  0.65806501  0.62052973  0.49177804
+    0.74383322  0.72037241  0.26564913  0.65786845  0.88489038  0.02357311
+    0.58811967  0.19880954  0.94712376]
 
 -----------------
 Comments and bugs
