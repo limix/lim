@@ -15,12 +15,12 @@ from lim.tool.normalize import stdnorm
 def test_qtl_normal_scan():
     random = RandomState(2)
 
-    N = 50
+    N = 200
     G = random.randn(N, N + 100)
     G = stdnorm(G, 0)
     G /= sqrt(G.shape[1])
 
-    p = 5
+    p = 2
     X = random.randn(N, p)
     X = stdnorm(X, 0)
     X /= sqrt(X.shape[1])
@@ -33,8 +33,7 @@ def test_qtl_normal_scan():
     qtl = scan(NormalPhenotype(y), X, G=G, progress=False)
     assert_allclose(
         qtl.pvalues(), [
-            0.0705409218415, 1.33152093178e-13, 2.48707231047e-05,
-            0.259664271433, 0.93041182258
+            4.742418e-001, 5.094706e-167
         ],
         rtol=1e-5)
 
@@ -65,12 +64,12 @@ def test_qtl_normal_scan_covariate_redundance():
 def test_qtl_binomial_scan():
     random = RandomState(9)
 
-    N = 50
+    N = 200
     G = random.randn(N, N + 100)
     G = stdnorm(G, 0)
     G /= sqrt(G.shape[1])
 
-    p = 5
+    p = 2
     X = random.randn(N, p)
     X = stdnorm(X, 0)
     X /= sqrt(X.shape[1])
@@ -88,8 +87,7 @@ def test_qtl_binomial_scan():
 
     assert_allclose(
         qtl.pvalues(), [
-            0.024850888252989, 0.569692542168291, 0.6901692002748263,
-            0.7570352252604872, 0.0888544623627765
+            0.33515, 0.889361
         ],
         rtol=1e-2)
 
@@ -97,12 +95,12 @@ def test_qtl_binomial_scan():
 def test_qtl_binomial_scan_covariate_redundance():
     random = RandomState(9)
 
-    N = 50
+    N = 200
     G = random.randn(N, N + 100)
     G = stdnorm(G, 0)
     G /= sqrt(G.shape[1])
 
-    p = 5
+    p = 2
     X = random.randn(N, p)
     X = stdnorm(X, 0)
     X /= sqrt(X.shape[1])
@@ -124,12 +122,12 @@ def test_qtl_binomial_scan_covariate_redundance():
 def test_qtl_poisson_scan():
     random = RandomState(9)
 
-    N = 50
+    N = 200
     G = random.randn(N, N + 100)
     G = stdnorm(G, 0)
     G /= sqrt(G.shape[1])
 
-    p = 5
+    p = 2
     X = random.randn(N, p)
     X = stdnorm(X, 0)
     X /= sqrt(X.shape[1])
@@ -141,8 +139,7 @@ def test_qtl_poisson_scan():
 
     assert_allclose(
         qtl.pvalues(), [
-            0.3602609452849577, 0.5858386291857423, 0.2578859083822661,
-            0.2583832367791912, 0.3712543845933317
+            0.973835, 0.095306
         ],
         rtol=1e-2)
 
@@ -150,12 +147,12 @@ def test_qtl_poisson_scan():
 def test_qtl_bernoulli_scan():
     random = RandomState(9)
 
-    N = 50
+    N = 200
     G = random.randn(N, N + 100)
     G = stdnorm(G, 0)
     G /= sqrt(G.shape[1])
 
-    p = 5
+    p = 2
     X = random.randn(N, p)
     X = stdnorm(X, 0)
     X /= sqrt(X.shape[1])
@@ -167,8 +164,7 @@ def test_qtl_bernoulli_scan():
 
     assert_allclose(
         qtl.pvalues(), [
-            0.2746075778074198, 0.795602783193831, 0.27632759390398,
-            0.0409249249070836, 0.8975492615275441
+            0.55695, 0.720715
         ],
         rtol=1e-4)
 
