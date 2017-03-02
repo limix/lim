@@ -147,7 +147,7 @@ def test_qtl_poisson_scan():
 def test_qtl_bernoulli_scan():
     random = RandomState(9)
 
-    N = 200
+    N = 500
     G = random.randn(N, N + 100)
     G = stdnorm(G, 0)
     G /= sqrt(G.shape[1])
@@ -164,7 +164,7 @@ def test_qtl_bernoulli_scan():
 
     assert_allclose(
         qtl.pvalues(), [
-            0.5528567777, 0.7071499656
+            0.2787889621, 0.1147668419
         ],
         rtol=1e-4)
 
