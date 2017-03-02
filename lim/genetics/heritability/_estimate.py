@@ -8,7 +8,7 @@ from numpy import ones
 
 from numpy_sugar.linalg import (economic_qs, economic_qs_linear)
 
-def estimate(phenotype, G=None, K=None, covariates=None):
+def estimate(phenotype, G=None, K=None, covariates=None, overdispersion=True):
     """Estimate the so-called narrow-sense heritability.
 
     It supports Bernoulli and Binomial phenotypes (see `outcome_type`).
@@ -50,7 +50,8 @@ def estimate(phenotype, G=None, K=None, covariates=None):
 
     logger.debug('Constructing EP.')
     from limix_inference.glmm import ExpFamEP
-    ep = ExpFamEP(phenotype.to_likelihood(), covariates, Q0, Q1, S0)
+    ep = ExpFamEP(phenotype.to_likelihood(), covariates, Q0, Q1, S0,
+                  overdispersion)
 
     logger.debug('EP optimization.')
     ep.learn()

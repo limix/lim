@@ -139,7 +139,7 @@ def test_qtl_poisson_scan():
 
     assert_allclose(
         qtl.pvalues(), [
-            0.973835, 0.095306
+            0.8163571597, 0.0849437877
         ],
         rtol=1e-2)
 
@@ -164,7 +164,7 @@ def test_qtl_bernoulli_scan():
 
     assert_allclose(
         qtl.pvalues(), [
-            0.55695, 0.720715
+            0.5528567777, 0.7071499656
         ],
         rtol=1e-4)
 
