@@ -164,7 +164,7 @@ def test_qtl_bernoulli_scan():
 
     assert_allclose(
         qtl.pvalues(), [
-            0.2787889621, 0.1147668419
+            0.27762911, 0.11432954
         ],
         rtol=1e-4)
 
