@@ -36,6 +36,3 @@ script:
 - popd
 notifications:
   email: false
-branches:
-  only:
-  - master
