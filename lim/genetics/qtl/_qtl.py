@@ -62,7 +62,7 @@ class QTLScan(object):
         method.learn(progress=self.progress)
 
         self._method = method
-        self._null_lml = method.lml()
+        self._null_lml = method.lml(self._fast)
 
         self._valid_null_model = True
 
@@ -80,26 +80,6 @@ class QTLScan(object):
         self._alt_lmls, self._effect_sizes = al, es
 
         self._valid_alt_models = True
-
-        # if self._phenotype.likelihood_name.lower() == 'normal':
-        #     n, p = self._X.shape
-        #     nc = self._covariates.shape[1]
-        #     self._alt_lmls = empty(p)
-        #     self._effect_sizes = empty(p)
-        #     M = empty((n, nc + 1))
-        #     M[:, :nc] = self._covariates
-        #     for i in range(p):
-        #         M[:, nc] = self._X[:, i]
-        #         flmm = self._flmm.copy()
-        #         flmm.M = M
-        #         flmm.learn()
-        #         self._alt_lmls[i] = flmm.lml()
-        #         self._effect_sizes[i] = flmm.beta[-1]
-        # else:
-        #     fep = self._fixed_ep
-        #     covariates = self._covariates
-        #     X = self._X
-        #     self._alt_lmls, self._effect_sizes = fep.compute(covariates, X)
 
     def null_lml(self):
         """Log marginal likelihood for the null hypothesis."""
@@ -164,5 +144,9 @@ def _slow_scan(method, covariates, X, progress):
 
     return alt_lmls, effect_sizes
 
-def _fast_scan(method, covariates, X):
-    raise NotImplementedError
+def _fast_scan(method, covariates, X, progress):
+    nlt = method.get_normal_likelihood_trick()
+
+    alt_lmls, effect_sizes = nlt.fast_scan(X)
+
+    return alt_lmls, effect_sizes

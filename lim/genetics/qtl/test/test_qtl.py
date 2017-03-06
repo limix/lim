@@ -30,7 +30,7 @@ def test_qtl_normal_scan():
 
     y = dot(G, u1) + dot(X, u2)
 
-    qtl = scan(NormalPhenotype(y), X, G=G, progress=False)
+    qtl = scan(NormalPhenotype(y), X, G=G, progress=False, fast=False)
     assert_allclose(
         qtl.pvalues(), [
             4.742418e-001, 5.094706e-167
@@ -57,7 +57,7 @@ def test_qtl_normal_scan_covariate_redundance():
     y = dot(G, u1) + dot(X, u2)
 
     X[:] = 1
-    qtl = scan(NormalPhenotype(y), X, G=G, progress=False)
+    qtl = scan(NormalPhenotype(y), X, G=G, progress=False, fast=False)
     assert_allclose(qtl.pvalues(), [1] * p)
 
 
@@ -83,13 +83,46 @@ def test_qtl_binomial_scan():
         causal_variance=0.1,
         random_state=random)
 
-    qtl = scan(BinomialPhenotype(nsuccesses, ntrials), X, G=G, progress=False)
+    qtl = scan(BinomialPhenotype(nsuccesses, ntrials), X, G=G, progress=False,
+               fast=False)
 
     assert_allclose(
         qtl.pvalues(), [
             0.33515, 0.889361
         ],
         rtol=1e-2)
+
+
+def test_qtl_fast_binomial_scan():
+    random = RandomState(9)
+
+    N = 200
+    G = random.randn(N, N + 100)
+    G = stdnorm(G, 0)
+    G /= sqrt(G.shape[1])
+
+    p = 2
+    X = random.randn(N, p)
+    X = stdnorm(X, 0)
+    X /= sqrt(X.shape[1])
+
+    ntrials = random.randint(1, 50, N)
+    nsuccesses = binomial(
+        ntrials,
+        -0.1,
+        G,
+        causal_variants=X,
+        causal_variance=0.1,
+        random_state=random)
+
+    qtl = scan(BinomialPhenotype(nsuccesses, ntrials), X, G=G, progress=False,
+               fast=True)
+
+    assert_allclose(
+        qtl.pvalues(), [
+            0.698565827403, 0.443299805368
+        ],
+        rtol=1e-4)
 
 
 def test_qtl_binomial_scan_covariate_redundance():
@@ -115,7 +148,8 @@ def test_qtl_binomial_scan_covariate_redundance():
         random_state=random)
 
     X[:] = 1
-    qtl = scan(BinomialPhenotype(nsuccesses, ntrials), X, G=G, progress=False)
+    qtl = scan(BinomialPhenotype(nsuccesses, ntrials), X, G=G, progress=False,
+               fast=False)
     assert_allclose(qtl.pvalues(), [1] * p, rtol=1e-4)
 
 
@@ -135,7 +169,8 @@ def test_qtl_poisson_scan():
     noccurrences = poisson(
         -0.1, G, causal_variants=X, causal_variance=0.1, random_state=random)
 
-    qtl = scan(PoissonPhenotype(noccurrences), X, G=G, progress=False)
+    qtl = scan(PoissonPhenotype(noccurrences), X, G=G, progress=False,
+               fast=False)
 
     assert_allclose(
         qtl.pvalues(), [
@@ -160,7 +195,7 @@ def test_qtl_bernoulli_scan():
     outcome = bernoulli(
         -0.1, G, causal_variants=X, causal_variance=0.1, random_state=random)
 
-    qtl = scan(BernoulliPhenotype(outcome), X, G=G, progress=False)
+    qtl = scan(BernoulliPhenotype(outcome), X, G=G, progress=False, fast=False)
 
     assert_allclose(
         qtl.pvalues(), [

@@ -17,7 +17,8 @@ from ..background import Background
 from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
 
-def scan(phenotype, X, G=None, K=None, covariates=None, progress=True):
+def scan(phenotype, X, G=None, K=None, covariates=None, progress=True,
+         fast=True):
     """Association between genetic variants and phenotype.
 
     Matrix `X` shall contain the genetic markers (e.g., number of minor
@@ -71,7 +72,7 @@ def scan(phenotype, X, G=None, K=None, covariates=None, progress=True):
     background = Background()
 
     (Q0, Q1, S0) = _genetic_preprocess(X, G, K, background)
-    qtl = QTLScan(phenotype, covariates, X, Q0, Q1, S0)
+    qtl = QTLScan(phenotype, covariates, X, Q0, Q1, S0, fast=fast)
     qtl.progress = progress
     qtl.compute_statistics()
 
