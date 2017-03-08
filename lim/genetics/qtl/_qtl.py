@@ -5,6 +5,7 @@ from copy import copy
 from operator import attrgetter
 
 from numpy import asarray, empty, nan
+from scipy_sugar.stats import quantile_gaussianize
 
 from limix_inference.glmm import ExpFamEP
 from limix_inference.lmm import FastLMM
@@ -13,7 +14,7 @@ from numpy_sugar.linalg import economic_qs
 from ..phenotype import NormalPhenotype
 
 class QTLScan(object):
-    def __init__(self, phenotype, covariates, X, Q0, Q1, S0, fast=False):
+    def __init__(self, phenotype, covariates, X, Q0, Q1, S0, options):
         self._logger = logging.getLogger(__name__)
         self.progress = True
 
@@ -29,7 +30,7 @@ class QTLScan(object):
         self._null_lml = nan
         self._alt_lmls = None
         self._effect_sizes = None
-        self._fast = fast
+        self._options = options
 
     @property
     def candidate_markers(self):
@@ -58,11 +59,12 @@ class QTLScan(object):
         Q0, Q1 = self._Q0, self._Q1
         S0 = self._S0
 
-        method = _get_method(self._phenotype, Q0, Q1, S0, covariates)
+        method = _get_method(self._phenotype, Q0, Q1, S0, covariates,
+                             self._options)
         method.learn(progress=self.progress)
 
         self._method = method
-        self._null_lml = method.lml(self._fast)
+        self._null_lml = method.lml()
 
         self._valid_null_model = True
 
@@ -70,7 +72,7 @@ class QTLScan(object):
         if self._valid_alt_models:
             return
 
-        if self._fast:
+        if self._options['fast']:
             al, es = _fast_scan(self._method, self._covariates, self._X,
                                 self.progress)
         else:
@@ -110,16 +112,18 @@ class QTLScan(object):
 
         return chi2.sf(lrs)
 
-def _get_method(phenotype, Q0, Q1, S0, covariates):
+def _get_method(phenotype, Q0, Q1, S0, covariates, options):
 
     if phenotype.likelihood_name.lower() == 'normal':
         y = phenotype.outcome
-        method = FastLMM(y, Q0=Q0, Q1=Q1, S0=S0, covariates=covariates)
+        if options['rank_norm']:
+            y = quantile_gaussianize(y)
+        method = FastLMM(y, Q0=Q0, Q1=Q1, S0=S0, covariates=covariates, options=options)
     else:
         y = phenotype.to_likelihood()
         overdispersion = y.name != 'Bernoulli'
         method = ExpFamEP(y, covariates, Q0=Q0, Q1=Q1, S0=S0,
-                          overdispersion=overdispersion)
+                          overdispersion=overdispersion, options=options)
 
     return method
 

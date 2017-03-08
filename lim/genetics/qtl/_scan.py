@@ -18,7 +18,7 @@ from ...tool.kinship import gower_normalization
 from ...tool.normalize import stdnorm
 
 def scan(phenotype, X, G=None, K=None, covariates=None, progress=True,
-         fast=True):
+         options=None):
     """Association between genetic variants and phenotype.
 
     Matrix `X` shall contain the genetic markers (e.g., number of minor
@@ -53,6 +53,15 @@ def scan(phenotype, X, G=None, K=None, covariates=None, progress=True,
     logger = logging.getLogger(__name__)
     logger.info('%s association scan has started.', phenotype.likelihood_name)
 
+    if options is None:
+        options = dict()
+
+    if 'fast' not in options:
+        options['fast'] = True
+
+    if 'rank_norm' not in options:
+        options['rank_norm'] = True
+
     n = phenotype.sample_size
     covariates = ones((n, 1)) if covariates is None else covariates
 
@@ -72,7 +81,7 @@ def scan(phenotype, X, G=None, K=None, covariates=None, progress=True,
     background = Background()
 
     (Q0, Q1, S0) = _genetic_preprocess(X, G, K, background)
-    qtl = QTLScan(phenotype, covariates, X, Q0, Q1, S0, fast=fast)
+    qtl = QTLScan(phenotype, covariates, X, Q0, Q1, S0, options)
     qtl.progress = progress
     qtl.compute_statistics()
 
