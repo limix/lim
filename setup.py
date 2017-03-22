@@ -23,9 +23,9 @@ def setup_package():
 
     setup_requires = ['cffi>=1.7'] + pytest_runner
     install_requires = [
-        'pytest>=2.9', 'scipy', 'numpy', 'cffi>=1.7', 'numpy-sugar', 'tqdm',
-        'h5py', 'pandas', 'tabulate>=0.7', 'six', 'optimix',
-        'limix-inference>=1.0.15', 'cachetools>=2.0'
+        'pytest>=2.9', 'scipy>=0.19', 'numpy>=1.12', 'cffi>=1.7',
+        'numpy-sugar>=1.0.27', 'tqdm', 'h5py', 'pandas', 'tabulate>=0.7',
+        'six', 'optimix>=1.2.3', 'limix-inference>=1.1.2', 'cachetools>=2.0'
     ]
     tests_require = install_requires
 
@@ -49,6 +49,7 @@ def setup_package():
             "License :: OSI Approved :: MIT License",
             "Programming Language :: Python :: 2.7",
             "Programming Language :: Python :: 3.5",
+            "Programming Language :: Python :: 3.6",
             "Operating System :: OS Independent",
         ])
 
