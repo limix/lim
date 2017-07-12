@@ -1,22 +1,23 @@
-# from __future__ import division
-#
-# from numpy.random import RandomState
-# from numpy.testing import assert_allclose
-#
-# from lim.genetics.heritability import estimate
-# from lim.random.canonical import bernoulli as bernoulli_sampler
-#
+from __future__ import division
+
+from numpy.random import RandomState
+from numpy.testing import assert_allclose
+
+from lim.heritability import estimate
+from limix_inference.random.canonical import bernoulli_sample
+
 # from lim.genetics.phenotype import BernoulliPhenotype, BinomialPhenotype
 # from lim.random.canonical import binomial as binomial_sampler
 #
 #
-# def test_heritability_bernoulli_estimate():
-#     random = RandomState(1)
-#     N = 500
-#     X = random.randn(N, N+50)
-#     y = bernoulli_sampler(0.0, X, random_state=random)
-#     assert_allclose(estimate(BernoulliPhenotype(y), X, overdispersion=False),
-#                     0.1541935844900915, rtol=1e-4, atol=1e-4)
+def test_heritability_bernoulli_estimate():
+    random = RandomState(1)
+    N = 500
+    G = random.randn(N, N+50)
+    y = bernoulli_sample(0.0, G, random_state=random)
+    print(estimate(y, 'bernoulli', G=G))
+    # assert_allclose(estimate(y, 'bernoulli', X),
+    #                 0.1541935844900915, rtol=1e-4, atol=1e-4)
 #
 #
 # def test_heritability_binomial_estimate():

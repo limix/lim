@@ -1,0 +1,11 @@
+{
+  "projectPath": "/Users/horta/workspace/lim",
+  "title": "LaTeX-Plus Project",
+  "root": "lim/heritability/test/test_heritability.py",
+  "program": "pdflatex",
+  "latexmkOptions": "-bibtex -pdf -shell-escape",
+  "output": ".latex",
+  "openOutput": "true",
+  "postAction": "link",
+  "postPath": ""
+}

@@ -173,4 +173,4 @@ Comments and bugs
 
 You can get the source and open issues `on Github.`_
 
-.. _on Github.: https://github.com/glimix/lim
+.. _on Github.: https://github.com/limix/lim

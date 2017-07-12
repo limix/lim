@@ -1,0 +1,10 @@
+# Fdb version 3
+["pdflatex"] 1491851725 "test_heritability.py" "/Users/horta/workspace/lim/.latex/test_heritability.pdf" "test_heritability" 1491851725
+  "/Users/horta/workspace/lim/.latex/test_heritability.aux" 1491851725 8 a94a2480d3289e625eea47cd1b285758 ""
+  "/usr/local/texlive/2016/texmf-dist/web2c/texmf.cnf" 1491389445 32192 c18bc721db8195c55b3f5b993e802bbf ""
+  "/usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt" 1491750448 4051008 051463a807e9a1039fe021da9bf9977c ""
+  "/usr/local/texlive/2016/texmf.cnf" 1463979140 577 2938757e76f31531e65cc647e3507693 ""
+  "test_heritability.py" 1490777967 1129 3a14bb94b71c583f6ee6a048a6263793 ""
+  (generated)
+  "/Users/horta/workspace/lim/.latex/test_heritability.log"
+  "/Users/horta/workspace/lim/.latex/test_heritability.pdf"

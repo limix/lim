@@ -1,14 +1,15 @@
 from __future__ import division
+
 import logging
-from numpy import ascontiguousarray
 
-from numpy import copy
-from numpy import sqrt
-from numpy import ones
+from numpy import ascontiguousarray, copy, ones, sqrt
 
-from numpy_sugar.linalg import (economic_qs, economic_qs_linear)
+from limix_inference.glmm import GLMM
+from limix_inference.lmm import LMM
+from numpy_sugar.linalg import economic_qs, economic_qs_linear
 
-def estimate(phenotype, G=None, K=None, covariates=None, overdispersion=True):
+
+def estimate(y, likname, X=None, G=None, K=None):
     """Estimate the so-called narrow-sense heritability.
 
     It supports Bernoulli and Binomial phenotypes (see `outcome_type`).
@@ -34,36 +35,35 @@ def estimate(phenotype, G=None, K=None, covariates=None, overdispersion=True):
     :return: a tuple containing the estimated heritability and additional
              information, respectively.
     """
-    logger = logging.getLogger(__name__)
-    logger.info('Heritability estimation has started.')
+
+    if not isinstance(y, tuple):
+        y = (y, )
+
+    if G is None and K is None:
+        raise ValueError('G and K cannot be all None.')
 
     G, K = _background_standardize(G, K)
 
-    if G is None and K is None:
-        raise Exception('G and K cannot be all None.')
+    QS = _background_decomposition(G, K)
 
-    Q0, Q1, S0 = _background_decomposition(G, K)
+    if X is None:
+        X = ones((len(y[0]), 1))
 
-    if covariates is None:
-        logger.debug('Inserting offset covariate.')
-        covariates = ones((phenotype.sample_size, 1))
+    import pdb
+    pdb.set_trace()
+    if likname.lower() == 'normal':
+        model = LMM(y, X, QS=QS)
+    else:
+        model = GLMM(y, likname, X, QS=(QS[0][0], QS[1]))
 
-    logger.debug('Constructing EP.')
-    from limix_inference.glmm import ExpFamEP
-    ep = ExpFamEP(phenotype.to_likelihood(), covariates, Q0, Q1, S0,
-                  overdispersion)
+    model.feed().maximize()
 
-    logger.debug('EP optimization.')
-    ep.learn()
+    return model.heritability
 
-    h2 = ep.heritability
-    logger.info('Found heritability before correction: %.5f.', h2)
-
-    return h2
 
 def _background_standardize(G, K):
-    from ...tool.normalize import stdnorm
-    from ...tool.kinship import gower_normalization
+    from ..tool.normalize import stdnorm
+    from ..tool.kinship import gower_normalization
     logger = logging.getLogger(__name__)
 
     if K is not None:
@@ -84,12 +84,11 @@ def _background_standardize(G, K):
 
 def _background_decomposition(G, K):
     if G is None:
-        (Q, S0) = economic_qs(K)
+        QS = economic_qs(K)
     else:
-        (Q, S0) = economic_qs_linear(G)
+        QS = economic_qs_linear(G)
 
-    Q0 = Q[0]
-    Q1 = Q[1]
+    S0 = QS[1]
     S0 /= S0.mean()
 
-    return Q0, Q1, S0
+    return QS

@@ -1,0 +1,6 @@
+PWD /Users/horta/workspace/lim/lim/heritability/test
+INPUT /usr/local/texlive/2016/texmf.cnf
+INPUT /usr/local/texlive/2016/texmf-dist/web2c/texmf.cnf
+INPUT /usr/local/texlive/2016/texmf-var/web2c/pdftex/pdflatex.fmt
+INPUT test_heritability.py
+OUTPUT /Users/horta/workspace/lim/.latex/test_heritability.log

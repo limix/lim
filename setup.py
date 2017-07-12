@@ -37,7 +37,7 @@ def setup_package():
         license="MIT",
         description='Lim.',
         long_description=long_description,
-        url='https://github.com/glimix/lim',
+        url='https://github.com/limix/lim',
         packages=find_packages(),
         zip_safe=True,
         install_requires=install_requires,
